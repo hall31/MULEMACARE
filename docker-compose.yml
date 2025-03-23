@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: mulemacare_app
+    working_dir: /var/www/html
+    volumes:
+      - ./app:/var/www/html
+    networks:
+      - laravel
+
+  webserver:
+    image: nginx:alpine
+    container_name: mulemacare_webserver
+    depends_on:
+      - app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/www/html
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - laravel
+
+  db:
+    image: mysql:5.7
+    container_name: mulemacare_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mulemacare_dev
+      MYSQL_USER: mulemacare
+      MYSQL_PASSWORD: Icare_1983
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - laravel
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: mulemacare_phpmyadmin
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    networks:
+      - laravel
+
+networks:
+  laravel:
+
+volumes:
+  dbdata:
