@@ -262,7 +262,7 @@ HTML;
                         'name' => 'Quels sont les délais de carence appliqués chez MulemaCare ?',
                         'acceptedAnswer' => [
                             '@type' => 'Answer',
-                            'text' => 'Les accidents, urgences vitales (SAMU, réanimation) et le service de télétriage Lisacare 24/7 sont pris en charge à 0 jour (immédiatement dès l\'adhésion). Pour garantir l\'équilibre prudentiel et la pérennité de la mutuelle, les soins courants et la pharmacie s\'activent après 30 jours, l\'hospitalisation programmée après 90 jours, le dentaire/optique/évacuation après 180 jours et la maternité après 300 jours.'
+                            'text' => 'Les accidents, urgences vitales (SAMU, réanimation) et le service de régulation Lisacare 24/7 sont pris en charge à 0 jour (immédiatement dès l\'adhésion). Le délai de carence est de 3 mois pour les soins programmés, consultations et hospitalisations, et de 6 mois pour la maternité et les femmes enceintes (bilans prénataux et accouchement).'
                         ]
                     ],
                     [

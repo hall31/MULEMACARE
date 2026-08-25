@@ -254,6 +254,11 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
 .btn-whatsapp-hero:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 16px 32px -6px rgba(37,211,102,.65);color:#fff}
 .btn-whatsapp-hero svg{width:19px;height:19px;stroke-width:2.2}
 
+.btn-replay-chat{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 18px;background:#fff;border:1.5px solid rgba(16,185,129,.28);border-radius:12px;color:var(--emerald-800);font:600 13px var(--font-b);cursor:pointer;transition:all .22s cubic-bezier(.2,.8,.3,1);box-shadow:0 2px 8px rgba(16,185,129,.08);margin-top:14px;align-self:flex-start}
+.btn-replay-chat:hover{background:#ECFDF5;border-color:var(--emerald);color:var(--emerald-900);transform:translateY(-2px);box-shadow:0 6px 18px rgba(16,185,129,.2)}
+.btn-replay-chat svg{width:15px;height:15px;stroke-width:2.2;transition:transform .4s cubic-bezier(.2,.8,.3,1)}
+.btn-replay-chat:hover svg{transform:rotate(-180deg)}
+
 .lisa-team-strip{display:flex;align-items:center;gap:12px;padding-top:14px;border-top:1px solid rgba(16,185,129,.15);margin-top:4px}
 .doctor-avatars{display:flex;align-items:center}
 .doc-av{width:30px;height:30px;border-radius:50%;border:2px solid #fff;display:grid;place-items:center;font:700 10.5px var(--font-b);color:#fff;margin-left:-8px;background:var(--emerald);box-shadow:0 2px 5px rgba(0,0,0,.12)}
@@ -535,18 +540,19 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
         <div class="sp-cycle">
           <span>Périodicité</span>
           <div class="seg seg-dark" id="cycleSeg" role="group" aria-label="Périodicité de paiement">
-            <button type="button" data-cycle="monthly" class="on">Mensuel</button>
-            <button type="button" data-cycle="annual">Annuel</button>
+            <button type="button" data-cycle="annual" class="on">Paiement Annuel (Recommandé)</button>
+            <button type="button" data-cycle="monthly">Mensuel</button>
           </div>
         </div>
-        <div class="big-price"><span class="bp-v num" id="bigPrice">—</span><span class="bp-u" id="bigUnit">/ mois</span></div>
+        <div class="big-price"><span class="bp-v num" id="bigPrice">—</span><span class="bp-u" id="bigUnit">/ an</span></div>
         <div class="sp-save" id="spSave"><i data-lucide="piggy-bank"></i><span id="spSaveTxt"></span></div>
         <div class="sp-detail" id="spDetail"></div>
         <button class="btn btn-white btn-block" id="simAdhere"><i data-lucide="badge-check"></i>Adhérer avec ce devis</button>
         <ul class="panel-notes">
-          <li><i data-lucide="check"></i>Sans engagement, résiliable à tout moment</li>
-          <li><i data-lucide="check"></i>Carte mutuelle digitale émise immédiatement</li>
-          <li><i data-lucide="check"></i>Effectif dès le lendemain de l'adhésion</li>
+          <li><i data-lucide="check"></i><b>Paiement à l'année</b> pour une couverture continue garantie</li>
+          <li><i data-lucide="check"></i>Délai de carence : <b>3 mois</b> (soins courants &amp; hospitalisation)</li>
+          <li><i data-lucide="check"></i>Délai de carence femmes enceintes : <b>6 mois</b> (maternité &amp; accouchement)</li>
+          <li><i data-lucide="check"></i>Accidents &amp; Lisacare 24/7 : <b>0 jour</b> (immédiat)</li>
         </ul>
       </aside>
     </div>
@@ -564,6 +570,19 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
         <p class="sec-sub">De l'essentiel urgentiste au haut de gamme international — chaque garantie est écrite noir sur blanc, sans astérisque ni petites lignes.</p>
       </div>
     </div>
+
+    <!-- Bannière explicative Carence & Paiement Annuel -->
+    <div class="carence-banner reveal" style="background:#F0FDF4;border:1.5px solid rgba(16,185,129,.25);border-radius:18px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="width:38px;height:38px;border-radius:10px;background:var(--emerald);color:#fff;display:grid;place-items:center;flex:none"><i data-lucide="shield-check"></i></span>
+        <div>
+          <b style="font:700 14px var(--font-b);color:var(--ink);display:block">Paiement Annuel &amp; Délais de Carence Clairs</b>
+          <span style="font:500 13px var(--font-b);color:var(--ink-2)">Adhésion avec cotisation à l'année · Délai de carence standard de <b>3 mois</b> (soins &amp; clinique) · <b>6 mois</b> pour les femmes enceintes &amp; maternité · Urgences <b>immédiates (0j)</b>.</span>
+        </div>
+      </div>
+      <span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid rgba(16,185,129,.3);padding:6px 14px;border-radius:999px;font:700 12px var(--font-b);color:var(--emerald-800)"><i data-lucide="calendar"></i>Cotisation Annuelle</span>
+    </div>
+
     <div class="plans-grid">
       <article class="plan-card reveal" data-planc="bronze" style="--c:#8A5A2B">
         <div class="plan-head">
@@ -573,7 +592,7 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
         <span class="plan-tag">Essentielle</span>
         <p class="plan-desc">Le filet de sécurité vital : urgences couvertes à 100 % et un médecin joignable jour et nuit.</p>
         <ul class="plan-feats">
-          <li><i data-lucide="check"></i>Hospitalisation d'urgence à <b>100 %</b></li>
+          <li><i data-lucide="check"></i>Hospitalisation d'urgence à <b>100 %</b> (Carence 0j)</li>
           <li><i data-lucide="check"></i>SAMU &amp; transport d'urgence inclus</li>
           <li><i data-lucide="check"></i>Télétriage Lisacare 24/7 sur WhatsApp</li>
           <li class="muted"><i data-lucide="minus"></i>Consultations &amp; pharmacie non couvertes</li>
@@ -591,10 +610,10 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
         <p class="plan-desc">L'équilibre parfait pour la famille : soins courants, maternité et pharmacie pris en main.</p>
         <ul class="plan-feats">
           <li><i data-lucide="check"></i>Tout Bronze, plus :</li>
-          <li><i data-lucide="check"></i>Consultations généralistes à <b>70 %</b></li>
+          <li><i data-lucide="check"></i>Consultations généralistes à <b>70 %</b> (Carence 3 mois)</li>
           <li><i data-lucide="check"></i>Spécialistes &amp; examens de laboratoire</li>
           <li><i data-lucide="check"></i>Pharmacie à <b>80 %</b> en tiers-payant</li>
-          <li><i data-lucide="check"></i>Maternité suivie et accompagnée</li>
+          <li><i data-lucide="check"></i>Maternité suivie &amp; accouchement (Carence 6 mois)</li>
         </ul>
         <button class="btn btn-white btn-block" data-open-sub="silver">Souscrire Silver</button>
       </article>
@@ -607,10 +626,10 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
         <p class="plan-desc">Zéro avance de frais en clinique conventionnée, et l'ajout des soins du quotidien.</p>
         <ul class="plan-feats">
           <li><i data-lucide="check"></i>Tout Silver, plus :</li>
-          <li><i data-lucide="check"></i><b>Zéro avance de frais</b> en clinique partenaire</li>
-          <li><i data-lucide="check"></i>Optique &amp; dentaire inclus</li>
+          <li><i data-lucide="check"></i><b>Zéro avance de frais</b> en clinique (Carence 3 mois)</li>
+          <li><i data-lucide="check"></i>Optique &amp; dentaire inclus (Carence 3 mois)</li>
           <li><i data-lucide="check"></i>Pharmacie à <b>100 %</b></li>
-          <li><i data-lucide="check"></i>Transport sanitaire conventionné</li>
+          <li><i data-lucide="check"></i>Maternité &amp; nouveau-né (Carence 6 mois)</li>
         </ul>
         <button class="btn btn-ghost btn-block" data-open-sub="gold">Souscrire Gold</button>
       </article>
@@ -624,9 +643,9 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
         <ul class="plan-feats">
           <li><i data-lucide="check"></i>Tout Gold, plus :</li>
           <li><i data-lucide="check"></i>Plafond annuel de <b>8 000 000 FCFA</b> (12 200 €)</li>
-          <li><i data-lucide="check"></i>Lit d'accompagnant pour un proche</li>
-          <li><i data-lucide="check"></i>Bilan de santé annuel complet (Carence 180j)</li>
-          <li><i data-lucide="check"></i>Évacuation sanitaire internationale (Plafond 8M FCFA)</li>
+          <li><i data-lucide="check"></i>Lit d'accompagnant pour un proche (Carence 3 mois)</li>
+          <li><i data-lucide="check"></i>Maternité &amp; femmes enceintes (Carence 6 mois)</li>
+          <li><i data-lucide="check"></i>Évacuation sanitaire internationale (Plafond 8M FCFA, Carence 6 mois)</li>
         </ul>
         <button class="btn btn-white btn-block" data-open-sub="platinium">Souscrire Platinium</button>
       </article>
@@ -650,14 +669,14 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
           <tbody>
             <tr><td>Hospitalisation</td><td data-col="bronze"><span class="v-inc">100 %</span> urgence</td><td data-col="silver"><span class="v-inc">100 %</span> urgence</td><td data-col="gold"><span class="v-inc">100 %</span></td><td data-col="platinium"><span class="v-inc">100 %</span> suite VIP</td></tr>
             <tr><td>Plafond annuel par assuré</td><td data-col="bronze" class="num v-strong" data-base-eur="760">760 €</td><td data-col="silver" class="num v-strong" data-base-eur="2290">2 290 €</td><td data-col="gold" class="num v-strong" data-base-eur="5335">5 335 €</td><td data-col="platinium" class="num v-strong" data-base-eur="12200">12 200 €</td></tr>
-            <tr><td>Délais de carence</td><td data-col="bronze"><span class="v-inc">0j</span> urgences</td><td data-col="silver"><span class="v-strong">30j</span> soins / <span class="v-strong">90j</span> hospit</td><td data-col="gold"><span class="v-strong">30j</span> / <span class="v-strong">180j</span> dentaire</td><td data-col="platinium"><span class="v-strong">30j</span> / <span class="v-strong">180j</span> évac.</td></tr>
+            <tr><td>Délais de carence</td><td data-col="bronze"><span class="v-inc">0j</span> urgences</td><td data-col="silver"><span class="v-strong">3 mois</span> soins / <span class="v-strong">6 mois</span> maternité</td><td data-col="gold"><span class="v-strong">3 mois</span> soins / <span class="v-strong">6 mois</span> maternité</td><td data-col="platinium"><span class="v-strong">3 mois</span> / <span class="v-strong">6 mois</span> maternité &amp; évac.</td></tr>
             <tr><td>SAMU &amp; transport sanitaire</td><td data-col="bronze"><span class="v-inc">Urgences</span></td><td data-col="silver"><span class="v-inc">Urgences</span></td><td data-col="gold"><span class="v-inc">Inclus</span></td><td data-col="platinium"><span class="v-inc">Inclus + internat.</span></td></tr>
-            <tr><td>Télétriage Lisacare 24/7</td><td data-col="bronze"><span class="v-inc">Inclus</span></td><td data-col="silver"><span class="v-inc">Inclus</span></td><td data-col="gold"><span class="v-inc">Inclus</span></td><td data-col="platinium"><span class="v-inc">Prioritaire</span></td></tr>
+            <tr><td>Télétriage Lisacare 24/7</td><td data-col="bronze"><span class="v-inc">Inclus (0j)</span></td><td data-col="silver"><span class="v-inc">Inclus (0j)</span></td><td data-col="gold"><span class="v-inc">Inclus (0j)</span></td><td data-col="platinium"><span class="v-inc">Prioritaire (0j)</span></td></tr>
             <tr><td>Consultations généralistes</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-strong">70 %</span></td><td data-col="gold"><span class="v-strong">80 %</span></td><td data-col="platinium"><span class="v-strong">90 %</span></td></tr>
             <tr><td>Spécialistes</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-strong">60 %</span></td><td data-col="gold"><span class="v-strong">80 %</span></td><td data-col="platinium"><span class="v-strong">90 %</span></td></tr>
             <tr><td>Pharmacie (tiers-payant)</td><td data-col="bronze"><span class="v-strong">Urgences</span></td><td data-col="silver"><span class="v-strong">80 %</span></td><td data-col="gold"><span class="v-inc">100 %</span></td><td data-col="platinium"><span class="v-inc">100 %</span></td></tr>
             <tr><td>Examens &amp; laboratoire</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-strong">70 %</span></td><td data-col="gold"><span class="v-strong">85 %</span></td><td data-col="platinium"><span class="v-strong">90 %</span></td></tr>
-            <tr><td>Maternité</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-strong">70 %</span></td><td data-col="gold"><span class="v-strong">85 %</span></td><td data-col="platinium"><span class="v-inc">100 %</span></td></tr>
+            <tr><td>Maternité &amp; femmes enceintes</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-strong">70 % (6 mois)</span></td><td data-col="gold"><span class="v-strong">85 % (6 mois)</span></td><td data-col="platinium"><span class="v-inc">100 % (6 mois)</span></td></tr>
             <tr><td>Optique &amp; dentaire</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-no">—</span></td><td data-col="gold"><span class="v-inc">Inclus</span></td><td data-col="platinium"><span class="v-inc">Inclus</span></td></tr>
             <tr><td>Bilan de santé annuel</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-no">—</span></td><td data-col="gold"><span class="v-no">—</span></td><td data-col="platinium"><span class="v-inc">Complet</span></td></tr>
             <tr><td>Lit d'accompagnant</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-no">—</span></td><td data-col="gold"><span class="v-no">—</span></td><td data-col="platinium"><span class="v-inc">Inclus</span></td></tr>
@@ -738,7 +757,10 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
             </div>
           </div>
         </div>
-        <button class="link-arrow" id="waReplay" type="button"><i data-lucide="rotate-ccw"></i>Rejouer la conversation</button>
+        <button class="btn-replay-chat" id="waReplay" type="button" aria-label="Rejouer la démonstration de conversation">
+          <i data-lucide="rotate-ccw"></i>
+          <span>Rejouer la simulation WhatsApp</span>
+        </button>
       </article>
       <article class="ally-card ongwa-card reveal">
         <span class="ally-tag a2"><i data-lucide="heart-pulse"></i>Ongwa Senior Care</span>

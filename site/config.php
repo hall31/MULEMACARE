@@ -244,22 +244,22 @@ return [
         ],
     ],
 
-    // Délais de Carence Actuariels & Prudentiels (Marge de rentabilité cible 45%)
+    // Délais de Carence Actuariels & Prudentiels
     'waiting_periods' => [
         'urgences' => [
             'act'   => 'Accidents & Urgences Vitales (SAMU, Réanimation, Traumatisme)',
-            'delay' => '0 jour',
+            'delay' => '0 jour (Immédiat)',
             'desc'  => 'Prise en charge immédiate dès la validation de votre adhésion',
         ],
         'teleconsultation' => [
             'act'   => 'Télétriage & Téléconsultation Lisacare 24/7 sur WhatsApp',
-            'delay' => '0 jour',
+            'delay' => '0 jour (Immédiat)',
             'desc'  => 'Accès illimité et instantané au médecin de garde',
         ],
         'soins_courants' => [
             'act'   => 'Consultations Généralistes, Spécialistes & Pharmacie Tiers-Payant',
-            'delay' => '30 jours (1 mois)',
-            'desc'  => 'Valable pour les soins programmés du quotidien',
+            'delay' => '90 jours (3 mois)',
+            'desc'  => 'Valable pour les soins programmés et consultations du quotidien',
         ],
         'hospitalisation' => [
             'act'   => 'Hospitalisation Médicale & Chirurgie Programmée',
@@ -268,7 +268,7 @@ return [
         ],
         'dentaire_optique' => [
             'act'   => 'Soins Dentaires, Prothèses & Optique Médicale (Gold & Platinium)',
-            'delay' => '180 jours (6 mois)',
+            'delay' => '90 jours (3 mois)',
             'desc'  => 'Forfaits lunettes, verres correcteurs et soins dentaires',
         ],
         'evacuation' => [
@@ -277,9 +277,9 @@ return [
             'desc'  => 'Hors accidents de la voie publique survenus post-adhésion (0j)',
         ],
         'maternite' => [
-            'act'   => 'Maternité, Accouchement & Soins Néonataux',
-            'delay' => '300 jours (10 mois)',
-            'desc'  => 'Couverture accouchement voie basse, césarienne et suites de couches',
+            'act'   => 'Maternité, Femmes Enceintes, Bilans Prénataux & Accouchement',
+            'delay' => '180 jours (6 mois)',
+            'desc'  => 'Couverture accouchement voie basse, césarienne, suivi de grossesse et nouveau-né',
         ],
     ],
 

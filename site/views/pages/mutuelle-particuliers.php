@@ -67,9 +67,9 @@
           <tr style="border-bottom:1px solid var(--line)">
             <td style="padding:16px 20px;font-weight:600">Délais de Carence</td>
             <td style="padding:16px 20px;text-align:center;color:#047857;font-weight:700">0j (Urgences vitales)</td>
-            <td style="padding:16px 20px;text-align:center;background:#F0FDFA">30j soins / 90j hospit</td>
-            <td style="padding:16px 20px;text-align:center">30j soins / 180j dentaire</td>
-            <td style="padding:16px 20px;text-align:center;color:#047857;font-weight:700">30j soins / 180j évac.</td>
+            <td style="padding:16px 20px;text-align:center;background:#F0FDFA">3 mois soins / 6 mois maternité</td>
+            <td style="padding:16px 20px;text-align:center">3 mois soins / 6 mois maternité</td>
+            <td style="padding:16px 20px;text-align:center;color:#047857;font-weight:700">3 mois soins / 6 mois maternité &amp; évac.</td>
           </tr>
           <tr style="border-bottom:1px solid var(--line)">
             <td style="padding:16px 20px;font-weight:600">Hospitalisation Chirurgicale &amp; Médicale</td>

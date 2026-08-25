@@ -172,7 +172,7 @@ const PROFILES={
 };
 const CITIES={douala:'Douala',yaounde:'Yaoundé',kinshasa:'Kinshasa',abidjan:'Abidjan',dakar:'Dakar',libreville:'Libreville',bangui:'Bangui'};
 const CITY_F={douala:1,yaounde:1,kinshasa:1.05,abidjan:1,dakar:1.05,libreville:1.1,bangui:1.15};
-let sim={profile:'solo',city:'douala',plan:'silver',cycle:'monthly',pme:8};
+let sim={profile:'solo',city:'douala',plan:'silver',cycle:'annual',pme:8};
 
 function simPrice(){
   const p=PLANS[sim.plan]||PLANS.silver, pr=PROFILES[sim.profile]||PROFILES.solo;
@@ -188,19 +188,19 @@ function updateSim(){
   if($('#qCity')) $('#qCity').textContent=CITIES[sim.city];
   if($('#qPlan')) $('#qPlan').textContent=PLANS[sim.plan].label;
   $('#bigPrice').textContent=sim.cycle==='monthly'?fmt(pr.m):fmt(pr.a);
-  $('#bigUnit').textContent=sim.cycle==='monthly'?'/ mois':'/ an';
+  $('#bigUnit').textContent=sim.cycle==='monthly'?'/ mois':`/ an (soit ${fmt(pr.a/12)}/mois)`;
   if($('#spSaveTxt')){
     $('#spSaveTxt').textContent=sim.cycle==='monthly'
       ?`Économisez ${fmt(pr.m*12-pr.a)} en payant à l'année`
-      :`Vous économisez ${fmt(pr.m*12-pr.a)} cette année`;
+      :`Cotisation annuelle — 10 % d'économie incluses (${fmt(pr.m*12-pr.a)})`;
   }
   let d='';
-  if(sim.profile==='pme') d+=`<span>${pr.n} salariés couverts · <b>${fmt(pr.perHead)}</b> / salarié / mois</span>`;
-  else if(pr.n>1) d+=`<span>${pr.n} personnes couvertes · <b>${fmt(pr.m/pr.n)}</b> / personne / mois</span>`;
-  else d+=`<span><b>1</b> personne couverte</span>`;
-  d+=`<span>Équivalent : <b>${fmt(cur==='XAF'?pr.m/655.957:pr.m*655.957)}</b> ${cur==='XAF'?'EUR':'FCFA'}</span>`;
+  if(sim.profile==='pme') d+=`<span>${pr.n} salariés couverts · <b>${fmt(pr.perHead*12*.9)}</b> / salarié / an</span>`;
+  else if(pr.n>1) d+=`<span>${pr.n} personnes couvertes · <b>${fmt(pr.a/pr.n)}</b> / personne / an</span>`;
+  else d+=`<span><b>1</b> personne couverte (1 an de protection continue)</span>`;
+  d+=`<span>Équivalent : <b>${fmt(cur==='XAF'?(sim.cycle==='monthly'?pr.m:pr.a)/655.957:(sim.cycle==='monthly'?pr.m:pr.a)*655.957)}</b> ${cur==='XAF'?'EUR':'FCFA'}</span>`;
   if($('#spDetail')) $('#spDetail').innerHTML=d;
-  if($('#pmeUnit')) $('#pmeUnit').textContent=`≈ ${fmt(pr.perHead)} / salarié / mois`;
+  if($('#pmeUnit')) $('#pmeUnit').textContent=`≈ ${fmt(pr.perHead*12*.9)} / salarié / an`;
   // synchronise sélections visuelles
   $$('#planOpts .p-opt').forEach(o=>o.classList.toggle('on',o.querySelector('input').value===sim.plan));
   $$('.plan-card').forEach(c=>c.classList.toggle('sel',c.dataset.planc===sim.plan));
@@ -703,9 +703,10 @@ function openInfo(kind){
       <ul class="ally-feats" style="margin-bottom:18px"><li><i data-lucide="check"></i>Remboursement numérique sous 72 heures</li><li><i data-lucide="check"></i>Validation des prises en charge par QR code</li><li><i data-lucide="check"></i>Formation et supports offerts à vos équipes d'accueil</li></ul>
       <a class="btn btn-primary btn-block" href="mailto:partenaires@mulemacare.com?subject=Conventionnement%20clinique%20MulemaCare"><i data-lucide="mail"></i>Écrire à partenaires@mulemacare.com</a>`,
     faq:`<div style="display:flex;flex-direction:column;gap:16px;font-size:14.5px;color:var(--ink-2)">
+      <div><b style="color:var(--ink)">Comment s'effectue le paiement de la mutuelle ?</b><br>Les adhésions s'effectuent avec un <b>paiement à l'année</b> (cotisation annuelle), garantissant 12 mois de sérénité et de couverture continue sans risque d'interruption.</div>
       <div><b style="color:var(--ink)">Mes parents doivent-ils avancer de l'argent ?</b><br>Non. Dans les 45+ établissements conventionnés, la prise en charge est immédiate : ils présentent simplement le QR code de la carte digitale.</div>
       <div><b style="color:var(--ink)">Je paie depuis l'Europe, est-ce possible ?</b><br>Oui : carte bancaire via Stripe, virement SEPA, ou débit automatique. Les tarifs s'affichent dans votre devise.</div>
-      <div><b style="color:var(--ink)">Y a-t-il un délai de carence ?</b><br>Aucun. Votre couverture est effective dès le lendemain de l'adhésion, urgences dès le premier jour.</div>
+      <div><b style="color:var(--ink)">Quels sont les délais de carence appliqués ?</b><br>Les urgences vitales (SAMU, réanimation) et la régulation WhatsApp Lisacare 24/7 sont prises en charge <b>immédiatement (0 jour)</b>. Le délai de carence est de <b>3 mois</b> pour les soins programmés &amp; hospitalisations, et de <b>6 mois</b> pour la maternité et les femmes enceintes (bilans et accouchement).</div>
       <div><b style="color:var(--ink)">Puis-je ajouter un bénéficiaire plus tard ?</b><br>Oui, à tout moment depuis votre espace adhérent ou par WhatsApp — l'ajout est actif sous 24 h.</div></div>`,
     legal:`<div style="font-size:13.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:12px">
       <p><b>Éditeur France &amp; Diaspora :</b> <b>SOCIETE E-SANTE MULEMACARE FRANCE</b> — Société enregistrée sous le <b>SIRET n° 8807 7661 2000 17</b>. Siège : 208 Avenue Aristide Briand, 92220 Bagneux, France. Téléphone &amp; WhatsApp : <a href="tel:+33659513458" style="color:var(--emerald);font-weight:700">+33 6 59 51 34 58</a>. E-mail : <a href="mailto:contact@mulemacare.com" style="color:var(--emerald);font-weight:700">contact@mulemacare.com</a>.</p>
