@@ -67,14 +67,16 @@ footer.site h4{font:700 13px var(--font-b);letter-spacing:.14em;text-transform:u
         </div>
       </div>
       <div>
-        <h4>Produit</h4>
+        <h4>Produit &amp; Services</h4>
         <ul class="f-links">
-          <li><a href="/#simulateur">Simulateur de cotisation</a></li>
-          <li><a href="/#garanties">Grille des garanties</a></li>
+          <li><a href="/adhesion">Adhésion &amp; Souscription en Ligne</a></li>
+          <li><a href="/#simulateur">Simulateur de Devis &amp; Tarifs</a></li>
+          <li><a href="/espace-adherent">Espace Adhérent 360°</a></li>
+          <li><a href="/borne-clinique">Borne Tiers-Payant Établissements</a></li>
+          <li><a href="/#garanties">Grille des Garanties</a></li>
           <li><a href="/entreprises">Entreprises &amp; PME</a></li>
-          <li><a href="/#services">Lisacare &amp; Ongwa</a></li>
           <li><a href="/reseau-soins">Annuaire des Cliniques &amp; Pharmacies</a></li>
-          <li><a href="/partenaires">Devenir Établissement Partenaire</a></li>
+          <li><a href="/admin">Tour de Contrôle Admin</a></li>
         </ul>
       </div>
       <div>
@@ -228,8 +230,9 @@ if($('#cycleSeg')){
   });
 }
 if($('#pmeMinus')) $('#pmeMinus').onclick=()=>{if(sim.pme>3){sim.pme--;$('#pmeCount').textContent=sim.pme;updateSim();}};
-if($('#pmePlus')) $('#pmePlus').onclick=()=>{if(sim.pme<200){sim.pme++;$('#pmeCount').textContent=sim.pme;updateSim();}};
-if($('#simAdhere')) $('#simAdhere').onclick=()=>openSub(sim.plan);
+if($('#simAdhere')) $('#simAdhere').onclick=()=>{
+  location.href='/adhesion?plan='+encodeURIComponent(sim.plan)+'&comp='+encodeURIComponent(sim.profile)+'&city='+encodeURIComponent(sim.city);
+};
 
 /* ══════════════════ CARTE MUTUELLE DIGITALE ══════════════════ */
 function qrSVG(text,px){

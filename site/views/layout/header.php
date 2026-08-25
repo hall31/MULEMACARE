@@ -195,7 +195,7 @@ $isAdmin = str_starts_with($reqPath, '/admin');
         <button type="button" data-cur="USD">$ USD</button>
         <button type="button" data-cur="XAF">FCFA</button>
       </div>
-      <button class="btn btn-primary btn-sm" data-open-sub><i data-lucide="badge-check"></i>Adhérer</button>
+      <a href="/adhesion" class="btn btn-primary btn-sm"><i data-lucide="badge-check"></i>Adhérer</a>
       <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false"><i data-lucide="menu"></i></button>
     </div>
   </div>
@@ -205,13 +205,14 @@ $isAdmin = str_starts_with($reqPath, '/admin');
     <a href="/entreprises" class="<?= $isEntreprises ? 'active' : '' ?>"><span class="m-nav-item"><i data-lucide="building-2"></i>Entreprises &amp; PME</span><i data-lucide="chevron-right" class="m-chev"></i></a>
     <a href="/reseau-soins" class="<?= $isReseau ? 'active' : '' ?>"><span class="m-nav-item"><i data-lucide="map-pin"></i>Annuaire Cliniques &amp; Pharmacies</span><i data-lucide="chevron-right" class="m-chev"></i></a>
     <a href="/partenaires" class="<?= $isPartenaires ? 'active' : '' ?>"><span class="m-nav-item"><i data-lucide="handshake"></i>Devenir Établissement Partenaire</span><i data-lucide="chevron-right" class="m-chev"></i></a>
+    <a href="/espace-adherent"><span class="m-nav-item"><i data-lucide="id-card"></i>Espace Adhérent 360°</span><i data-lucide="chevron-right" class="m-chev"></i></a>
     <a href="/admin" class="<?= $isAdmin ? 'active' : '' ?>"><span class="m-nav-item"><i data-lucide="layout-dashboard"></i>Tour de Contrôle Admin</span><i data-lucide="chevron-right" class="m-chev"></i></a>
     <div class="seg" data-cur-seg role="group" aria-label="Choix de la devise" style="margin:14px 0 8px">
       <button type="button" data-cur="EUR" class="on">€ EUR</button>
       <button type="button" data-cur="USD">$ USD</button>
       <button type="button" data-cur="XAF">FCFA</button>
     </div>
-    <button class="btn btn-primary btn-block" data-open-sub><i data-lucide="badge-check"></i>Adhérer en 2 minutes</button>
+    <a href="/adhesion" class="btn btn-primary btn-block"><i data-lucide="badge-check"></i>Adhérer en 2 minutes</a>
   </div>
 </header>
 

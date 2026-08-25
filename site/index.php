@@ -43,8 +43,15 @@ $router->get('/partenaires', [HomeController::class, 'partenaires']);
 $router->get('/devenir-partenaire', [HomeController::class, 'partenaires']);
 $router->get('/pays/{slug}', [HomeController::class, 'pays']);
 $router->get('/diaspora/{slug}', [HomeController::class, 'diaspora']);
+$router->get('/devis/{id}', [HomeController::class, 'devis']);
+$router->get('/devis', [HomeController::class, 'devis']);
+$router->get('/adhesion', [HomeController::class, 'adhesion']);
+$router->get('/souscription', [HomeController::class, 'adhesion']);
+$router->get('/borne-clinique', [HomeController::class, 'borneClinique']);
+$router->get('/verifier', [HomeController::class, 'borneClinique']);
 $router->get('/espace-adherent', [HomeController::class, 'adherent']);
 $router->get('/admin', [HomeController::class, 'admin']);
+$router->get('/espace-admin', [HomeController::class, 'admin']);
 $router->get('/carte/{memberId}', [HomeController::class, 'carte']);
 
 // Routes SEO & AI Search
@@ -56,6 +63,9 @@ $router->get('/llms.txt', [HomeController::class, 'llmsTxt']);
 $router->post('/api/quote', [ApiController::class, 'quote']);
 $router->post('/api/subscribe', [ApiController::class, 'subscribe']);
 $router->get('/api/verify-card/{code}', [ApiController::class, 'verifyCard']);
+$router->get('/api/adherent/lookup', [ApiController::class, 'lookupAdherent']);
+$router->post('/api/claim', [ApiController::class, 'createClaim']);
+$router->post('/api/admin/toggle-status', [ApiController::class, 'toggleMemberStatus']);
 $router->post('/api/webhook', [ApiController::class, 'webhook']);
 
 // Dispatch

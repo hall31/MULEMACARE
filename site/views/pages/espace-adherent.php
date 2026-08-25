@@ -1,248 +1,276 @@
+<?php
+use App\Services\MembershipService;
+
+$memService = new MembershipService($this->config);
+$queryParam = trim($_GET['adh'] ?? $_GET['q'] ?? '');
+$member = null;
+
+if (!empty($queryParam)) {
+    $member = $memService->getMemberByQuery($queryParam) ?? $memService->verifyCard($queryParam);
+}
+
+// Fallback démo interactif certifié si aucun paramètre fourni
+if (!$member) {
+    $member = [
+        'cssa_id'              => 'CSSA-4921-26',
+        'membership_id'        => 'ADH-8FA3B2',
+        'subscriber_name'      => 'Éric Awono Mballa',
+        'subscriber_email'     => 'eric.awono@mulemacare.com',
+        'subscriber_phone'     => '+33 6 59 51 34 58',
+        'subscriber_country'   => 'France (Diaspora)',
+        'city'                 => 'Douala',
+        'plan_name'            => 'Mulema Silver Confort',
+        'plan_id'              => 'silver',
+        'composition'          => 'Famille (4 personnes couvertes)',
+        'annual_cap'           => 1500000,
+        'consumed_cap'         => 124500,
+        'remaining_cap'        => 1375500,
+        'status'               => 'ACTIVE',
+        'tiers_payant'         => '100% ACTIF',
+        'valid_from'           => date('01/01/Y'),
+        'valid_until_label'    => date('31/12/Y'),
+        'carence_general_label'=> 'Validé · Carence 3 mois échue',
+        'carence_mat_label'    => 'Validé · Carence 6 mois échue',
+        'beneficiaries'        => [
+            ['name' => 'Éric Awono Mballa', 'relation' => 'Titulaire', 'city' => 'Douala', 'carence_general' => 'Actif (0j)', 'carence_maternity' => 'N/A'],
+            ['name' => 'Monique Awono', 'relation' => 'Conjointe', 'city' => 'Douala', 'carence_general' => 'Actif', 'carence_maternity' => 'Actif'],
+            ['name' => 'Junior Awono (12 ans)', 'relation' => 'Enfant', 'city' => 'Douala', 'carence_general' => 'Actif', 'carence_maternity' => 'N/A'],
+            ['name' => 'Mme Thérèse Ekwalla (78 ans)', 'relation' => 'Mère / Senior', 'city' => 'Douala', 'carence_general' => 'Actif', 'carence_maternity' => 'N/A'],
+        ],
+        'claims_history'       => [
+            ['date' => date('18/08/Y'), 'clinic' => 'Clinique de l\'Aéroport (Douala)', 'act' => 'Consultation Pédiatrie + Médicaments', 'amount' => '38 500 FCFA', 'covered' => '100%', 'copay' => '0 FCFA'],
+            ['date' => date('04/07/Y'), 'clinic' => 'Pharmacie du Rond-Point', 'act' => 'Ordonnance Lisacare Tiers-Payant', 'amount' => '24 000 FCFA', 'covered' => '100%', 'copay' => '0 FCFA'],
+            ['date' => date('12/05/Y'), 'clinic' => 'Centre Médico-Chirurgical Akwa', 'act' => 'Bilan Cardiologique Mère (Ongwa)', 'amount' => '62 000 FCFA', 'covered' => '100%', 'copay' => '0 FCFA'],
+        ]
+    ];
+}
+
+$capPercent = round((($member['consumed_cap'] ?? 0) / ($member['annual_cap'] ?? 1500000)) * 100, 1);
+?>
+
 <style>
-/* ================= ESPACE ADHÉRENT (FAMILY HUB) ================= */
-.user-hub{padding:48px 0 88px;background:var(--bg)}
-.hub-header{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:36px;flex-wrap:wrap}
-.hub-header h1{font-size:clamp(1.8rem,3vw,2.4rem);font-weight:800}
-.hub-header p{font-size:15px;color:var(--ink-3);margin-top:4px}
-.hub-actions{display:flex;gap:12px;align-items:center}
+/* ═══════════ ESPACE ADHÉRENT 360° GAFAM-LEVEL ═══════════ */
+.adherent-hub{padding:40px 0 88px;background:#F8FAFC;min-height:85vh}
+.adh-welcome-bar{background:linear-gradient(135deg,#064E3B 0%,#047857 100%);color:#fff;border-radius:24px;padding:32px;margin-bottom:36px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;box-shadow:0 12px 32px -8px rgba(6,78,59,.35)}
+.aw-left h1{font:800 28px/1.2 var(--font-n);color:#fff;margin-bottom:6px}
+.aw-left p{font:500 15px var(--font-b);color:#A7F3D0}
+.aw-status-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:99px;font:700 13px var(--font-b);color:#fff}
 
-.hub-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:36px;align-items:start}
+.adh-main-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;margin-bottom:36px}
 
-.hub-card-box{background:#fff;border:1.5px solid var(--line);border-radius:24px;padding:32px;box-shadow:var(--shadow-1)}
-.ben-selector{display:flex;gap:10px;overflow-x:auto;padding-bottom:14px;margin-bottom:24px;scrollbar-width:none}
-.ben-selector::-webkit-scrollbar{display:none}
-.ben-btn{background:#F1F5F9;border:1.5px solid var(--line);border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;white-space:nowrap;transition:.18s;font:600 13.5px var(--font-b);color:var(--ink-2)}
-.ben-btn:hover{border-color:var(--emerald);color:var(--emerald)}
-.ben-btn.active{background:var(--emerald-050);border-color:var(--emerald);color:var(--emerald);box-shadow:0 0 0 3px rgba(9,114,104,.1)}
-.ben-btn .b-dot{width:8px;height:8px;border-radius:50%;background:#10B981}
+/* CARTE CSSA 3D INTERACTIVE */
+.card-3d-wrap{perspective:1000px;margin-bottom:24px}
+.cssa-card-3d{width:100%;max-width:480px;height:290px;background:linear-gradient(135deg,#064E3B 0%,#0D9488 100%);border-radius:22px;padding:26px;color:#fff;position:relative;box-shadow:0 20px 40px -10px rgba(6,78,59,.5);display:flex;flex-direction:column;justify-content:space-between;border:1.5px solid rgba(255,255,255,.25);transform-style:preserve-3d;transition:transform .4s cubic-bezier(.2,.8,.3,1)}
+.cssa-card-3d:hover{transform:translateY(-4px) rotateX(4deg) rotateY(-4deg)}
+.cc-top{display:flex;justify-content:space-between;align-items:flex-start}
+.cc-chip{width:44px;height:34px;background:linear-gradient(135deg,#FBBF24,#F59E0B);border-radius:7px;border:1px solid #D97706}
+.cc-number{font:800 20px/1 var(--font-n);letter-spacing:.12em;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.3)}
+.cc-bottom{display:flex;justify-content:space-between;align-items:flex-end}
+.cc-holder span{display:block;font:600 10.5px var(--font-b);text-transform:uppercase;color:#A7F3D0;letter-spacing:.05em}
+.cc-holder b{font:700 15px var(--font-b);color:#fff}
+.cc-qr{width:56px;height:56px;background:#fff;border-radius:8px;padding:4px;display:grid;place-items:center}
+.cc-qr img{width:100%;height:100%;object-fit:contain}
 
-.hub-gauge-box{background:var(--bg);border:1.5px solid var(--line);border-radius:18px;padding:20px;margin-top:24px}
-.gauge-top{display:flex;justify-content:space-between;font-size:13.5px;color:var(--ink-2);margin-bottom:8px}
-.gauge-bar{width:100%;height:10px;border-radius:99px;background:#E2E8F0;overflow:hidden;margin-bottom:8px}
-.gauge-fill{height:100%;background:linear-gradient(90deg,var(--emerald),var(--emerald-500));border-radius:99px;width:18%}
-.gauge-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3)}
+/* JAUGES ET STATS */
+.box-white{background:#fff;border:1px solid #E2E8F0;border-radius:22px;padding:26px;box-shadow:0 6px 20px rgba(15,23,42,.04);margin-bottom:28px}
+.box-white h3{font:800 18px var(--font-n);color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:10px}
 
-.hub-claims-box{background:#fff;border:1.5px solid var(--line);border-radius:24px;padding:32px;box-shadow:var(--shadow-1)}
-.hub-claims-box h3{font-size:19px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
-.claims-table{width:100%;border-collapse:collapse;font-size:13.5px}
-.claims-table th{text-align:left;padding:12px 14px;background:#F8FAFC;color:var(--ink-3);font-weight:600;border-bottom:1.5px solid var(--line)}
-.claims-table td{padding:14px;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
-.claims-table tr:last-child td{border-bottom:0}
-.claim-badge{display:inline-flex;align-items:center;gap:5px;background:#ECFDF5;color:#047857;border-radius:99px;padding:3px 10px;font:600 11.5px var(--font-b)}
+.gauge-wrap{margin-bottom:20px}
+.gauge-labels{display:flex;justify-content:space-between;font:600 13.5px var(--font-b);margin-bottom:8px}
+.gauge-bar{height:14px;background:#E2E8F0;border-radius:99px;overflow:hidden;position:relative}
+.gauge-fill{height:100%;background:linear-gradient(90deg,#10B981,#047857);border-radius:99px;transition:width .6s ease}
 
-.hub-services-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
-.hub-service-card{border:1.5px solid var(--line);border-radius:16px;padding:18px;display:flex;align-items:center;gap:14px;background:#FBFDFC;transition:.18s}
-.hub-service-card:hover{border-color:var(--emerald);transform:translateY(-2px);box-shadow:var(--shadow-1)}
-.hub-service-card .h-ic{width:42px;height:42px;border-radius:12px;background:var(--emerald-050);color:var(--emerald);display:grid;place-items:center;flex:none}
+.carence-pill-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.cp-pill{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:12px 16px}
+.cp-pill span{display:block;font:600 11.5px var(--font-b);color:#64748B;text-transform:uppercase;margin-bottom:2px}
+.cp-pill b{font:700 13.5px var(--font-b);color:#065F46}
+
+.ben-table, .claims-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.ben-table th, .claims-table th{text-align:left;padding:12px 14px;background:#F8FAFC;color:#64748B;font-weight:600;border-bottom:1px solid #E2E8F0}
+.ben-table td, .claims-table td{padding:14px;border-bottom:1px solid #F1F5F9;color:var(--ink)}
 
 @media(max-width:960px){
-  .hub-grid{grid-template-columns:1fr}
-  .hub-services-grid{grid-template-columns:1fr}
+  .adh-main-grid{grid-template-columns:1fr}
 }
 </style>
 
-<div class="user-hub">
-  <div class="wrap">
-    <div class="hub-header">
-      <div>
-        <span class="badge-agr"><i data-lucide="shield-check"></i>Espace Adhérent Sécurisé · N° ADH-98420173</span>
-        <h1>Bonjour Éric Awono Mballa</h1>
-        <p>Famille rattachée : <b>4 bénéficiaires</b> · Formule <b>Silver (Famille &amp; Soins Courants)</b> · Tiers-payant 100% actif</p>
-      </div>
-      <div class="hub-actions">
-        <button class="btn btn-primary btn-sm" id="btnHubPdf"><i data-lucide="download"></i>Attestation PDF</button>
-        <a class="btn btn-ghost btn-sm" href="https://wa.me/23752112021?text=Bonjour%20MulemaCare%2C%20j%27ai%20une%20question%20sur%20mon%20espace%20adh%C3%A9rent." target="_blank" rel="noopener"><i data-lucide="message-circle"></i>Assistance 24/7</a>
-      </div>
-    </div>
-
-    <div class="hub-grid">
-      <!-- Colonne Gauche : Cartes & Jauges -->
-      <div class="hub-card-box">
-        <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:9px">
-          <i data-lucide="wallet-cards" style="color:var(--emerald)"></i>Portefeuille Famille (Pass Digital)
-        </h3>
-
-        <!-- Sélecteur de bénéficiaire -->
-        <div class="ben-selector" id="benSelector">
-          <button type="button" class="ben-btn active" data-ben-name="Éric Awono Mballa" data-ben-cssa="CSSA-8842-26" data-ben-rel="Titulaire">
-            <span class="b-dot"></span>Éric (Vous)
-          </button>
-          <button type="button" class="ben-btn" data-ben-name="Marthe Awono" data-ben-cssa="CSSA-8842-27" data-ben-rel="Conjointe">
-            <span class="b-dot"></span>Marthe (Épouse)
-          </button>
-          <button type="button" class="ben-btn" data-ben-name="Junior Awono" data-ben-cssa="CSSA-8842-28" data-ben-rel="Enfant">
-            <span class="b-dot"></span>Junior (Fils)
-          </button>
-          <button type="button" class="ben-btn" data-ben-name="Maman Madeleine Ekwalla" data-ben-cssa="CSSA-8842-29" data-ben-rel="Mère">
-            <span class="b-dot"></span>Mme Ekwalla (Mère)
-          </button>
-        </div>
-
-        <!-- Carte d'assuré dynamique -->
-        <div class="member-card static" id="hubMemberCard" data-plan="silver">
-          <div class="card-face card-front" id="hubCardFront"></div>
-        </div>
-
-        <!-- Jauge Plafond Annuel -->
-        <div class="hub-gauge-box">
-          <div class="gauge-top">
-            <span>Plafond Annuel Hospitalier &amp; Soins</span>
-            <b class="num" id="hubCapText">1 260 000 FCFA restants</b>
-          </div>
-          <div class="gauge-bar"><div class="gauge-fill" id="hubGaugeFill" style="width:16%"></div></div>
-          <div class="gauge-meta">
-            <span>Consommé : 240 000 FCFA (16 %)</span>
-            <span>Plafond Total : 1 500 000 FCFA (2 290 €)</span>
-          </div>
-        </div>
-        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:9px 12px;font-size:12px;color:#166534;margin-top:12px;display:flex;align-items:center;gap:7px">
-          <i data-lucide="shield-check" style="width:15px;height:15px;flex:none"></i>
-          <span>Délais de carence échus · Prise en charge 100% active dans le réseau agréé.</span>
-        </div>
-
-        <!-- Services d'urgence connectés -->
-        <div class="hub-services-grid">
-          <a class="hub-service-card" href="https://wa.me/23752112021?text=Urgence%20MulemaCare%20Dr%20Lisacare" target="_blank" rel="noopener">
-            <div class="h-ic"><i data-lucide="stethoscope"></i></div>
-            <div>
-              <b style="font-size:13.5px;display:block">Médecin Lisacare</b>
-              <small style="color:var(--ink-3);font-size:12px">Réponse en 4 min 24/7</small>
-            </div>
-          </a>
-          <button type="button" class="hub-service-card" data-info="ongwa" style="border:1.5px solid #FCD34D;background:#FFFDF6">
-            <div class="h-ic" style="background:var(--gold-100);color:#92400E"><i data-lucide="heart-pulse"></i></div>
-            <div style="text-align:left">
-              <b style="font-size:13.5px;display:block">Visite Ongwa Senior</b>
-              <small style="color:var(--ink-3);font-size:12px">Planifier un passage</small>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      <!-- Colonne Droite : Historique des Prises en Charge -->
-      <div class="hub-claims-box">
-        <h3><i data-lucide="receipt" style="color:var(--emerald)"></i>Derniers Actes &amp; Prises en Charge Tiers-Payant</h3>
-        <p style="font-size:13.5px;color:var(--ink-3);margin-bottom:20px">Toutes les consultations et ordonnances validées en clinique conventionnée sans avance de frais :</p>
-        
-        <table class="claims-table">
-          <thead>
-            <tr>
-              <th>Date &amp; Bénéficiaire</th>
-              <th>Établissement</th>
-              <th>Acte</th>
-              <th>Couverture</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <b style="display:block">18 Août 2026</b>
-                <small style="color:var(--ink-3)">Junior Awono</small>
-              </td>
-              <td>Clinique de l'Étoile (Bonapriso)</td>
-              <td>Pédiatrie &amp; Bilan</td>
-              <td><span class="claim-badge"><i data-lucide="check"></i>100% Tiers-payant</span></td>
-            </tr>
-            <tr>
-              <td>
-                <b style="display:block">04 Août 2026</b>
-                <small style="color:var(--ink-3)">Marthe Awono</small>
-              </td>
-              <td>Pharmacie du Centre (Akwa)</td>
-              <td>Ordonnance Dr Lisacare</td>
-              <td><span class="claim-badge"><i data-lucide="check"></i>80% Remboursé</span></td>
-            </tr>
-            <tr>
-              <td>
-                <b style="display:block">22 Juillet 2026</b>
-                <small style="color:var(--ink-3)">Mme Ekwalla</small>
-              </td>
-              <td>Visite Domicile Ongwa</td>
-              <td>Contrôle Tension &amp; Glycémie</td>
-              <td><span class="claim-badge"><i data-lucide="check"></i>0 F Avancé</span></td>
-            </tr>
-            <tr>
-              <td>
-                <b style="display:block">12 Juillet 2026</b>
-                <small style="color:var(--ink-3)">Éric Awono</small>
-              </td>
-              <td>Polyclinique Bonanjo</td>
-              <td>Consultation Médecine Générale</td>
-              <td><span class="claim-badge"><i data-lucide="check"></i>100% Pris en charge</span></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Téléchargement Attestation de Droit -->
-        <div style="background:#F8FAFC;border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
-          <div>
-            <b style="font-size:14px;display:block">Attestation Fiscale Diaspora &amp; Reçu de Cotisation</b>
-            <small style="color:var(--ink-3)">Valable pour vos déclarations et justificatifs administratifs</small>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="toast('Téléchargement en cours', 'Votre reçu fiscal 2026 a été généré.', 'success')">
-            <i data-lucide="file-text"></i>Reçu Fiscal 2026
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="breadcrumb">
+  <div class="wrap"><a href="/">Accueil</a> <span>/</span> <b style="color:var(--emerald)">Espace Adhérent 360°</b></div>
 </div>
 
-<script>
-/* Mise à jour dynamique de la carte selon le bénéficiaire sélectionné */
-const benBtns = $$('#benSelector .ben-btn');
-benBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    benBtns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    const name = btn.dataset.benName;
-    const no = btn.dataset.benCssa;
+<main class="adherent-hub">
+  <div class="wrap">
     
-    if($('#hubCardFront')) {
-      $('#hubCardFront').innerHTML = cardFrontHTML({
-        name: name,
-        no: no,
-        plan: 'silver',
-        validThru: '12/2028'
-      });
-      icons();
-    }
-    toast('Carte actualisée', `Affichage de la carte CSSA pour ${name}.`, 'info');
-  });
-});
+    <!-- BANDEAU DE BIENVENUE -->
+    <div class="adh-welcome-bar">
+      <div class="aw-left">
+        <div class="aw-status-badge">
+          <i data-lucide="shield-check"></i>
+          <span>MUTUELLE ACTIVE · TIERS-PAYANT 100% DISPONIBLE</span>
+        </div>
+        <h1 style="margin-top:10px">Bonjour <?= htmlspecialchars($member['subscriber_name']) ?> 👋</h1>
+        <p>Gérez vos garanties santé, suivez vos prises en charge et consultez le médecin de garde Lisacare.</p>
+      </div>
+      <div>
+        <a href="https://wa.me/23752112021?text=<?= rawurlencode('Bonjour Dr Lisacare, je suis adhérent ' . $member['cssa_id'] . ' et j\'ai besoin d\'une téléconsultation.') ?>" target="_blank" class="btn btn-gold btn-lg" style="box-shadow:0 8px 20px rgba(0,0,0,.25)">
+          <i data-lucide="message-circle"></i>
+          <span>Médecin Lisacare 24/7</span>
+        </a>
+      </div>
+    </div>
 
-// Initialisation de la carte au chargement
-if($('#hubCardFront')) {
-  $('#hubCardFront').innerHTML = cardFrontHTML({
-    name: 'Éric Awono Mballa',
-    no: 'CSSA-8842-26',
-    plan: 'silver',
-    validThru: '12/2028'
-  });
-  icons();
-}
+    <div class="adh-main-grid">
+      
+      <!-- COLONNE GAUCHE : CARTE CSSA & PLAFOND -->
+      <div>
+        
+        <!-- CARTE MUTUELLE CSSA 3D -->
+        <div class="box-white">
+          <h3><i data-lucide="id-card" style="color:var(--emerald)"></i>Votre Carte Digitale d'Assuré CSSA</h3>
+          
+          <div class="card-3d-wrap">
+            <div class="cssa-card-3d">
+              <div class="cc-top">
+                <div class="cc-chip"></div>
+                <img src="/assets/img/logofooter.png" alt="MulemaCare" height="28" style="height:28px;width:auto;filter:brightness(0) invert(1)">
+              </div>
+              <div class="cc-number"><?= htmlspecialchars($member['cssa_id']) ?></div>
+              <div class="cc-bottom">
+                <div class="cc-holder">
+                  <span>Titulaire Adhérent</span>
+                  <b><?= htmlspecialchars($member['subscriber_name']) ?></b>
+                  <small style="display:block;font-size:11px;color:#D1FAE5;margin-top:2px"><?= htmlspecialchars($member['plan_name']) ?> · Valide jusqu'au <?= htmlspecialchars($member['valid_until_label'] ?? date('d/m/Y', strtotime('+1 year'))) ?></small>
+                </div>
+                <div class="cc-qr">
+                  <!-- QR Code dynamique pointant vers la vérification officielle -->
+                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=<?= urlencode('https://preprod.mulemacare.com/carte/' . $member['cssa_id']) ?>" alt="QR Code CSSA">
+                </div>
+              </div>
+            </div>
+          </div>
 
-if($('#btnHubPdf')) {
-  $('#btnHubPdf').onclick = () => {
-    const activeBtn = $('#benSelector .ben-btn.active') || benBtns[0];
-    const m = {
-      name: activeBtn.dataset.benName,
-      adh: 'ADH-98420173',
-      cssa: activeBtn.dataset.benCssa,
-      plan: 'silver'
-    };
-    $('#printArea').innerHTML = `
-      <h2>MulemaCare Mutuelle Santé — Attestation de Tiers-Payant</h2>
-      <p class="pa-sub">Émise le ${new Date().toLocaleDateString('fr-FR')} · Agrément CSSA n° 045/CSSA/2024 · mulemacare.com</p>
-      <div class="member-card static" data-plan="silver"><div class="card-face card-front">${cardFrontHTML(m)}</div></div>
-      <div class="pa-meta">
-        <div><b>N° d'adhésion :</b> <span class="num">${m.adh}</span></div>
-        <div><b>Adhérent :</b> ${esc(m.name)}</div>
-        <div><b>Formule :</b> Silver (Famille &amp; Soins Courants)</div>
-        <div><b>Urgences 24/7 :</b> <span class="num">+237 521 120 21</span></div>
-      </div>`;
-    window.print();
-  };
-}
-</script>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <a href="/carte/<?= urlencode($member['cssa_id']) ?>" class="btn btn-secondary btn-sm" target="_blank">
+              <i data-lucide="external-link"></i>
+              <span>Vue Plein Écran Clinique</span>
+            </a>
+            <button class="btn btn-secondary btn-sm" onclick="window.print()" type="button">
+              <i data-lucide="printer"></i>
+              <span>Télécharger l'Attestation PDF</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SUIVI DU PLAFOND ANNUEL -->
+        <div class="box-white">
+          <h3><i data-lucide="pie-chart" style="color:var(--emerald)"></i>Consommation du Plafond Annuel Garanti</h3>
+          <div class="gauge-wrap">
+            <div class="gauge-labels">
+              <span>Consommé : <b><?= number_format($member['consumed_cap'] ?? 124500, 0, ',', ' ') ?> FCFA</b></span>
+              <span style="color:#047857">Restant : <b><?= number_format($member['remaining_cap'] ?? 1375500, 0, ',', ' ') ?> FCFA</b></span>
+            </div>
+            <div class="gauge-bar">
+              <div class="gauge-fill" style="width:<?= max(8, $capPercent) ?>%"></div>
+            </div>
+            <small style="display:block;font:500 12px var(--font-b);color:#64748B;margin-top:8px">
+              Plafond global garanti : <b><?= number_format($member['annual_cap'] ?? 1500000, 0, ',', ' ') ?> FCFA / an</b> (Renouvellement le <?= htmlspecialchars($member['valid_until_label'] ?? date('d/m/Y', strtotime('+1 year'))) ?>).
+            </small>
+          </div>
+
+          <div class="carence-pill-grid">
+            <div class="cp-pill">
+              <span>Carence Soins &amp; Cliniques (3 mois)</span>
+              <b>✅ <?= htmlspecialchars($member['carence_general_label'] ?? 'Validé') ?></b>
+            </div>
+            <div class="cp-pill">
+              <span>Carence Maternité (6 mois)</span>
+              <b>✅ <?= htmlspecialchars($member['carence_mat_label'] ?? 'Validé') ?></b>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- COLONNE DROITE : AYANTS DROIT & HISTORIQUE TIERS-PAYANT -->
+      <div>
+        
+        <!-- PERSONNES COUVERTES -->
+        <div class="box-white">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 style="margin:0"><i data-lucide="users" style="color:var(--emerald)"></i>Personnes Couvertes au Pays</h3>
+            <span style="font:700 12px var(--font-b);background:#ECFDF5;color:#065F46;padding:4px 10px;border-radius:99px">
+              <?= count($member['beneficiaries'] ?? [1]) ?> bénéficiaires
+            </span>
+          </div>
+
+          <div style="overflow-x:auto">
+            <table class="ben-table">
+              <thead>
+                <tr>
+                  <th>Nom &amp; Prénom</th>
+                  <th>Rôle</th>
+                  <th>Ville</th>
+                  <th>Droits Tiers-Payant</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach (($member['beneficiaries'] ?? []) as $b): ?>
+                <tr>
+                  <td><b><?= htmlspecialchars($b['name']) ?></b></td>
+                  <td><?= htmlspecialchars($b['relation'] ?? 'Ayant droit') ?></td>
+                  <td><?= htmlspecialchars($b['city'] ?? $member['city']) ?></td>
+                  <td><span style="color:#047857;font-weight:700">100 % Actif</span></td>
+                </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- DERNIÈRES PRISES EN CHARGE TIERS-PAYANT -->
+        <div class="box-white">
+          <h3><i data-lucide="history" style="color:var(--emerald)"></i>Dernières Prises en Charge Tiers-Payant</h3>
+          <div style="overflow-x:auto">
+            <table class="claims-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Établissement</th>
+                  <th>Acte Médical</th>
+                  <th>Montant</th>
+                  <th>Avance Adhérent</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach (($member['claims_history'] ?? []) as $cl): ?>
+                <tr>
+                  <td><?= htmlspecialchars($cl['date']) ?></td>
+                  <td><b><?= htmlspecialchars($cl['clinic']) ?></b></td>
+                  <td><?= htmlspecialchars($cl['act']) ?></td>
+                  <td><?= htmlspecialchars($cl['amount']) ?></td>
+                  <td><span style="color:#047857;font-weight:700;background:#ECFDF5;padding:3px 8px;border-radius:6px"><?= htmlspecialchars($cl['copay']) ?></span></td>
+                </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ONFORMATION ONGWASENIOR CARE -->
+        <div class="box-white" style="background:#FFFBEB;border-color:#FCD34D">
+          <h3 style="color:#92400E;font-size:16px"><i data-lucide="heart-pulse" style="color:#D97706"></i>Passages Infirmiers Ongwa Senior Care</h3>
+          <p style="font-size:13.5px;color:#78350F;line-height:1.5">
+            Vos parents âgés bénéficient de visites de contrôle régulières à domicile (tension, glycémie, ordonnances) incluses dans votre mutuelle.
+          </p>
+          <a href="https://wa.me/23752112021?text=<?= rawurlencode('Bonjour Ongwa Care, je souhaite planifier une visite à domicile pour mes parents.') ?>" target="_blank" class="btn btn-secondary btn-sm" style="background:#fff;color:#92400E;border-color:#FDE68A;margin-top:10px">
+            <i data-lucide="calendar"></i>
+            <span>Planifier une visite infirmière</span>
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</main>

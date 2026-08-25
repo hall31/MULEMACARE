@@ -273,6 +273,33 @@ class HomeController {
     }
 
     /**
+     * Fiche Officielle de Devis en Ligne
+     * GET /devis/{id}
+     */
+    public function devis(string $id = ''): void {
+        $seo = new SEO($this->config, "/devis/{$id}", null, 'home');
+        $this->render('devis', ['quoteId' => $id], $seo);
+    }
+
+    /**
+     * Tunnel de Souscription & Adhésion 100% Automatisé
+     * GET /adhesion
+     */
+    public function adhesion(): void {
+        $seo = new SEO($this->config, '/adhesion', null, 'home');
+        $this->render('adhesion', [], $seo);
+    }
+
+    /**
+     * Borne Tiers-Payant Établissements & Pharmacies
+     * GET /borne-clinique ou /verifier
+     */
+    public function borneClinique(): void {
+        $seo = new SEO($this->config, '/borne-clinique', null, 'home');
+        $this->render('borne-clinique', [], $seo);
+    }
+
+    /**
      * Espace Adhérent Family Hub
      * GET /espace-adherent
      */
