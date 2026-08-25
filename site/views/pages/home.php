@@ -396,21 +396,48 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
 </div>
 
 <!-- ═══════════ LOGOS PARTENAIRES OFFICIELS ═══════════ -->
-<div style="background:#fff;border-bottom:1px solid var(--line);padding:24px 0;overflow:hidden">
-  <div class="wrap" style="display:flex;align-items:center;gap:28px;flex-wrap:wrap;justify-content:space-between">
+<div style="background:#fff;border-bottom:1px solid var(--line);padding:20px 0;overflow:hidden">
+  <div class="wrap" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:space-between">
     <span style="font:700 11.5px var(--font-b);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap;display:flex;align-items:center;gap:7px">
       <i data-lucide="shield-check" style="width:16px;height:16px;color:var(--emerald)"></i>Réseau &amp; Agréments Santé :
     </span>
-    <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;justify-content:center;opacity:.88">
-      <img src="/assets/img/partenaires/0.jpg" alt="Partenaire Santé Agréé" height="34" style="height:34px;width:auto;object-fit:contain;border-radius:6px;filter:grayscale(0.3);transition:all .2s" onmouseover="this.style.filter='none';this.style.transform='scale(1.05)'" onmouseout="this.style.filter='grayscale(0.3)';this.style.transform='none'">
-      <img src="/assets/img/partenaires/1.jpg" alt="Clinique Conventionnée" height="34" style="height:34px;width:auto;object-fit:contain;border-radius:6px;filter:grayscale(0.3);transition:all .2s" onmouseover="this.style.filter='none';this.style.transform='scale(1.05)'" onmouseout="this.style.filter='grayscale(0.3)';this.style.transform='none'">
-      <img src="/assets/img/partenaires/2.jpg" alt="Centre Hospitalier" height="34" style="height:34px;width:auto;object-fit:contain;border-radius:6px;filter:grayscale(0.3);transition:all .2s" onmouseover="this.style.filter='none';this.style.transform='scale(1.05)'" onmouseout="this.style.filter='grayscale(0.3)';this.style.transform='none'">
-      <img src="/assets/img/partenaires/3.png" alt="Pharmacie Partenaire" height="34" style="height:34px;width:auto;object-fit:contain;border-radius:6px;filter:grayscale(0.3);transition:all .2s" onmouseover="this.style.filter='none';this.style.transform='scale(1.05)'" onmouseout="this.style.filter='grayscale(0.3)';this.style.transform='none'">
-      <img src="/assets/img/partenaires/5.jpg" alt="Laboratoire Médical" height="34" style="height:34px;width:auto;object-fit:contain;border-radius:6px;filter:grayscale(0.3);transition:all .2s" onmouseover="this.style.filter='none';this.style.transform='scale(1.05)'" onmouseout="this.style.filter='grayscale(0.3)';this.style.transform='none'">
-      <img src="/assets/img/partenaires/7.png" alt="Groupe Santé" height="34" style="height:34px;width:auto;object-fit:contain;border-radius:6px;filter:grayscale(0.3);transition:all .2s" onmouseover="this.style.filter='none';this.style.transform='scale(1.05)'" onmouseout="this.style.filter='grayscale(0.3)';this.style.transform='none'">
-      <img src="/assets/img/partenaires/11.png" alt="MFDI Partenaire" height="34" style="height:34px;width:auto;object-fit:contain;border-radius:6px;filter:grayscale(0.3);transition:all .2s" onmouseover="this.style.filter='none';this.style.transform='scale(1.05)'" onmouseout="this.style.filter='grayscale(0.3)';this.style.transform='none'">
-      <img src="/assets/img/partenaires/ivory.png" alt="Ivory Health" height="34" style="height:34px;width:auto;object-fit:contain;border-radius:6px;filter:grayscale(0.3);transition:all .2s" onmouseover="this.style.filter='none';this.style.transform='scale(1.05)'" onmouseout="this.style.filter='grayscale(0.3)';this.style.transform='none'">
-      <img src="/assets/img/partenaires/medical-insurance.png" alt="Medical Insurance Network" height="34" style="height:34px;width:auto;object-fit:contain;border-radius:6px;filter:grayscale(0.3);transition:all .2s" onmouseover="this.style.filter='none';this.style.transform='scale(1.05)'" onmouseout="this.style.filter='grayscale(0.3)';this.style.transform='none'">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center">
+      <div class="partner-badge-pill" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:100px;font:700 12px var(--font-b);color:var(--ink);transition:all .2s">
+        <i data-lucide="shield-check" style="width:14px;height:14px;color:#0D9488"></i>
+        <span>Partenaire Santé Agréé</span>
+      </div>
+      <div class="partner-badge-pill" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:100px;font:700 12px var(--font-b);color:var(--ink);transition:all .2s">
+        <i data-lucide="hospital" style="width:14px;height:14px;color:#097268"></i>
+        <span>Clinique Conventionnée</span>
+      </div>
+      <div class="partner-badge-pill" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:100px;font:700 12px var(--font-b);color:var(--ink);transition:all .2s">
+        <i data-lucide="building-2" style="width:14px;height:14px;color:#1E293B"></i>
+        <span>Centre Hospitalier</span>
+      </div>
+      <div class="partner-badge-pill" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:100px;font:700 12px var(--font-b);color:var(--ink);transition:all .2s">
+        <i data-lucide="pill" style="width:14px;height:14px;color:#059669"></i>
+        <span>Pharmacie Partenaire</span>
+      </div>
+      <div class="partner-badge-pill" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:100px;font:700 12px var(--font-b);color:var(--ink);transition:all .2s">
+        <i data-lucide="flask-conical" style="width:14px;height:14px;color:#0284C7"></i>
+        <span>Laboratoire Médical</span>
+      </div>
+      <div class="partner-badge-pill" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:100px;font:700 12px var(--font-b);color:var(--ink);transition:all .2s">
+        <i data-lucide="heart-pulse" style="width:14px;height:14px;color:#E11D48"></i>
+        <span>Groupe Santé</span>
+      </div>
+      <div class="partner-badge-pill" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:100px;font:700 12px var(--font-b);color:var(--ink);transition:all .2s">
+        <i data-lucide="award" style="width:14px;height:14px;color:#D97706"></i>
+        <span>MFDI Partenaire</span>
+      </div>
+      <div class="partner-badge-pill" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:100px;font:700 12px var(--font-b);color:var(--ink);transition:all .2s">
+        <i data-lucide="activity" style="width:14px;height:14px;color:#0D9488"></i>
+        <span>Ivory Health</span>
+      </div>
+      <div class="partner-badge-pill" style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:100px;font:700 12px var(--font-b);color:var(--ink);transition:all .2s">
+        <i data-lucide="badge-check" style="width:14px;height:14px;color:#2563EB"></i>
+        <span>Medical Insurance Network</span>
+      </div>
     </div>
   </div>
 </div>

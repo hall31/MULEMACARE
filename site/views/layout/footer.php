@@ -37,7 +37,7 @@ footer.site h4{font:700 13px var(--font-b);letter-spacing:.14em;text-transform:u
 .toast .t-close svg{width:15px;height:15px}
 @keyframes tin{from{opacity:0;transform:translateY(12px) scale(.95)}}
 @keyframes tout{to{opacity:0;transform:translateY(8px) scale(.95)}}
-.wa-fab{position:fixed;bottom:24px;left:24px;z-index:90;width:54px;height:54px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 12px 28px -6px rgba(37,211,102,.5);transition:transform .2s,box-shadow .2s}
+.wa-fab{position:fixed;bottom:24px;right:24px;z-index:90;width:54px;height:54px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 12px 28px -6px rgba(37,211,102,.5);transition:transform .2s,box-shadow .2s}
 .wa-fab:hover{transform:scale(1.08);box-shadow:0 18px 36px -6px rgba(37,211,102,.65)}
 .wa-fab svg{width:28px;height:28px}
 #printArea{display:none}
