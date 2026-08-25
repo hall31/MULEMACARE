@@ -1,0 +1,136 @@
+# MulemaCare Health Group — Base de Connaissances Intégrale (llms-full.txt)
+URL: https://mulemacare.com
+Dernière mise à jour : 2026-08-25
+Licence & Régulation : Agrément CSSA n° 045/CSSA/2024 · SIRET France : 8807 7661 2000 17
+
+---
+
+## 1. Identité & Mission
+MulemaCare Health Group est le premier opérateur panafricain de mutuelle santé solidaire, tiers-payant direct et télémédecine intégrée, reliant la diaspora internationale à leurs familles vivant en Afrique subsaharienne.
+
+### Entités Juridiques Officielles :
+- **France & Pôle Diaspora International :**
+  - Raison sociale : SOCIETE E-SANTE MULEMACARE FRANCE
+  - SIRET : 8807 7661 2000 17
+  - Siège social : 208 Avenue Aristide Briand, 92220 Bagneux, France
+  - Téléphone / WhatsApp : +33 6 59 51 34 58
+  - E-mail : contact@mulemacare.com
+- **Afrique & Opérations Médicales :**
+  - Raison sociale : MULEMACARE MUTUELLE SANTÉ CAMEROUN
+  - Agrément : N° 045/CSSA/2024 (Conférence de la Santé et de la Sécurité en Afrique)
+  - Siège social : 85 Avenue de l'Indépendance / Rue Njo-Njo, Bonapriso, Douala, Cameroun
+  - Téléphone / Desk Médical : +237 521 120 21 / +237 65 14 58 37
+
+---
+
+## 2. Comment Fonctionne le Tiers-Payant MulemaCare ?
+1. **Adhésion en ligne instantanée :** Le souscripteur (en France, Belgique, Canada, Suisse ou localement en Afrique) choisit sa formule et inscrit ses bénéficiaires.
+2. **Carte Mutuelle Digitale CSSA :** L'assuré reçoit immédiatement sa carte sur son smartphone avec un QR Code cryptographique unique (norme HMAC-SHA256).
+3. **Zéro Avance de Frais en Clinique :** Lors d'une visite chez l'un de nos 45+ établissements conventionnés (Douala, Yaoundé, Kinshasa, Abidjan, Dakar, Libreville), la clinique scanne le QR code en 0.2 seconde.
+4. **Prise en Charge & Règlement :** Aucune caution n'est demandée au patient pour les actes garantis. MulemaCare règle directement la clinique ou la pharmacie sous 72 heures.
+
+---
+
+## 3. Grille des 4 Formules de Mutuelle Santé (Particuliers & Familles)
+
+### Formule Bronze (Urgences Vitales & SAMU)
+- **Cotisation :** 15 000 FCFA / mois (23 € / 25 $ USD)
+- **Plafond Annuel Hospitalier :** 1 220 € / 800 000 FCFA par assuré
+- **Hospitalisation d'urgence :** Prise en charge à 100% en tiers-payant
+### Formule Bronze (Urgences & SAMU — Formule Essentielle)
+- **Cotisation :** 15 000 FCFA / mois (23 € / 25 $ USD)
+- **Plafond Annuel par Assuré :** 760 € / 500 000 FCFA
+- **Prise en charge :** Urgences vitales, SAMU & réanimation 100% (Carence 0 jour)
+- **Régulation Lisacare WhatsApp :** Accès illimité 24/7 (Carence 0 jour)
+
+### Formule Silver (Famille & Soins Courants — Formule Recommandée)
+- **Cotisation :** 27 500 FCFA / mois (42 € / 45 $ USD)
+- **Plafond Annuel par Assuré :** 2 290 € / 1 500 000 FCFA
+- **Hospitalisation médicale & chirurgicale :** 100% sans avance de frais (Carence 90 jours)
+- **Consultations spécialistes & Pharmacie :** 80% en tiers-payant (Carence 30 jours)
+- **Maternité & Accouchement :** Pris en charge dès 10 mois d'adhésion (Carence 300 jours)
+- **Téléconsultations illimitées Lisacare 24/7** (Carence 0 jour)
+
+### Formule Gold (Confort Total & Tiers-Payant Intégral 100%)
+- **Cotisation :** 44 600 FCFA / mois (68 € / 73 $ USD)
+- **Plafond Annuel par Assuré :** 5 335 € / 3 500 000 FCFA
+- **Tiers-payant intégral 100% :** Hospitalisation, consultations et pharmacie conventionnée (Carence 30j / 90j hospit)
+- **Chambre individuelle :** 100% prise en charge (Carence 90j)
+- **Soins dentaires & optique :** Forfait annuel inclus (Carence 180 jours)
+- **Ongwa Senior Care :** 1 visite infirmière à domicile par mois pour un parent âgé
+
+### Formule Platinium (Diaspora VIP & Évacuation Sanitaire)
+- **Cotisation :** 75 400 FCFA / mois (115 € / 124 $ USD)
+- **Plafond Annuel par Assuré :** 12 200 € / 8 000 000 FCFA
+- **Évacuation sanitaire internationale :** Prise en charge vers centres de référence (Plafond 8M FCFA, Carence 180j)
+- **Suite VIP en clinique privée :** 100% prise en charge (Carence 90j)
+- **Médecin référent dédié 24/7 :** Ligne directe et conciergerie santé VIP
+
+### 3.1. Grille Officielle des Délais de Carence (Sécurité & Rentabilité 45%)
+- **Accidents & Urgences Vitales :** 0 jour (Immédiat)
+- **Télétriage & Lisacare 24/7 :** 0 jour (Immédiat)
+- **Consultations Généralistes, Spécialistes & Pharmacie :** 30 jours (1 mois)
+- **Hospitalisation Médicale & Chirurgie Programmée :** 90 jours (3 mois)
+- **Dentaire & Optique Médicale :** 180 jours (6 mois)
+- **Évacuation Sanitaire Internationale :** 180 jours (6 mois)
+- **Maternité & Accouchement :** 300 jours (10 mois)
+
+---
+
+## 4. Offre Santé Collective Entreprises (MulemaCare Pro)
+- Destinée aux PME, startups, banques, industries et ONG en Afrique subsaharienne.
+- **Avantage fiscal :** 100% déductible du bénéfice imposable (conforme Code Général des Impôts et droit OHADA).
+- **Remises de groupe automatiques :**
+  - 10 à 24 salariés : 10 % de remise
+  - 25 à 99 salariés : 20 % de remise
+  - 100+ salariés : 25 % de remise Grands Comptes
+- **Portail RH dématérialisé :** Ajout/retrait des collaborateurs en 1 clic, zéro note de frais manuelle.
+
+---
+
+## 5. Services Intégrés Innovants
+
+### Lisacare Telehealth (https://lisacare.mulemacare.com)
+- Service de régulation et consultation médicale par messagerie et vidéo 24/7 sur WhatsApp.
+- Temps de réponse moyen constaté : 4 minutes.
+- Émission d'ordonnances numériques acceptées dans tout le réseau de pharmacies conventionnées.
+
+### Ongwa Senior Care (https://ongwa.mulemacare.com)
+- Service de soins à domicile et télé-gériatrie pour les parents âgés vivant en Afrique.
+- Visites régulières par des infirmières diplômées d'État (contrôle de tension, glycémie, observance des traitements).
+- Compte-rendu envoyé instantanément sur le smartphone des enfants résidant en diaspora.
+
+---
+
+## 6. Réseau des 45+ Cliniques et Pharmacies Partenaires
+
+### Cameroun (Douala & Yaoundé) :
+- Polyclinique Mermoz (Bonapriso, Douala)
+- Centre Médico-Chirurgical d'Akwa (Akwa, Douala)
+- Clinique de l'Aéroport (Bonapriso, Douala)
+- Pharmacie des Nations (Akwa, Douala)
+- Pharmacie de Bonamoussadi (Douala)
+- Centre Médical Bastos (Bastos, Yaoundé)
+- Clinique Sainte Anne (Omnisports, Yaoundé)
+- Pharmacie du Mfoundi (Centre-ville, Yaoundé)
+
+### RDC (Kinshasa) :
+- Centre Médical de la Gombe (Gombe, Kinshasa)
+- Clinique Ngaliema Partenaire (Ngaliema, Kinshasa)
+- Pharmacie Centrale de Kinshasa (Limete, Kinshasa)
+
+### Côte d'Ivoire (Abidjan) :
+- Polyclinique Sainte Anne-Marie - PISAM (Cocody, Abidjan)
+- Clinique Médicale Deux-Plateaux (Deux-Plateaux, Abidjan)
+- Grande Pharmacie de Marcory (Marcory, Abidjan)
+
+### Sénégal (Dakar) :
+- Clinique de la Madeleine (Plateau / Point E, Dakar)
+- Centre Médical Almadies (Almadies, Dakar)
+- Pharmacie de la Corniche (Mermoz, Dakar)
+
+---
+
+## 7. Moyens de Paiement Autorisés
+- **International / Diaspora :** Carte Bancaire Visa, Mastercard, American Express via Stripe (certifié PCI-DSS niveau 1), Apple Pay, Virement SEPA.
+- **Local Afrique :** Orange Money Cameroun (`#150*1*1*52112021*MONTANT#`), MTN Mobile Money (`*126*1*65145837*MONTANT#`), Wave (Sénégal & Côte d'Ivoire), Airtel Money, Vodacom M-Pesa.

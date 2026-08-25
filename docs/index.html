@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MulemaCare — La Mutuelle Santé digitale pour l'Afrique et la Diaspora</title>
+<meta name="description" content="Mutuelle santé digitale et solidaire : tiers-payant 100 % dans 45+ cliniques partenaires, téléconsultation 24/7, adhésion en ligne dès 23 € / 15 000 FCFA par mois.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23097268'/%3E%3Crect x='13' y='6' width='6' height='20' rx='3' fill='white'/%3E%3Crect x='6' y='13' width='20' height='6' rx='3' fill='white'/%3E%3Cpath d='M7 16h5l2-3.5 3 7 2-3.5h6' stroke='%23D97706' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+<style>
+/* ================= TOKENS ================= */
+:root{
+  --emerald-900:#064A43; --emerald:#097268; --emerald-500:#0D9488;
+  --emerald-050:#F0FAF8; --emerald-100:#D9F1EC;
+  --blue-800:#1E40AF; --blue-050:#EFF6FF;
+  --gold-600:#D97706; --gold-100:#FEF3C7; --gold-050:#FFFDF6;
+  --bg:#F8FAFC; --card:#FFFFFF; --ink:#0F172A; --ink-2:#334155; --ink-3:#64748B;
+  --line:#E2E8F0; --line-2:#EEF2F7;
+  --font-h:'Outfit',sans-serif; --font-b:'Plus Jakarta Sans',sans-serif; --font-n:'Inter',sans-serif;
+  --r-lg:20px; --r-md:14px; --r-sm:10px;
+  --shadow-1:0 1px 2px rgba(15,23,42,.05),0 8px 24px rgba(15,23,42,.06);
+  --shadow-2:0 12px 40px -12px rgba(6,74,67,.28);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-b);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+img,svg{display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+input,select{font-family:inherit}
+section{scroll-margin-top:84px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+h1,h2,h3,h4{font-family:var(--font-h);line-height:1.15;letter-spacing:-.02em}
+.num{font-family:var(--font-n);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+:focus-visible{outline:2.5px solid var(--emerald-500);outline-offset:2px;border-radius:6px}
+::selection{background:var(--emerald-100)}
+
+/* ================= BOUTONS ================= */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font:600 15px var(--font-b);padding:13px 22px;border-radius:12px;border:1.5px solid transparent;transition:transform .18s,box-shadow .18s,background .18s,border-color .18s,color .18s;white-space:nowrap}
+.btn svg{width:17px;height:17px}
+.btn-primary{background:var(--emerald);color:#fff}
+.btn-primary:hover{background:var(--emerald-500);transform:translateY(-1.5px);box-shadow:0 10px 22px -6px rgba(9,114,104,.45)}
+.btn-ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--emerald-500);color:var(--emerald);transform:translateY(-1.5px)}
+.btn-white{background:#fff;color:var(--emerald-900)}
+.btn-white:hover{transform:translateY(-1.5px);box-shadow:0 12px 26px -8px rgba(0,0,0,.35)}
+.btn-outline-w{background:transparent;border-color:rgba(255,255,255,.4);color:#fff}
+.btn-outline-w:hover{border-color:#fff;background:rgba(255,255,255,.08)}
+.btn-sm{padding:9px 14px;font-size:13.5px;border-radius:var(--r-sm)}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.55;pointer-events:none}
+.link-arrow{display:inline-flex;align-items:center;gap:7px;font-weight:600;color:var(--emerald);font-size:15px}
+.link-arrow svg{width:16px;height:16px;transition:transform .18s}
+.link-arrow:hover svg{transform:translateX(4px)}
+
+/* ================= SEGMENTED ================= */
+.seg{display:inline-flex;background:#F1F5F9;border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;padding:7px 13px;border-radius:8px;font:600 13px var(--font-b);color:var(--ink-3);transition:.16s}
+.seg button.on{background:#fff;color:var(--emerald);box-shadow:0 1px 3px rgba(15,23,42,.14)}
+.seg-dark{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.18)}
+.seg-dark button{color:rgba(255,255,255,.65)}
+.seg-dark button.on{background:#fff;color:var(--emerald-900)}
+
+/* ================= TOPBAR ================= */
+.topbar{background:var(--emerald-900);color:#D7F0EA;font-size:13px;height:40px;display:flex;align-items:center;overflow:hidden}
+.tb-inner{max-width:1200px;margin:0 auto;width:100%;padding:0 24px;display:flex;align-items:center;justify-content:center}
+.tb-flow{display:flex;align-items:center;gap:10px;white-space:nowrap}
+.tb-flow .lucide-globe{width:14px;height:14px;color:#5EEAD4;flex:none}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:#34D399;flex:none;position:relative}
+.pulse-dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid #34D399;animation:ping 2s ease-out infinite}
+@keyframes ping{0%{transform:scale(.4);opacity:1}80%,100%{transform:scale(1.25);opacity:0}}
+.tb-flow b{color:#fff}
+.tb-seq{display:inline-flex;align-items:center;gap:10px}
+@media(max-width:767px){
+  .topbar{height:36px}
+  .tb-inner{padding:0;justify-content:flex-start}
+  .tb-flow{animation:tbmar 24s linear infinite}
+  .tb-seq{padding-right:60px}
+  .tb-flow:hover{animation-play-state:paused}
+}
+@keyframes tbmar{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ================= HEADER ================= */
+header.site{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:border-color .25s,box-shadow .25s}
+header.site.scrolled{border-color:var(--line);box-shadow:0 6px 24px -18px rgba(15,23,42,.25)}
+.h-in{max-width:1200px;margin:0 auto;padding:0 24px;height:70px;display:flex;align-items:center;gap:28px}
+.logo{display:flex;align-items:center;gap:10px;flex:none}
+.logo svg{width:36px;height:36px}
+.logo-txt b{display:block;font:700 19px var(--font-h);color:var(--ink);letter-spacing:-.02em;line-height:1}
+.logo-txt b i{font-style:normal;color:var(--emerald)}
+.logo-txt span{font:600 9.5px var(--font-b);letter-spacing:.22em;color:var(--ink-3);text-transform:uppercase}
+nav.main{display:flex;gap:26px;margin:0 auto}
+nav.main a{font:600 14.5px var(--font-b);color:var(--ink-2);position:relative;padding:6px 0}
+nav.main a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--emerald-500);border-radius:2px;transition:width .2s}
+nav.main a:hover{color:var(--emerald)}
+nav.main a:hover::after{width:100%}
+.h-right{display:flex;align-items:center;gap:14px;flex:none}
+.burger{display:none;background:none;border:1.5px solid var(--line);border-radius:10px;width:42px;height:42px;place-items:center;color:var(--ink)}
+.burger svg{width:20px;height:20px}
+.m-nav{display:none}
+@media(max-width:960px){
+  nav.main,.h-right .seg{display:none}
+  .burger{display:grid}
+  .m-nav{display:block;position:absolute;top:70px;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);box-shadow:var(--shadow-1);padding:14px 24px 22px;transform:translateY(-8px);opacity:0;pointer-events:none;transition:.22s}
+  header.site.open .m-nav{transform:none;opacity:1;pointer-events:auto}
+  .m-nav a{display:flex;align-items:center;justify-content:space-between;padding:13px 4px;font:600 15px var(--font-b);color:var(--ink-2);border-bottom:1px solid var(--line-2)}
+  .m-nav a svg{width:16px;height:16px;color:var(--ink-3)}
+  .m-nav .btn{margin-top:16px}
+}
+
+/* ================= HERO ================= */
+.hero{position:relative;background:var(--bg);background-image:radial-gradient(rgba(9,114,104,.07) 1px,transparent 1px);background-size:22px 22px;border-bottom:1px solid var(--line);padding:72px 0 84px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.badge-agr{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 15px;font:600 12.5px var(--font-b);color:var(--emerald);box-shadow:var(--shadow-1)}
+.badge-agr svg{width:15px;height:15px}
+.hero h1{font-size:clamp(2.3rem,4.6vw,3.7rem);font-weight:700;margin:22px 0 18px}
+.hero h1 .hl{background:linear-gradient(transparent 62%,var(--gold-100) 62%);border-radius:3px;padding:0 3px;white-space:nowrap}
+.hero-sub{font-size:17px;color:var(--ink-2);max-width:34rem;margin-bottom:30px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+.cur-mod{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--ink-3)}
+.cur-mod b{color:var(--ink-2);font-weight:600}
+.hero-proof{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
+.stars{display:inline-flex;gap:2px}
+.stars svg{width:15px;height:15px;fill:var(--gold-600);stroke:var(--gold-600)}
+.proof-it{font-size:13.5px;color:var(--ink-3)}
+.proof-it b{color:var(--ink);font-family:var(--font-n)}
+.proof-sep{width:1px;height:26px;background:var(--line)}
+
+/* ---- Carte d'assuré 3D ---- */
+.card-scene{position:relative;perspective:1300px;width:min(420px,100%);margin:0 auto}
+.card-tilt{transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.75,.3,1)}
+.card-tilt.gliding{transition:transform .07s linear}
+.card-flip{position:relative;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.25,.8,.3,1);cursor:pointer;aspect-ratio:1.586}
+.card-flip.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;border-radius:20px;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d;background:var(--card-bg);color:var(--card-ink);padding:22px 24px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;box-shadow:0 30px 60px -22px rgba(6,74,67,.5),inset 0 1px 0 rgba(255,255,255,.14)}
+.card-back{transform:rotateY(180deg)}
+.card-front::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(240px circle at var(--gx,72%) var(--gy,20%),rgba(255,255,255,.15),transparent 62%);pointer-events:none;transition:opacity .3s}
+.member-card[data-plan="bronze"]{--card-bg:#7A4A21;--card-ink:#FFF7EC;--card-accent:#F0C987}
+.member-card[data-plan="silver"]{--card-bg:#064A43;--card-ink:#ECFDF8;--card-accent:#5EEAD4}
+.member-card[data-plan="gold"]{--card-bg:#141B2B;--card-ink:#F5F1E6;--card-accent:#E8B54D}
+.member-card[data-plan="platinium"]{--card-bg:#414C5C;--card-ink:#F8FAFC;--card-accent:#DDE5EE}
+.cf-guilloche{position:absolute;inset:0;width:100%;height:100%;color:#fff;pointer-events:none}
+.cf-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:2}
+.cf-brand{display:flex;align-items:center;gap:10px}
+.cf-brand>svg{width:34px;height:34px}
+.cf-bname b{display:block;font:700 15.5px var(--font-h);letter-spacing:-.01em;line-height:1.1}
+.cf-bname i{font:600 8.5px var(--font-b);font-style:normal;letter-spacing:.2em;text-transform:uppercase;opacity:.72}
+.cf-status{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:5.5px 12px;font:600 10.5px var(--font-b);letter-spacing:.06em;text-transform:uppercase;transform:translateZ(26px)}
+.cf-status i{width:6.5px;height:6.5px;border-radius:50%;background:#34D399;box-shadow:0 0 0 3px rgba(52,211,153,.25);animation:blink 2.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.cf-mid{position:relative;z-index:2;display:flex;flex-direction:column;gap:12px}
+.cf-chip{width:42px;height:31px;border-radius:7px;background:linear-gradient(135deg,#E2A93E,#F6D58A 55%,#D9932C);position:relative;transform:translateZ(24px);flex:none}
+.cf-chip::before,.cf-chip::after{content:"";position:absolute;background:rgba(90,60,10,.35);border-radius:2px}
+.cf-chip::before{left:0;right:0;top:13px;height:4px}
+.cf-chip::after{top:6px;bottom:6px;left:18px;width:4px}
+.cf-label{display:block;font:600 8.5px var(--font-b);letter-spacing:.18em;text-transform:uppercase;opacity:.66;margin-bottom:3px}
+.cf-number{font:600 15px var(--font-n);letter-spacing:.08em}
+.cf-number b{font-weight:800;color:var(--card-accent)}
+.cf-holder b{font:700 17px var(--font-h);letter-spacing:.05em;text-transform:uppercase}
+.cf-valid{font:600 11px var(--font-n);opacity:.75;margin-top:2px}
+.cf-bottom{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;position:relative;z-index:2}
+.cf-plan{display:inline-block;background:var(--card-accent);color:rgba(12,26,22,.88);font:700 10px var(--font-b);letter-spacing:.1em;padding:4px 10px;border-radius:6px;margin-bottom:9px;text-transform:uppercase}
+.cap-bar{width:92px;height:5px;border-radius:99px;background:rgba(255,255,255,.2);overflow:hidden;flex:none}
+.cap-bar i{display:block;height:100%;background:var(--card-accent);border-radius:99px}
+.cf-capline{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.cf-capline em{font:500 10.5px var(--font-b);font-style:normal;opacity:.78}
+.cf-emerg{display:inline-flex;align-items:center;gap:7px;font:600 11px var(--font-b);opacity:.86}
+.cf-emerg svg{width:12.5px;height:12.5px}
+.cf-qr{background:#fff;border-radius:10px;padding:6px;width:76px;height:76px;flex:none;transform:translateZ(30px)}
+.cf-qr svg{width:100%;height:100%}
+.scene-hint{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:22px;font:500 12.5px var(--font-b);color:var(--ink-3)}
+.scene-hint svg{width:14px;height:14px}
+.float-tag{position:absolute;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 14px;font:600 12.5px var(--font-b);color:var(--ink-2);box-shadow:var(--shadow-1);display:flex;align-items:center;gap:9px;z-index:3}
+.float-tag svg{width:15px;height:15px;color:var(--emerald)}
+.ft-1{top:-16px;left:-26px;animation:floaty 5.5s ease-in-out infinite}
+.ft-2{bottom:14px;right:-30px;animation:floaty 6.5s ease-in-out 1.2s infinite}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@media(max-width:1080px){.ft-1,.ft-2{display:none}}
+@media(max-width:960px){.hero{padding:52px 0 64px}.hero-grid{grid-template-columns:1fr;gap:52px}.hero-sub{font-size:16px}}
+.member-card.static .card-face{position:relative;width:100%}
+
+/* ================= BANDE STATS ================= */
+.stats-band{background:#fff;border-bottom:1px solid var(--line)}
+.stats-list{display:flex;flex-wrap:wrap;padding:30px 0}
+.stat{flex:1 1 150px;padding:6px 26px;display:flex;flex-direction:column;gap:2px;border-left:1px solid var(--line)}
+.stat:first-child{border-left:0;padding-left:0}
+.stat b{font:700 30px var(--font-h);color:var(--emerald);letter-spacing:-.03em;line-height:1.1}
+.stat span{font:500 13px var(--font-b);color:var(--ink-3)}
+@media(max-width:860px){.stat{flex:1 1 40%;padding:12px 20px;border-left:0}.stat:nth-child(even){border-left:1px solid var(--line)}}
+
+/* ================= EN-TÊTES DE SECTION ================= */
+.sec{padding:88px 0}
+.sec-head{display:flex;gap:26px;align-items:flex-start;margin-bottom:52px}
+.sec-index{font:800 52px var(--font-h);color:var(--line);line-height:.9;flex:none;letter-spacing:-.04em}
+.eyebrow{display:flex;align-items:center;gap:10px;font:700 12.5px var(--font-b);letter-spacing:.16em;text-transform:uppercase;color:var(--emerald);margin-bottom:12px}
+.eyebrow::before{content:"";width:26px;height:2.5px;background:var(--gold-600);border-radius:2px}
+.sec-head h2{font-size:clamp(1.7rem,3.1vw,2.5rem);font-weight:700;margin-bottom:12px}
+.sec-sub{color:var(--ink-3);font-size:16px;max-width:44rem}
+@media(max-width:640px){.sec{padding:60px 0}.sec-index{font-size:38px}.sec-head{gap:16px;margin-bottom:36px}}
+
+/* ================= SIMULATEUR ================= */
+#simulateur{background:#fff;border-bottom:1px solid var(--line)}
+.sim-grid{display:grid;grid-template-columns:1fr 380px;gap:44px;align-items:start}
+.step-f{border:0;margin-bottom:38px}
+.step-f legend{font:700 12px var(--font-b);letter-spacing:.14em;text-transform:uppercase;color:var(--emerald);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.stno{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--emerald-050);color:var(--emerald);font:800 11.5px var(--font-n)}
+.opt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.opt{display:flex;gap:13px;align-items:center;padding:14px;border:1.5px solid var(--line);border-radius:var(--r-md);background:#fff;cursor:pointer;transition:.18s;position:relative}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt:hover{border-color:rgba(13,148,136,.55)}
+.opt.on{border-color:var(--emerald);background:var(--emerald-050);box-shadow:0 0 0 3px rgba(9,114,104,.08)}
+.o-ic{width:40px;height:40px;border-radius:11px;background:#F1F5F9;display:grid;place-items:center;color:var(--emerald);flex:none;transition:.18s}
+.o-ic svg{width:19px;height:19px}
+.opt.on .o-ic{background:var(--emerald);color:#fff}
+.opt b{display:block;font:600 14.5px var(--font-b)}
+.opt small{display:block;font:500 12px var(--font-b);color:var(--ink-3);line-height:1.35}
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.chip{padding:9.5px 17px;border:1.5px solid var(--line);border-radius:999px;font:600 13.5px var(--font-b);color:var(--ink-2);cursor:pointer;transition:.16s;position:relative;background:#fff}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip:hover{border-color:rgba(13,148,136,.55)}
+.chip.on{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.chip.on small{color:rgba(255,255,255,.72)}
+.chip small{font:500 11px var(--font-n);color:var(--ink-3);margin-left:6px}
+.pme-box{margin-top:14px;display:none;align-items:center;gap:16px;flex-wrap:wrap;background:var(--emerald-050);border:1.5px solid var(--emerald-100);border-radius:var(--r-md);padding:14px 18px}
+.pme-box.show{display:flex}
+.pme-box label{font:600 13.5px var(--font-b);color:var(--ink-2)}
+.stepper{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1.5px solid var(--line);border-radius:11px;padding:5px}
+.stepper button{width:32px;height:32px;border-radius:8px;border:0;background:#F1F5F9;display:grid;place-items:center;color:var(--ink-2);transition:.15s}
+.stepper button:hover{background:var(--emerald);color:#fff}
+.stepper button svg{width:15px;height:15px}
+.stepper b{font:700 17px var(--font-n);min-width:44px;text-align:center}
+.pme-unit{font:600 13px var(--font-b);color:var(--emerald)}
+.p-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px}
+.p-opt{padding:14px;border:1.5px solid var(--line);border-radius:var(--r-md);cursor:pointer;transition:.18s;background:#fff;position:relative}
+.p-opt input{position:absolute;opacity:0;pointer-events:none}
+.p-opt:hover{border-color:rgba(13,148,136,.55)}
+.p-opt.on{border-color:var(--emerald);background:var(--emerald-050);box-shadow:0 0 0 3px rgba(9,114,104,.08)}
+.p-dot{width:12px;height:12px;border-radius:50%;background:var(--c);margin-bottom:9px;box-shadow:0 0 0 3.5px color-mix(in srgb,var(--c) 18%,transparent)}
+.p-opt b{display:block;font:700 15px var(--font-h)}
+.p-opt span{font:500 12px var(--font-b);color:var(--ink-3);display:block;margin-bottom:5px}
+.p-opt em{font:600 12.5px var(--font-n);font-style:normal;color:var(--emerald)}
+.sim-panel{background:var(--emerald-900);color:#ECFDF8;border-radius:22px;padding:28px;position:sticky;top:104px;box-shadow:var(--shadow-2)}
+.sp-live{display:flex;align-items:center;gap:9px;font:700 11.5px var(--font-b);letter-spacing:.16em;text-transform:uppercase;color:#8BE0D2;margin-bottom:20px}
+.sp-rows{display:flex;flex-direction:column;gap:11px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.14);margin-bottom:20px}
+.sp-row{display:flex;justify-content:space-between;gap:14px;font-size:14px}
+.sp-row span{color:rgba(255,255,255,.62)}
+.sp-row b{font-weight:600;text-align:right}
+.sp-cycle{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.sp-cycle>span{font:600 13px var(--font-b);color:rgba(255,255,255,.75)}
+.big-price{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.big-price .bp-v{font:800 clamp(2.4rem,3.4vw,3rem) var(--font-n);letter-spacing:-.03em;line-height:1;color:#fff}
+.big-price .bp-u{font:600 14px var(--font-b);color:rgba(255,255,255,.66)}
+.sp-save{display:inline-flex;align-items:center;gap:8px;background:var(--gold-100);color:#92400E;font:600 12.5px var(--font-b);border-radius:9px;padding:7px 12px;margin-top:14px}
+.sp-save svg{width:14px;height:14px}
+.sp-detail{display:flex;flex-direction:column;gap:5px;margin-top:14px;font-size:13px;color:rgba(255,255,255,.72)}
+.sp-detail b{color:#fff;font-family:var(--font-n)}
+.sim-panel .btn{margin-top:22px}
+.panel-notes{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:7px}
+.panel-notes li{display:flex;align-items:center;gap:9px;font:500 12.5px var(--font-b);color:rgba(255,255,255,.72)}
+.panel-notes svg{width:13px;height:13px;color:#5EEAD4;flex:none}
+@media(max-width:1020px){.sim-grid{grid-template-columns:1fr}.sim-panel{position:static}}
+
+/* ================= FORMULES ================= */
+#garanties{background:var(--bg)}
+.plans-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;align-items:stretch;margin-bottom:56px}
+.plan-card{background:#fff;border:1.5px solid var(--line);border-radius:var(--r-lg);padding:24px 22px;display:flex;flex-direction:column;position:relative;transition:transform .22s,box-shadow .22s,border-color .22s}
+.plan-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-1);border-color:#CBD5E1}
+.plan-card.sel{border-color:var(--emerald);box-shadow:0 0 0 3px rgba(9,114,104,.1)}
+.plan-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px}
+.plan-name{display:flex;align-items:center;gap:9px}
+.plan-dot{width:11px;height:11px;border-radius:50%;background:var(--c);flex:none;box-shadow:0 0 0 3.5px color-mix(in srgb,var(--c) 17%,transparent)}
+.plan-card h3{font-size:21px;font-weight:700}
+.plan-tag{font:600 12px var(--font-b);color:var(--ink-3);display:block;margin:2px 0 12px 20px}
+.plan-price{font:600 12px var(--font-b);color:var(--ink-3);text-align:right;line-height:1.3;white-space:nowrap}
+.plan-price b{display:block;font:700 19px var(--font-n);color:var(--ink);letter-spacing:-.02em}
+.plan-desc{font-size:13.5px;color:var(--ink-2);padding-bottom:16px;border-bottom:1px solid var(--line-2);margin-bottom:16px}
+.plan-feats{list-style:none;display:flex;flex-direction:column;gap:10px;flex:1;margin-bottom:22px}
+.plan-feats li{display:flex;gap:10px;font:500 13.5px var(--font-b);color:var(--ink-2);align-items:flex-start}
+.plan-feats svg{width:15px;height:15px;color:var(--emerald);flex:none;margin-top:3px}
+.plan-feats li.muted svg{color:var(--ink-3)}
+.plan-feats li.muted{color:var(--ink-3)}
+.plan-card.featured{background:var(--emerald-900);border-color:var(--emerald-900);color:#ECFDF8;transform:translateY(-12px);box-shadow:0 34px 64px -26px rgba(6,74,67,.55)}
+.plan-card.featured:hover{transform:translateY(-16px)}
+.plan-card.featured .plan-tag,.plan-card.featured .plan-price{color:rgba(255,255,255,.66)}
+.plan-card.featured .plan-price b{color:#fff}
+.plan-card.featured .plan-desc{color:rgba(255,255,255,.82);border-color:rgba(255,255,255,.15)}
+.plan-card.featured .plan-feats li{color:rgba(255,255,255,.9)}
+.plan-card.featured .plan-feats svg{color:#5EEAD4}
+.plan-ribbon{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--gold-600);color:#FFF7E6;font:700 11px var(--font-b);letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px -4px rgba(217,119,6,.5)}
+.plan-stars{display:flex;align-items:center;gap:8px;margin:-4px 0 12px 20px}
+.plan-stars .stars svg{width:13px;height:13px}
+.plan-stars span{font:500 11.5px var(--font-b);color:rgba(255,255,255,.66)}
+.plan-card.gold{background:var(--gold-050);border-color:#EAD9A8}
+.plan-card.gold .plan-price b{color:#8A5A10}
+.plan-card.dark{background:#0F172A;border-color:#0F172A;color:#F1F5F9}
+.plan-card.dark .plan-tag,.plan-card.dark .plan-price{color:rgba(255,255,255,.6)}
+.plan-card.dark .plan-price b{color:#fff}
+.plan-card.dark .plan-desc{color:rgba(255,255,255,.78);border-color:rgba(255,255,255,.13)}
+.plan-card.dark .plan-feats li{color:rgba(255,255,255,.88)}
+.plan-card.dark .plan-feats svg{color:#5EEAD4}
+@media(max-width:1080px){.plans-grid{grid-template-columns:repeat(2,1fr)}.plan-card.featured{transform:none}.plan-card.featured:hover{transform:translateY(-4px)}}
+@media(max-width:660px){.plans-grid{grid-template-columns:1fr}}
+.cmp-title{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.cmp-title h3{font-size:22px}
+.cmp-title p{font-size:14px;color:var(--ink-3)}
+.cmp-wrap{overflow-x:auto;border:1.5px solid var(--line);border-radius:var(--r-lg);background:#fff;box-shadow:var(--shadow-1)}
+.cmp-wrap table{border-collapse:collapse;width:100%;min-width:820px}
+.cmp-wrap th,.cmp-wrap td{padding:13px 18px;border-bottom:1px solid var(--line-2);text-align:center;font:500 13.5px var(--font-b);color:var(--ink-2);transition:background .2s}
+.cmp-wrap tr:last-child td{border-bottom:0}
+.cmp-wrap td:first-child,.cmp-wrap th:first-child{text-align:left;position:sticky;left:0;background:#fff;font-weight:600;color:var(--ink);min-width:210px;z-index:2;box-shadow:1px 0 0 var(--line-2)}
+.cmp-wrap thead th{vertical-align:top;padding-top:20px;padding-bottom:18px;background:#FBFDFC}
+.th-plan{display:flex;align-items:center;justify-content:center;gap:8px;font:700 16px var(--font-h);color:var(--ink)}
+.th-plan i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.th-tag{display:block;font:600 11px var(--font-b);color:var(--ink-3);margin:3px 0 8px}
+.th-price{display:block;font:700 14px var(--font-n);color:var(--emerald);margin-bottom:12px}
+.th-choose{border:1.5px solid var(--line);background:#fff;color:var(--ink-2);border-radius:9px;padding:7px 16px;font:600 12.5px var(--font-b);transition:.16s}
+.th-choose:hover{border-color:var(--emerald);color:var(--emerald)}
+th[data-col="silver"] .th-choose{background:var(--emerald);border-color:var(--emerald);color:#fff}
+th[data-col="silver"] .th-choose:hover{background:var(--emerald-500)}
+th[data-col="silver"] .th-plan small{font:700 9px var(--font-b);letter-spacing:.1em;color:#92400E;background:var(--gold-100);padding:3px 8px;border-radius:99px;text-transform:uppercase}
+td[data-col].sel,th[data-col].sel{background:rgba(13,148,136,.075)}
+td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
+.v-no{color:#B4BFCB}
+.v-inc{color:var(--emerald);font-weight:600}
+.v-strong{font-family:var(--font-n);font-weight:600;color:var(--ink)}
+
+/* ================= ALLIANCE ================= */
+#services{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ally-grid{display:grid;grid-template-columns:1.18fr .82fr;gap:22px}
+.ally-card{border:1.5px solid var(--line);border-radius:24px;padding:34px;display:flex;flex-direction:column;gap:18px}
+.ally-tag{display:inline-flex;align-items:center;gap:9px;align-self:flex-start;font:700 11.5px var(--font-b);letter-spacing:.14em;text-transform:uppercase;border-radius:999px;padding:7px 14px}
+.ally-tag.a1{background:var(--emerald-050);color:var(--emerald)}
+.ally-tag.a2{background:var(--gold-100);color:#92400E}
+.ally-tag svg{width:14px;height:14px}
+.ally-card h3{font-size:clamp(1.35rem,2vw,1.7rem)}
+.ally-card>p{font-size:15px;color:var(--ink-2)}
+.ally-feats{list-style:none;display:flex;flex-direction:column;gap:11px}
+.ally-feats li{display:flex;gap:11px;font:500 14px var(--font-b);color:var(--ink-2);align-items:flex-start}
+.ally-feats svg{width:16px;height:16px;color:var(--emerald);flex:none;margin-top:3px}
+.ally-feats li.strong{font-weight:600;color:var(--ink)}
+.lisa-body{display:grid;grid-template-columns:1fr 300px;gap:32px;align-items:center;flex:1}
+.lisa-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.lisa-note{font:500 12.5px var(--font-b);color:var(--ink-3);display:flex;align-items:center;gap:7px}
+.lisa-note svg{width:14px;height:14px;color:var(--emerald)}
+.phone{background:#0F172A;border-radius:30px;padding:10px;box-shadow:0 24px 44px -18px rgba(15,23,42,.5);width:100%;max-width:300px;justify-self:center}
+.phone-scr{background:#EFEAE2;border-radius:21px;overflow:hidden;display:flex;flex-direction:column;height:430px}
+.ph-head{background:var(--emerald-900);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:11px;flex:none}
+.ph-av{width:36px;height:36px;border-radius:50%;background:var(--emerald-500);display:grid;place-items:center;font:700 14px var(--font-h);flex:none}
+.ph-head b{display:block;font:600 13.5px var(--font-b);line-height:1.2}
+.ph-head span{display:flex;align-items:center;gap:5px;font:500 11px var(--font-b);color:#A7E8DA}
+.ph-head span i{width:6px;height:6px;border-radius:50%;background:#34D399}
+.chat{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:9px;scrollbar-width:none}
+.chat::-webkit-scrollbar{display:none}
+.msg{max-width:84%;border-radius:11px;padding:8px 11px 6px;font:500 12.5px var(--font-b);line-height:1.45;animation:msgin .4s cubic-bezier(.2,.8,.3,1);align-self:flex-start;background:#fff;box-shadow:0 1px 1px rgba(15,23,42,.08)}
+.msg.me{align-self:flex-end;background:#D9FDD3}
+.msg span{display:block;font:500 9.5px var(--font-n);color:#94A3B8;text-align:right;margin-top:3px}
+.msg-doc{align-self:flex-start;background:#fff;border-radius:11px;padding:9px 12px;display:flex;gap:10px;align-items:center;max-width:88%;animation:msgin .4s cubic-bezier(.2,.8,.3,1);box-shadow:0 1px 1px rgba(15,23,42,.08)}
+.msg-doc svg{width:20px;height:20px;color:var(--emerald);flex:none}
+.msg-doc b{display:block;font:600 12px var(--font-b)}
+.msg-doc small{font:500 10.5px var(--font-b);color:var(--emerald)}
+@keyframes msgin{from{opacity:0;transform:translateY(9px) scale(.95)}}
+.ongwa-card{background:var(--gold-050);border-color:#EAD9A8}
+.ongwa-inner{display:flex;flex-direction:column;gap:16px;flex:1}
+.visit-report{background:#fff;border:1.5px solid #EAD9A8;border-radius:var(--r-md);padding:18px}
+.vr-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.vr-head b{font:700 13.5px var(--font-b)}
+.vr-head span{font:500 11.5px var(--font-n);color:var(--ink-3)}
+.vr-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:13px}
+.vr-m{background:#FFFDF4;border:1px solid #F3E8C8;border-radius:10px;padding:9px 10px}
+.vr-m span{display:block;font:600 10px var(--font-b);letter-spacing:.05em;text-transform:uppercase;color:#A16207}
+.vr-m b{font:700 15px var(--font-n);color:var(--ink)}
+.vr-note{font:500 13px var(--font-b);color:var(--ink-2);font-style:italic;margin-bottom:13px}
+.vr-stamp{display:inline-flex;align-items:center;gap:8px;background:var(--emerald-050);color:var(--emerald);border-radius:9px;padding:7px 12px;font:600 12px var(--font-b)}
+.vr-stamp svg{width:14px;height:14px}
+.ongwa-next{display:flex;align-items:center;gap:13px;background:#fff;border:1.5px solid #EAD9A8;border-radius:var(--r-md);padding:14px 16px}
+.ongwa-next .o-ic{background:var(--gold-100);color:#92400E}
+.ongwa-next b{display:block;font:600 13.5px var(--font-b)}
+.ongwa-next small{font:500 12px var(--font-b);color:var(--ink-3)}
+@media(max-width:1020px){.ally-grid{grid-template-columns:1fr}.lisa-body{grid-template-columns:1fr}}
+
+/* ================= RÉSEAU ================= */
+#reseau{background:#F2F9F7}
+.net-tools{display:flex;flex-direction:column;gap:16px;margin-bottom:26px}
+.net-search{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:4px 16px;box-shadow:var(--shadow-1)}
+.net-search svg{width:19px;height:19px;color:var(--ink-3);flex:none}
+.net-search input{flex:1;border:0;outline:0;font:500 15px var(--font-b);padding:13px 0;background:transparent;color:var(--ink)}
+.net-search input::placeholder{color:#94A3B8}
+.net-filters{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.net-filters .chip{padding:8px 14px;font-size:13px}
+.tp-switch{display:inline-flex;align-items:center;gap:10px;font:600 13px var(--font-b);color:var(--ink-2);cursor:pointer;user-select:none;margin-left:auto}
+.tp-switch input{position:absolute;opacity:0}
+.tp-track{width:40px;height:23px;border-radius:99px;background:#CBD5E1;position:relative;transition:.2s;flex:none}
+.tp-track::after{content:"";position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(15,23,42,.25);transition:.2s}
+.tp-switch input:checked+.tp-track{background:var(--blue-800)}
+.tp-switch input:checked+.tp-track::after{transform:translateX(17px)}
+.net-count{font:600 13.5px var(--font-b);color:var(--ink-3);margin-bottom:16px;display:block}
+.net-list{display:flex;flex-direction:column;gap:12px}
+.net-row{display:flex;gap:16px;padding:18px 20px;background:#fff;border:1.5px solid var(--line);border-radius:16px;align-items:center;transition:.18s}
+.net-row:hover{border-color:rgba(13,148,136,.5);box-shadow:var(--shadow-1);transform:translateY(-1.5px)}
+.net-ic{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;flex:none}
+.net-ic svg{width:21px;height:21px}
+.net-ic.k-clinic{background:var(--emerald-050);color:var(--emerald)}
+.net-ic.k-pharmacy{background:var(--gold-100);color:#92400E}
+.net-ic.k-center{background:var(--blue-050);color:var(--blue-800)}
+.net-main{flex:1;min-width:0}
+.net-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:5px}
+.net-title h4{font-size:16.5px;font-weight:700}
+.tp-badge{display:inline-flex;align-items:center;gap:6px;background:var(--blue-050);color:var(--blue-800);border:1px solid #C7D7FE;border-radius:999px;padding:3.5px 11px;font:600 11.5px var(--font-b)}
+.tp-badge svg{width:12.5px;height:12.5px}
+.net-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font:500 13px var(--font-b);color:var(--ink-3)}
+.net-meta svg{width:13.5px;height:13.5px}
+.dot-sep{width:3px;height:3px;border-radius:50%;background:#CBD5E1}
+.net-rate{display:inline-flex;align-items:center;gap:5px;color:var(--ink-2);font-family:var(--font-n);font-weight:600}
+.net-rate svg{width:13.5px;height:13.5px;fill:var(--gold-600);stroke:var(--gold-600)}
+.net-specs{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.net-specs span{font:500 11.5px var(--font-b);color:var(--ink-3);background:#F1F5F9;border-radius:6px;padding:3px 9px}
+.net-actions{display:flex;gap:9px;flex:none}
+.net-empty{background:#fff;border:1.5px dashed var(--line);border-radius:16px;padding:46px 24px;text-align:center;color:var(--ink-3)}
+.net-empty svg{width:34px;height:34px;margin:0 auto 12px;color:#B4BFCB}
+.net-empty b{display:block;font:600 16px var(--font-b);color:var(--ink-2);margin-bottom:6px}
+@media(max-width:760px){.net-row{flex-wrap:wrap}.net-actions{width:100%}.net-actions .btn{flex:1}.tp-switch{margin-left:0}}
+
+/* ================= CTA FINAL ================= */
+.cta-final{background:var(--emerald-900);color:#fff;padding:92px 0;position:relative;overflow:hidden}
+.cta-final .cf-guilloche{z-index:0}
+.cta-in{position:relative;z-index:1;text-align:center;max-width:660px;margin:0 auto}
+.cta-in h2{font-size:clamp(1.9rem,3.6vw,2.9rem);margin-bottom:16px}
+.cta-in p{color:rgba(255,255,255,.78);font-size:16.5px;margin-bottom:34px}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.cta-note{margin-top:30px;font:500 13px var(--font-b);color:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap}
+.cta-note svg{width:14px;height:14px;color:#5EEAD4}
+
+/* ================= FOOTER ================= */
+footer.site{background:#0F172A;color:#94A3B8;padding:64px 0 0;font-size:14px}
+.f-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.1fr;gap:44px;padding-bottom:48px}
+.f-brand p{margin:16px 0 20px;font-size:13.5px;line-height:1.65;max-width:30rem}
+.f-badges{display:flex;gap:8px;flex-wrap:wrap}
+.f-badges span{display:inline-flex;align-items:center;gap:7px;border:1px solid #293548;border-radius:999px;padding:6px 12px;font:600 11.5px var(--font-b);color:#CBD5E1}
+.f-badges svg{width:12.5px;height:12.5px;color:#5EEAD4}
+footer.site h4{color:#F1F5F9;font-size:14px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px;font-family:var(--font-b)}
+.f-links{list-style:none;display:flex;flex-direction:column;gap:11px}
+.f-links a,.f-links button{background:none;border:0;padding:0;font:500 14px var(--font-b);color:#94A3B8;cursor:pointer;text-align:left;transition:color .15s}
+.f-links a:hover,.f-links button:hover{color:#fff}
+.f-contact{list-style:none;display:flex;flex-direction:column;gap:13px}
+.f-contact li{display:flex;gap:11px;align-items:flex-start}
+.f-contact svg{width:15px;height:15px;color:#5EEAD4;flex:none;margin-top:4px}
+.f-contact a:hover{color:#fff}
+.f-bottom{border-top:1px solid #293548;padding:22px 0;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:12.5px}
+.f-legal{display:flex;gap:20px;flex-wrap:wrap}
+.f-bottom button{background:none;border:0;color:#94A3B8;font:500 12.5px var(--font-b);cursor:pointer}
+.f-bottom button:hover{color:#fff}
+@media(max-width:960px){.f-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.f-grid{grid-template-columns:1fr}}
+
+/* ================= MODALES ================= */
+.overlay{position:fixed;inset:0;background:rgba(6,20,18,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:100;padding:18px}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:22px;width:min(680px,100%);max-height:calc(100dvh - 36px);display:flex;flex-direction:column;overflow:hidden;animation:mup .35s cubic-bezier(.2,.8,.3,1);box-shadow:0 40px 90px -20px rgba(6,20,18,.55)}
+@keyframes mup{from{opacity:0;transform:translateY(22px) scale(.97)}}
+.m-head{padding:20px 26px 0;border-bottom:1px solid var(--line-2);flex:none}
+.m-head-top{display:flex;justify-content:space-between;align-items:center;gap:14px}
+.m-head-top h3{font-size:20px}
+.m-close{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--line);background:#fff;display:grid;place-items:center;color:var(--ink-2);transition:.15s}
+.m-close:hover{border-color:#DC2626;color:#DC2626}
+.m-close svg{width:17px;height:17px}
+.stepper-bar{display:flex;align-items:center;padding:18px 0}
+.stp{display:flex;align-items:center;gap:9px;flex:1}
+.stp:last-child{flex:0}
+.stp-dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font:700 12.5px var(--font-n);color:var(--ink-3);transition:.25s;flex:none;background:#fff}
+.stp.done .stp-dot{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.stp.cur .stp-dot{border-color:var(--emerald);color:var(--emerald);box-shadow:0 0 0 4px rgba(9,114,104,.12)}
+.stp-label{font:600 12.5px var(--font-b);color:var(--ink-3)}
+.stp.cur .stp-label{color:var(--emerald)}
+.stp-line{flex:1;height:2px;background:var(--line);margin:0 10px;border-radius:2px;min-width:14px}
+.stp-line.done{background:var(--emerald)}
+.m-body{overflow-y:auto;padding:26px}
+.m-foot{padding:18px 26px;border-top:1px solid var(--line-2);display:flex;gap:12px;align-items:center;flex:none;background:#FBFDFC}
+.m-secure{margin-left:auto;display:flex;align-items:center;gap:7px;font:500 12px var(--font-b);color:var(--ink-3)}
+.m-secure svg{width:13px;height:13px;color:var(--emerald)}
+@media(max-width:640px){
+  .overlay{padding:0;align-items:flex-end}
+  .modal{border-radius:22px 22px 0 0;max-height:94dvh}
+  .m-foot{padding:14px 18px}.m-body{padding:20px 18px}.m-head{padding:16px 18px 0}
+  .stp-label{display:none}
+}
+.f-grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media(max-width:560px){.f-grid2{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:15px}
+.field>label{font:600 13px var(--font-b);color:var(--ink-2)}
+.field input,.field select{border:1.5px solid var(--line);border-radius:11px;padding:12px 14px;font:500 15px var(--font-b);background:#fff;color:var(--ink);transition:border-color .15s,box-shadow .15s;width:100%}
+.field input:focus,.field select:focus{border-color:var(--emerald-500);box-shadow:0 0 0 3px rgba(13,148,136,.13);outline:0}
+.field .err{display:none;font:500 12px var(--font-b);color:#DC2626}
+.field.invalid input,.field.invalid select{border-color:#DC2626;background:#FEF6F6}
+.field.invalid .err{display:block}
+.field.ok input{border-color:#7CD6C6}
+.field input[readonly]{background:#F8FAFC;color:var(--ink-3)}
+.phone-row{display:flex;gap:10px}
+.phone-row select{width:118px;flex:none}
+.res-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.res-card{display:flex;gap:12px;align-items:center;padding:14px;border:1.5px solid var(--line);border-radius:var(--r-md);cursor:pointer;transition:.18s;background:#fff;position:relative}
+.res-card input{position:absolute;opacity:0;pointer-events:none}
+.res-card .o-ic{width:38px;height:38px}
+.res-card:hover{border-color:rgba(13,148,136,.55)}
+.res-card.on{border-color:var(--emerald);background:var(--emerald-050)}
+.res-card b{display:block;font:600 13.5px var(--font-b);line-height:1.3}
+.res-card small{font:500 11.5px var(--font-b);color:var(--ink-3)}
+@media(max-width:560px){.res-cards{grid-template-columns:1fr}}
+.recap-strip{display:flex;align-items:center;gap:11px;flex-wrap:wrap;background:var(--emerald-050);border:1.5px solid var(--emerald-100);border-radius:var(--r-md);padding:13px 16px;font:600 13px var(--font-b);color:var(--emerald-900);margin-bottom:22px}
+.recap-strip svg{width:16px;height:16px;color:var(--emerald);flex:none}
+.ben-list{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.ben-row{border:1.5px solid var(--line);border-radius:var(--r-md);padding:16px;position:relative}
+.ben-row.locked{background:#FBFDFC}
+.ben-tag{position:absolute;top:-9px;left:14px;background:var(--emerald);color:#fff;font:700 10px var(--font-b);letter-spacing:.08em;text-transform:uppercase;border-radius:99px;padding:3px 10px}
+.ben-grid{display:grid;grid-template-columns:1fr 155px 46px 40px;gap:11px;align-items:end}
+.ben-grid .field{margin:0}
+.ben-photo{width:46px;height:46px;border-radius:50%;border:2px dashed var(--line);display:grid;place-items:center;color:var(--ink-3);cursor:pointer;overflow:hidden;transition:.15s;position:relative}
+.ben-photo:hover{border-color:var(--emerald-500);color:var(--emerald)}
+.ben-photo img{width:100%;height:100%;object-fit:cover}
+.ben-photo svg{width:17px;height:17px}
+.ben-photo input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.ben-del{width:42px;height:42px;border-radius:10px;border:1.5px solid var(--line);background:#fff;color:var(--ink-3);display:grid;place-items:center;transition:.15s}
+.ben-del:hover{border-color:#DC2626;color:#DC2626;background:#FEF6F6}
+.ben-del svg{width:16px;height:16px}
+@media(max-width:640px){.ben-grid{grid-template-columns:1fr 1fr 46px 40px}}
+.ben-add{width:100%;border:1.5px dashed #B8DDD4;background:var(--emerald-050);color:var(--emerald);border-radius:var(--r-md);padding:13px;font:600 14px var(--font-b);display:flex;align-items:center;justify-content:center;gap:9px;transition:.15s}
+.ben-add:hover{background:#E2F3EE}
+.ben-add svg{width:16px;height:16px}
+.pay-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:560px){.pay-opts{grid-template-columns:1fr}}
+.pay-opt{display:flex;gap:13px;align-items:center;padding:14px;border:1.5px solid var(--line);border-radius:var(--r-md);cursor:pointer;transition:.18s;background:#fff;position:relative}
+.pay-opt input{position:absolute;opacity:0;pointer-events:none}
+.pay-opt .o-ic{width:40px;height:40px}
+.pay-opt:hover{border-color:rgba(13,148,136,.55)}
+.pay-opt.on{border-color:var(--emerald);background:var(--emerald-050);box-shadow:0 0 0 3px rgba(9,114,104,.07)}
+.pay-opt b{display:block;font:600 14px var(--font-b)}
+.pay-opt small{display:block;font:500 11.5px var(--font-b);color:var(--ink-3)}
+.pay-panel{border:1.5px solid var(--line);border-radius:var(--r-md);padding:18px;margin-bottom:4px}
+.mm-info{display:flex;gap:12px;align-items:flex-start;background:var(--gold-050);border:1px solid #EAD9A8;border-radius:11px;padding:13px 15px;margin-bottom:16px;font:500 13px var(--font-b);color:#7C4A08}
+.mm-info svg{width:17px;height:17px;color:#B45309;flex:none;margin-top:2px}
+.mm-info b{font-family:var(--font-n)}
+.apple-pay{width:100%;background:#000;color:#fff;border:0;border-radius:12px;padding:15px;font:600 16px var(--font-b);letter-spacing:.02em;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+.apple-pay:hover{background:#1F2937}
+.apple-pay svg{width:17px;height:17px}
+.succ-wrap{text-align:center}
+.succ-check{width:74px;height:74px;margin:6px auto 18px}
+.succ-check .sc{stroke-dasharray:183;stroke-dashoffset:183;animation:draw .7s .1s ease-out forwards}
+.succ-check .sp{stroke-dasharray:40;stroke-dashoffset:40;animation:draw .45s .75s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.succ-wrap h3{font-size:24px;margin-bottom:8px}
+.succ-wrap>p{color:var(--ink-2);font-size:14.5px;margin-bottom:26px}
+.succ-card-zone{display:flex;justify-content:center;margin-bottom:24px}
+.succ-card-zone .member-card{width:min(420px,100%);filter:drop-shadow(0 22px 34px rgba(6,74,67,.32))}
+.succ-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:26px}
+.succ-meta div{background:#FBFDFC;border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;text-align:left}
+.succ-meta span{display:block;font:600 10.5px var(--font-b);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.succ-meta b{font:600 14px var(--font-b);color:var(--ink)}
+.succ-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.spin{width:16px;height:16px;border:2.2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;flex:none}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* ================= TOASTS & FAB ================= */
+#toasts{position:fixed;bottom:24px;right:24px;z-index:130;display:flex;flex-direction:column;gap:10px;max-width:min(380px,calc(100vw - 32px))}
+.toast{display:flex;gap:12px;align-items:flex-start;background:#0F172A;color:#fff;border-radius:14px;padding:14px 15px;box-shadow:0 18px 40px -12px rgba(15,23,42,.5);animation:tin .38s cubic-bezier(.2,.8,.3,1);position:relative;overflow:hidden}
+.toast::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3.5px;background:var(--emerald-500)}
+.toast.t-info::before{background:#3B82F6}
+.toast.t-error::before{background:#DC2626}
+.toast.out{animation:tout .3s ease forwards}
+@keyframes tin{from{opacity:0;transform:translateY(14px) scale(.96)}}
+@keyframes tout{to{opacity:0;transform:translateX(24px)}}
+.t-ic{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.1);display:grid;place-items:center;flex:none}
+.t-ic svg{width:15px;height:15px;color:#5EEAD4}
+.t-info .t-ic svg{color:#93C5FD}
+.t-error .t-ic svg{color:#FCA5A5}
+.toast b{display:block;font:600 14px var(--font-b);margin-bottom:1px}
+.toast p{font:500 12.5px var(--font-b);color:#CBD5E1;line-height:1.45}
+.t-close{background:none;border:0;color:#64748B;padding:2px;margin-left:auto;cursor:pointer}
+.t-close:hover{color:#fff}
+.t-close svg{width:14px;height:14px}
+@media(max-width:640px){#toasts{bottom:86px;right:16px;left:16px}}
+.wa-fab{position:fixed;right:22px;bottom:22px;z-index:60;width:56px;height:56px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 14px 30px -8px rgba(37,211,102,.55);transition:transform .18s}
+.wa-fab:hover{transform:scale(1.08)}
+.wa-fab svg{width:25px;height:25px}
+.wa-fab::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid rgba(37,211,102,.45);animation:ping 2.6s ease-out infinite}
+
+/* ================= IMPRESSION ================= */
+#printArea{display:none}
+@media print{
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important;padding:30px;font-family:var(--font-b)}
+  #printArea h2{font-size:20px;margin-bottom:6px}
+  #printArea .pa-sub{font-size:12px;color:#475569;margin-bottom:22px}
+  #printArea .member-card{width:430px;max-width:100%}
+  #printArea .card-face{box-shadow:none;border:1.5px solid #CBD5E1;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .pa-meta{margin-top:22px;font-size:13px}
+  .pa-meta div{margin-bottom:4px}
+}
+
+/* ================= MISC ================= */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.3,1)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important}
+  .reveal{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ TOP BAR DIASPORA ═══════════ -->
+<div class="topbar" role="note">
+  <div class="tb-inner">
+    <div class="tb-flow" id="tbFlow">
+      <span class="tb-seq"><span class="pulse-dot"></span><i data-lucide="globe" aria-hidden="true"></i>Diaspora &amp; Afrique Centrale / Ouest : <b>tiers-payant 100 %</b> sans avance de frais dans 45+ cliniques partenaires · Adhésion en ligne dès <b class="num" data-base-eur="23">23 €</b> par mois</span>
+      <span class="tb-seq" aria-hidden="true"><span class="pulse-dot"></span><i data-lucide="globe" aria-hidden="true"></i>Diaspora &amp; Afrique Centrale / Ouest : <b>tiers-payant 100 %</b> sans avance de frais dans 45+ cliniques partenaires · Adhésion en ligne dès <b class="num" data-base-eur="23">23 €</b> par mois</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header class="site" id="siteHeader">
+  <div class="h-in">
+    <a href="#" class="logo" id="logoHome" aria-label="MulemaCare — retour en haut de page">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#097268"/><rect x="13" y="6" width="6" height="20" rx="3" fill="#fff"/><rect x="6" y="13" width="20" height="6" rx="3" fill="#fff"/><path d="M7 16h5l2-3.5 3 7 2-3.5h6" stroke="#D97706" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="logo-txt"><b>Mulema<i>Care</i></b><span>Mutuelle Santé</span></span>
+    </a>
+    <nav class="main" aria-label="Navigation principale">
+      <a href="#simulateur">Simulateur</a>
+      <a href="#garanties">Garanties</a>
+      <a href="#services">Services</a>
+      <a href="#reseau">Réseau de soins</a>
+    </nav>
+    <div class="h-right">
+      <div class="seg" data-cur-seg role="group" aria-label="Choix de la devise">
+        <button type="button" data-cur="EUR" class="on">€ EUR</button>
+        <button type="button" data-cur="USD">$ USD</button>
+        <button type="button" data-cur="XAF">FCFA</button>
+      </div>
+      <button class="btn btn-primary btn-sm" data-open-sub><i data-lucide="badge-check"></i>Adhérer</button>
+      <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false"><i data-lucide="menu"></i></button>
+    </div>
+  </div>
+  <div class="m-nav" id="mNav">
+    <a href="#simulateur">Simulateur<i data-lucide="arrow-right"></i></a>
+    <a href="#garanties">Garanties<i data-lucide="arrow-right"></i></a>
+    <a href="#services">Services connectés<i data-lucide="arrow-right"></i></a>
+    <a href="#reseau">Réseau de soins<i data-lucide="arrow-right"></i></a>
+    <div class="seg" data-cur-seg role="group" aria-label="Choix de la devise">
+      <button type="button" data-cur="EUR" class="on">€ EUR</button>
+      <button type="button" data-cur="USD">$ USD</button>
+      <button type="button" data-cur="XAF">FCFA</button>
+    </div>
+    <button class="btn btn-primary btn-block" data-open-sub><i data-lucide="badge-check"></i>Adhérer en 2 minutes</button>
+  </div>
+</header>
+
+<main>
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="badge-agr"><i data-lucide="shield-check"></i>Établissement agréé CSSA · n° 045/CSSA/2024 · Cameroun</span>
+      <h1>La mutuelle santé qui protège votre famille au pays et en entreprise, <span class="hl">sans avance de frais</span>.</h1>
+      <p class="hero-sub">Adhérez en ligne depuis Paris, Bruxelles ou Montréal — ou directement depuis Douala. Tiers-payant intégral dans plus de 45 cliniques partenaires, médecin de garde 24/7 sur WhatsApp et infirmières à domicile pour vos parents, dès <b class="num" data-base-eur="23">23 €</b> par mois.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#simulateur"><i data-lucide="heart-pulse"></i>Simuler ma cotisation</a>
+        <a class="btn btn-ghost" href="#garanties"><i data-lucide="shield"></i>Explorer les garanties</a>
+      </div>
+      <div class="cur-mod">
+        <b>Vous cotisez depuis l'étranger ?</b>
+        <div class="seg" data-cur-seg role="group" aria-label="Choix de la devise">
+          <button type="button" data-cur="EUR" class="on">€ EUR</button>
+          <button type="button" data-cur="USD">$ USD</button>
+          <button type="button" data-cur="XAF">FCFA</button>
+        </div>
+      </div>
+      <div class="hero-proof">
+        <span class="proof-it"><span class="stars" aria-label="Note 4,8 sur 5"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></span>&nbsp;<b>4,8/5</b> — 1 234 avis</span>
+        <span class="proof-sep"></span>
+        <span class="proof-it"><b>45+</b> cliniques conventionnées</span>
+        <span class="proof-sep"></span>
+        <span class="proof-it"><b>12 400</b> familles protégées</span>
+      </div>
+    </div>
+    <div class="card-scene" id="cardScene">
+      <span class="float-tag ft-1"><i data-lucide="shield-check"></i>Zéro avance de frais</span>
+      <span class="float-tag ft-2"><i data-lucide="qr-code"></i>QR scanné en clinique</span>
+      <div class="card-tilt member-card" id="cardTilt" data-plan="silver">
+        <div class="card-flip" id="cardFlip" role="button" tabindex="0" aria-label="Carte Mutuelle Digitale — cliquer pour la retourner">
+          <div class="card-face card-front" id="heroFront"></div>
+          <div class="card-face card-back">
+            <svg class="cf-guilloche" viewBox="0 0 340 214" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-opacity=".09"><circle cx="312" cy="30" r="20"/><circle cx="312" cy="30" r="42"/><circle cx="312" cy="30" r="64"/><circle cx="20" cy="196" r="30"/><circle cx="20" cy="196" r="52"/></g></svg>
+            <div class="cf-top">
+              <div class="cf-brand">
+                <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="rgba(255,255,255,.14)"/><rect x="13" y="6" width="6" height="20" rx="3" fill="#fff"/><rect x="6" y="13" width="20" height="6" rx="3" fill="#fff"/><path d="M7 16h5l2-3.5 3 7 2-3.5h6" stroke="#D97706" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="cf-bname"><b>MulemaCare</b><i>Mutuelle Santé · CSSA</i></span>
+              </div>
+              <span class="cf-status"><i></i>Carte active</span>
+            </div>
+            <div style="position:relative;z-index:2">
+              <div style="height:38px;background:rgba(0,0,0,.55);margin:6px -24px 18px"></div>
+              <b style="font:700 13px var(--font-b);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:8px;color:var(--card-accent)">Conditions d'utilisation</b>
+              <p style="font:500 12px var(--font-b);line-height:1.55;opacity:.85;margin-bottom:18px">Carte nominative et strictement personnelle. Présentez-la à l'accueil de toute clinique ou pharmacie conventionnée : la prise en charge est immédiate, sans avance de frais. En cas d'urgence, appelez avant tout déplacement.</p>
+              <div style="display:flex;flex-direction:column;gap:11px">
+                <div style="display:flex;gap:11px;align-items:center"><span style="width:34px;height:34px;background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center;border-radius:9px;flex:none"><i data-lucide="phone-call"></i></span><div><b style="font:600 12.5px var(--font-b);display:block">Urgences &amp; SAMU — 24/7</b><span class="num" style="font:500 12px;opacity:.8">+237 521 120 21</span></div></div>
+                <div style="display:flex;gap:11px;align-items:center"><span style="width:34px;height:34px;background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center;border-radius:9px;flex:none"><i data-lucide="message-circle"></i></span><div><b style="font:600 12.5px var(--font-b);display:block">Médecin de garde Lisacare</b><span style="font:500 12px var(--font-b);opacity:.8">WhatsApp — réponse en 4 min</span></div></div>
+              </div>
+            </div>
+            <p style="position:relative;z-index:2;display:flex;align-items:center;gap:8px;font:600 10.5px var(--font-b);opacity:.72"><i data-lucide="badge-check" style="width:13px;height:13px"></i>Authenticité vérifiable sur mulemacare.com/verifier</p>
+          </div>
+        </div>
+      </div>
+      <p class="scene-hint"><i data-lucide="mouse-pointer-click"></i>Survolez la carte — cliquez pour la retourner</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ BANDE DE CONFIANCE ═══════════ -->
+<div class="stats-band">
+  <div class="wrap stats-list">
+    <div class="stat"><b>45+</b><span>cliniques conventionnées</span></div>
+    <div class="stat"><b>6</b><span>pays d'Afrique couverts</span></div>
+    <div class="stat"><b>12 400</b><span>adhérents protégés</span></div>
+    <div class="stat"><b>0 jour</b><span>de délai de carence</span></div>
+    <div class="stat"><b>2 min</b><span>pour adhérer en ligne</span></div>
+    <div class="stat"><b>4,8/5</b><span>de satisfaction adhérents</span></div>
+  </div>
+</div>
+
+<!-- ═══════════ SIMULATEUR ═══════════ -->
+<section class="sec" id="simulateur">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-index">01</span>
+      <div>
+        <p class="eyebrow">Simulateur de cotisation</p>
+        <h2>Votre devis santé en trois clics, dans votre devise.</h2>
+        <p class="sec-sub">Ajustez le profil, la ville et le niveau de couverture : le prix se recalcule instantanément, sans rechargement ni engagement.</p>
+      </div>
+    </div>
+    <div class="sim-grid">
+      <div>
+        <fieldset class="step-f reveal">
+          <legend><span class="stno">1</span>Pour qui ?</legend>
+          <div class="opt-grid" id="profileGrid">
+            <label class="opt on"><input type="radio" name="profile" value="solo" checked><span class="o-ic"><i data-lucide="user"></i></span><span><b>Moi seul</b><small>Ma couverture personnelle</small></span></label>
+            <label class="opt"><input type="radio" name="profile" value="couple"><span class="o-ic"><i data-lucide="heart-handshake"></i></span><span><b>Mon couple</b><small>Moi et mon conjoint</small></span></label>
+            <label class="opt"><input type="radio" name="profile" value="famille"><span class="o-ic"><i data-lucide="users"></i></span><span><b>Ma famille au pays</b><small>2 adultes + 3 enfants</small></span></label>
+            <label class="opt"><input type="radio" name="profile" value="seniors"><span class="o-ic"><i data-lucide="heart-pulse"></i></span><span><b>Mes parents âgés</b><small>2 seniors + visites Ongwa</small></span></label>
+            <label class="opt"><input type="radio" name="profile" value="pme"><span class="o-ic"><i data-lucide="building-2"></i></span><span><b>Mes salariés — PME</b><small>Tarif dégressif par tête</small></span></label>
+          </div>
+          <div class="pme-box" id="pmeBox">
+            <label for="pmeCount">Salariés à couvrir</label>
+            <div class="stepper">
+              <button type="button" id="pmeMinus" aria-label="Retirer un salarié"><i data-lucide="minus"></i></button>
+              <b class="num" id="pmeCount">8</b>
+              <button type="button" id="pmePlus" aria-label="Ajouter un salarié"><i data-lucide="plus"></i></button>
+            </div>
+            <span class="pme-unit" id="pmeUnit"></span>
+          </div>
+        </fieldset>
+        <fieldset class="step-f reveal">
+          <legend><span class="stno">2</span>Ville de couverture</legend>
+          <div class="chips" id="cityChips">
+            <label class="chip on"><input type="radio" name="city" value="douala" checked>Douala</label>
+            <label class="chip"><input type="radio" name="city" value="yaounde">Yaoundé</label>
+            <label class="chip"><input type="radio" name="city" value="kinshasa">Kinshasa</label>
+            <label class="chip"><input type="radio" name="city" value="abidjan">Abidjan</label>
+            <label class="chip"><input type="radio" name="city" value="dakar">Dakar</label>
+            <label class="chip"><input type="radio" name="city" value="libreville">Libreville</label>
+            <label class="chip"><input type="radio" name="city" value="bangui">Bangui</label>
+          </div>
+        </fieldset>
+        <fieldset class="step-f reveal">
+          <legend><span class="stno">3</span>Niveau de couverture</legend>
+          <div class="p-opts" id="planOpts">
+            <label class="p-opt" data-planc="bronze" style="--c:#8A5A2B"><input type="radio" name="plan" value="bronze"><span class="p-dot"></span><b>Bronze</b><span>Essentielle</span><em>dès <b class="num" data-base-eur="23">23 €</b>/mois</em></label>
+            <label class="p-opt on" data-planc="silver" style="--c:#0D9488"><input type="radio" name="plan" value="silver" checked><span class="p-dot"></span><b>Silver</b><span>Famille &amp; soins courants</span><em>dès <b class="num" data-base-eur="42">42 €</b>/mois</em></label>
+            <label class="p-opt" data-planc="gold" style="--c:#D97706"><input type="radio" name="plan" value="gold"><span class="p-dot"></span><b>Gold</b><span>Confort &amp; tiers-payant total</span><em>dès <b class="num" data-base-eur="68">68 €</b>/mois</em></label>
+            <label class="p-opt" data-planc="platinium" style="--c:#475569"><input type="radio" name="plan" value="platinium"><span class="p-dot"></span><b>Platinium</b><span>Haut de gamme &amp; diaspora</span><em>dès <b class="num" data-base-eur="115">115 €</b>/mois</em></label>
+          </div>
+        </fieldset>
+      </div>
+      <aside class="sim-panel reveal" aria-live="polite">
+        <p class="sp-live"><span class="pulse-dot"></span>Devis mis à jour en direct</p>
+        <div class="sp-rows">
+          <div class="sp-row"><span>Profil</span><b id="qProfile">Moi seul</b></div>
+          <div class="sp-row"><span>Couverture</span><b id="qCity">Douala</b></div>
+          <div class="sp-row"><span>Formule</span><b id="qPlan">Silver</b></div>
+        </div>
+        <div class="sp-cycle">
+          <span>Périodicité</span>
+          <div class="seg seg-dark" id="cycleSeg" role="group" aria-label="Périodicité de paiement">
+            <button type="button" data-cycle="monthly" class="on">Mensuel</button>
+            <button type="button" data-cycle="annual">Annuel</button>
+          </div>
+        </div>
+        <div class="big-price"><span class="bp-v num" id="bigPrice">—</span><span class="bp-u" id="bigUnit">/ mois</span></div>
+        <div class="sp-save" id="spSave"><i data-lucide="piggy-bank"></i><span id="spSaveTxt"></span></div>
+        <div class="sp-detail" id="spDetail"></div>
+        <button class="btn btn-white btn-block" id="simAdhere"><i data-lucide="badge-check"></i>Adhérer avec ce devis</button>
+        <ul class="panel-notes">
+          <li><i data-lucide="check"></i>Sans engagement, résiliable à tout moment</li>
+          <li><i data-lucide="check"></i>Carte mutuelle digitale émise immédiatement</li>
+          <li><i data-lucide="check"></i>Effectif dès le lendemain de l'adhésion</li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FORMULES ═══════════ -->
+<section class="sec" id="garanties">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-index">02</span>
+      <div>
+        <p class="eyebrow">Grille des garanties</p>
+        <h2>Quatre formules, une même exigence : la transparence.</h2>
+        <p class="sec-sub">De l'essentiel urgentiste au haut de gamme international — chaque garantie est écrite noir sur blanc, sans astérisque ni petites lignes.</p>
+      </div>
+    </div>
+    <div class="plans-grid">
+      <article class="plan-card reveal" data-planc="bronze" style="--c:#8A5A2B">
+        <div class="plan-head">
+          <div class="plan-name"><span class="plan-dot"></span><h3>Bronze</h3></div>
+          <p class="plan-price">à partir de<b class="num" data-base-eur="23">23 €</b>/ mois</p>
+        </div>
+        <span class="plan-tag">Essentielle</span>
+        <p class="plan-desc">Le filet de sécurité vital : urgences couvertes à 100 % et un médecin joignable jour et nuit.</p>
+        <ul class="plan-feats">
+          <li><i data-lucide="check"></i>Hospitalisation d'urgence à <b>100 %</b></li>
+          <li><i data-lucide="check"></i>SAMU &amp; transport d'urgence inclus</li>
+          <li><i data-lucide="check"></i>Télétriage Lisacare 24/7 sur WhatsApp</li>
+          <li class="muted"><i data-lucide="minus"></i>Consultations &amp; pharmacie non couvertes</li>
+        </ul>
+        <button class="btn btn-ghost btn-block" data-open-sub="bronze">Souscrire Bronze</button>
+      </article>
+      <article class="plan-card featured reveal" data-planc="silver" style="--c:#5EEAD4">
+        <span class="plan-ribbon">Le plus choisi par les familles</span>
+        <div class="plan-head">
+          <div class="plan-name"><span class="plan-dot" style="--c:#5EEAD4"></span><h3>Silver</h3></div>
+          <p class="plan-price">à partir de<b class="num" data-base-eur="42">42 €</b>/ mois</p>
+        </div>
+        <span class="plan-tag">Famille &amp; soins courants</span>
+        <div class="plan-stars"><span class="stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></span><span>4,9/5 — 68 % des adhésions</span></div>
+        <p class="plan-desc">L'équilibre parfait pour la famille : soins courants, maternité et pharmacie pris en main.</p>
+        <ul class="plan-feats">
+          <li><i data-lucide="check"></i>Tout Bronze, plus :</li>
+          <li><i data-lucide="check"></i>Consultations généralistes à <b>70 %</b></li>
+          <li><i data-lucide="check"></i>Spécialistes &amp; examens de laboratoire</li>
+          <li><i data-lucide="check"></i>Pharmacie à <b>80 %</b> en tiers-payant</li>
+          <li><i data-lucide="check"></i>Maternité suivie et accompagnée</li>
+        </ul>
+        <button class="btn btn-white btn-block" data-open-sub="silver">Souscrire Silver</button>
+      </article>
+      <article class="plan-card gold reveal" data-planc="gold" style="--c:#D97706">
+        <div class="plan-head">
+          <div class="plan-name"><span class="plan-dot"></span><h3>Gold</h3></div>
+          <p class="plan-price">à partir de<b class="num" data-base-eur="68">68 €</b>/ mois</p>
+        </div>
+        <span class="plan-tag">Confort &amp; tiers-payant total</span>
+        <p class="plan-desc">Zéro avance de frais en clinique conventionnée, et l'ajout des soins du quotidien.</p>
+        <ul class="plan-feats">
+          <li><i data-lucide="check"></i>Tout Silver, plus :</li>
+          <li><i data-lucide="check"></i><b>Zéro avance de frais</b> en clinique partenaire</li>
+          <li><i data-lucide="check"></i>Optique &amp; dentaire inclus</li>
+          <li><i data-lucide="check"></i>Pharmacie à <b>100 %</b></li>
+          <li><i data-lucide="check"></i>Transport sanitaire conventionné</li>
+        </ul>
+        <button class="btn btn-ghost btn-block" data-open-sub="gold">Souscrire Gold</button>
+      </article>
+      <article class="plan-card dark reveal" data-planc="platinium" style="--c:#94A3B8">
+        <div class="plan-head">
+          <div class="plan-name"><span class="plan-dot" style="--c:#94A3B8"></span><h3>Platinium</h3></div>
+          <p class="plan-price">à partir de<b class="num" data-base-eur="115">115 €</b>/ mois</p>
+        </div>
+        <span class="plan-tag">Haut de gamme &amp; diaspora</span>
+        <p class="plan-desc">La couverture absolue : hôpital sans plafond, bilan annuel et évacuation sanitaire.</p>
+        <ul class="plan-feats">
+          <li><i data-lucide="check"></i>Tout Gold, plus :</li>
+          <li><i data-lucide="check"></i>Hospitalisation <b>illimitée</b></li>
+          <li><i data-lucide="check"></i>Lit d'accompagnant pour un proche</li>
+          <li><i data-lucide="check"></i>Bilan de santé annuel complet</li>
+          <li><i data-lucide="check"></i>Évacuation sanitaire internationale</li>
+        </ul>
+        <button class="btn btn-white btn-block" data-open-sub="platinium">Souscrire Platinium</button>
+      </article>
+    </div>
+    <div id="comparateur" class="reveal">
+      <div class="cmp-title">
+        <h3>Comparateur détaillé</h3>
+        <p>Cliquez sur « Choisir » pour sélectionner une formule — les prix s'adaptent à votre devise.</p>
+      </div>
+      <div class="cmp-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Garanties</th>
+              <th scope="col" data-col="bronze"><span class="th-plan" style="--c:#8A5A2B"><i></i>Bronze</span><span class="th-tag">Essentielle</span><span class="th-price num" data-base-eur="23">23 €</span><button class="th-choose" data-pick="bronze">Choisir</button></th>
+              <th scope="col" data-col="silver"><span class="th-plan" style="--c:#0D9488"><i></i>Silver <small>Vedette</small></span><span class="th-tag">Famille</span><span class="th-price num" data-base-eur="42">42 €</span><button class="th-choose" data-pick="silver">Choisir</button></th>
+              <th scope="col" data-col="gold"><span class="th-plan" style="--c:#D97706"><i></i>Gold</span><span class="th-tag">Confort</span><span class="th-price num" data-base-eur="68">68 €</span><button class="th-choose" data-pick="gold">Choisir</button></th>
+              <th scope="col" data-col="platinium"><span class="th-plan" style="--c:#475569"><i></i>Platinium</span><span class="th-tag">Diaspora</span><span class="th-price num" data-base-eur="115">115 €</span><button class="th-choose" data-pick="platinium">Choisir</button></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Hospitalisation</td><td data-col="bronze"><span class="v-inc">100 %</span> urgence</td><td data-col="silver"><span class="v-inc">100 %</span> urgence</td><td data-col="gold"><span class="v-inc">100 %</span></td><td data-col="platinium"><span class="v-inc">Illimitée</span></td></tr>
+            <tr><td>Plafond hospitalisation / an</td><td data-col="bronze" class="num v-strong" data-base-eur="1220">1 220 €</td><td data-col="silver" class="num v-strong" data-base-eur="3810">3 810 €</td><td data-col="gold" class="num v-strong" data-base-eur="9145">9 145 €</td><td data-col="platinium"><span class="v-inc">Sans plafond</span></td></tr>
+            <tr><td>SAMU &amp; transport sanitaire</td><td data-col="bronze"><span class="v-inc">Urgences</span></td><td data-col="silver"><span class="v-inc">Urgences</span></td><td data-col="gold"><span class="v-inc">Inclus</span></td><td data-col="platinium"><span class="v-inc">Inclus + internat.</span></td></tr>
+            <tr><td>Télétriage Lisacare 24/7</td><td data-col="bronze"><span class="v-inc">Inclus</span></td><td data-col="silver"><span class="v-inc">Inclus</span></td><td data-col="gold"><span class="v-inc">Inclus</span></td><td data-col="platinium"><span class="v-inc">Prioritaire</span></td></tr>
+            <tr><td>Consultations généralistes</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-strong">70 %</span></td><td data-col="gold"><span class="v-strong">80 %</span></td><td data-col="platinium"><span class="v-strong">90 %</span></td></tr>
+            <tr><td>Spécialistes</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-strong">60 %</span></td><td data-col="gold"><span class="v-strong">80 %</span></td><td data-col="platinium"><span class="v-strong">90 %</span></td></tr>
+            <tr><td>Pharmacie (tiers-payant)</td><td data-col="bronze"><span class="v-strong">Urgences</span></td><td data-col="silver"><span class="v-strong">80 %</span></td><td data-col="gold"><span class="v-inc">100 %</span></td><td data-col="platinium"><span class="v-inc">100 %</span></td></tr>
+            <tr><td>Examens &amp; laboratoire</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-strong">70 %</span></td><td data-col="gold"><span class="v-strong">85 %</span></td><td data-col="platinium"><span class="v-strong">90 %</span></td></tr>
+            <tr><td>Maternité</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-strong">70 %</span></td><td data-col="gold"><span class="v-strong">85 %</span></td><td data-col="platinium"><span class="v-inc">100 %</span></td></tr>
+            <tr><td>Optique &amp; dentaire</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-no">—</span></td><td data-col="gold"><span class="v-inc">Inclus</span></td><td data-col="platinium"><span class="v-inc">Inclus</span></td></tr>
+            <tr><td>Bilan de santé annuel</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-no">—</span></td><td data-col="gold"><span class="v-no">—</span></td><td data-col="platinium"><span class="v-inc">Complet</span></td></tr>
+            <tr><td>Lit d'accompagnant</td><td data-col="bronze"><span class="v-no">—</span></td><td data-col="silver"><span class="v-no">—</span></td><td data-col="gold"><span class="v-no">—</span></td><td data-col="platinium"><span class="v-inc">Inclus</span></td></tr>
+            <tr><td>Visites Ongwa Seniors</td><td data-col="bronze"><span class="v-strong">Option</span></td><td data-col="silver"><span class="v-strong">Option</span></td><td data-col="gold"><span class="v-strong">-20 %</span></td><td data-col="platinium"><span class="v-inc">2 incluses/mois</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ALLIANCE DES SERVICES ═══════════ -->
+<section class="sec" id="services">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-index">03</span>
+      <div>
+        <p class="eyebrow">L'alliance des services MulemaCare</p>
+        <h2>Une mutuelle connectée qui agit, pas seulement qui rembourse.</h2>
+        <p class="sec-sub">Deux services partenaires intégrés à votre garantie : la télésanté Lisacare et le soin à domicile Ongwa Senior Care.</p>
+      </div>
+    </div>
+    <div class="ally-grid">
+      <article class="ally-card reveal">
+        <span class="ally-tag a1"><i data-lucide="message-circle"></i>Lisacare Telehealth</span>
+        <h3>Un médecin de garde en ligne 24/7 sur WhatsApp, inclus dans votre mutuelle.</h3>
+        <p>Fievre nocturne d'un enfant à Yaoundé pendant que vous dormez à Bruxelles ? Le médecin de garde de Lisacare répond en moyenne en 4 minutes, prescrit et oriente vers la clinique conventionnée la plus proche si nécessaire.</p>
+        <div class="lisa-body">
+          <div>
+            <ul class="ally-feats">
+              <li class="strong"><i data-lucide="check"></i>Télétriage et téléconsultation illimités, inclus dès la formule Bronze</li>
+              <li><i data-lucide="check"></i>Ordonnances numériques acceptées dans les pharmacies partenaires</li>
+              <li><i data-lucide="check"></i>Orientation directe en tiers-payant dans le réseau MulemaCare</li>
+              <li><i data-lucide="check"></i>Conseils prévention, carnet de vaccination et rappels de suivi</li>
+            </ul>
+            <div class="lisa-actions">
+              <a class="btn btn-primary" href="https://wa.me/23765145837?text=Bonjour%20Lisacare%2C%20je%20souhaite%20discuter%20avec%20un%20m%C3%A9decin%20de%20garde." target="_blank" rel="noopener"><i data-lucide="message-circle"></i>Ouvrir WhatsApp Lisacare</a>
+              <button class="btn btn-ghost" data-open-sub><i data-lucide="badge-check"></i>Adhérer</button>
+            </div>
+            <p class="lisa-note" style="margin-top:16px"><i data-lucide="clock"></i>Temps de réponse moyen constaté : 4 minutes, de jour comme à 3 h du matin.</p>
+          </div>
+          <div class="phone" id="phoneMock">
+            <div class="phone-scr">
+              <div class="ph-head">
+                <span class="ph-av">L</span>
+                <div><b>Lisacare — Médecin de garde</b><span><i></i>en ligne · 24/7</span></div>
+              </div>
+              <div class="chat" id="phoneChat"></div>
+            </div>
+          </div>
+        </div>
+        <button class="link-arrow" id="waReplay"><i data-lucide="rotate-ccw"></i>Rejouer la conversation</button>
+      </article>
+      <article class="ally-card ongwa-card reveal">
+        <span class="ally-tag a2"><i data-lucide="heart-pulse"></i>Ongwa Senior Care</span>
+        <div class="ongwa-inner">
+          <div>
+            <h3>Des infirmières à domicile pour vos parents âgés, couplées à votre garantie mutuelle.</h3>
+            <p>Vos parents restent chez eux, à Bonamoussadi ou à Cocody. Une infirmière conventionnée Ongwa passe régulièrement : tension, traitement, petite conversation. Vous recevez le compte-rendu sur votre téléphone, où que vous soyez dans le monde.</p>
+          </div>
+          <div class="visit-report">
+            <div class="vr-head"><b>Visite du jour — Mme Ekwalla, 78 ans</b><span class="num">Aujourd'hui · 09h40</span></div>
+            <div class="vr-metrics">
+              <div class="vr-m"><span>Tension</span><b class="num">13/8</b></div>
+              <div class="vr-m"><span>Glycémie</span><b class="num">1,10 g/L</b></div>
+              <div class="vr-m"><span>Pouls</span><b class="num">74 bpm</b></div>
+            </div>
+            <p class="vr-note">« Traitement bien pris, appétit correct. Douleur genou droit en baisse. À revoir dans 15 jours. »</p>
+            <span class="vr-stamp"><i data-lucide="shield-check"></i>Prise en charge mutuelle appliquée — 0 F avancé</span>
+          </div>
+          <div class="ongwa-next">
+            <span class="o-ic"><i data-lucide="calendar-check"></i></span>
+            <div><b>Planifier une première visite</b><small>Gratuite et sans engagement pour tout adhérent</small></div>
+          </div>
+          <button class="btn btn-primary btn-block" data-info="ongwa"><i data-lucide="calendar-check"></i>Planifier une visite Ongwa</button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ RÉSEAU DE SOINS ═══════════ -->
+<section class="sec" id="reseau">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-index">04</span>
+      <div>
+        <p class="eyebrow">Réseau conventionné</p>
+        <h2>Trouvez votre clinique ou pharmacie partenaire.</h2>
+        <p class="sec-sub">45+ établissements conventionnés dans 6 pays. Cherchez par ville, quartier ou spécialité — le badge bleu garantit le tiers-payant sans avance de frais.</p>
+      </div>
+    </div>
+    <div class="net-tools reveal">
+      <div class="net-search">
+        <i data-lucide="search"></i>
+        <input type="search" id="netSearch" placeholder="Rechercher un établissement, un quartier, une spécialité…" aria-label="Rechercher un établissement">
+      </div>
+      <div class="net-filters">
+        <div class="chips" id="netCityChips"></div>
+        <div class="seg" id="netTypeSeg" role="group" aria-label="Type d'établissement">
+          <button type="button" data-t="all" class="on">Tous</button>
+          <button type="button" data-t="clinic">Cliniques</button>
+          <button type="button" data-t="pharmacy">Pharmacies</button>
+          <button type="button" data-t="center">Centres</button>
+        </div>
+        <label class="tp-switch"><input type="checkbox" id="netTp"><span class="tp-track"></span>Tiers-payant uniquement</label>
+      </div>
+    </div>
+    <span class="net-count reveal" id="netCount"></span>
+    <div class="net-list reveal" id="netList"></div>
+  </div>
+</section>
+
+<!-- ═══════════ CTA FINAL ═══════════ -->
+<section class="cta-final">
+  <svg class="cf-guilloche" viewBox="0 0 1200 400" fill="none" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g stroke="#fff" stroke-opacity=".05"><circle cx="1050" cy="80" r="60"/><circle cx="1050" cy="80" r="120"/><circle cx="1050" cy="80" r="180"/><circle cx="150" cy="360" r="80"/><circle cx="150" cy="360" r="140"/><circle cx="150" cy="360" r="200"/></g></svg>
+  <div class="wrap cta-in">
+    <h2>Votre famille n'attendra pas votre prochain voyage pour être bien soignée.</h2>
+    <p>Adhérez en 2 minutes depuis votre téléphone. Carte digitale et QR code de prise en charge émis immédiatement, efficaces dès demain matin.</p>
+    <div class="cta-btns">
+      <button class="btn btn-white" data-open-sub><i data-lucide="badge-check"></i>Adhérer maintenant</button>
+      <a class="btn btn-outline-w" href="#simulateur"><i data-lucide="heart-pulse"></i>Refaire une simulation</a>
+    </div>
+    <p class="cta-note"><i data-lucide="shield-check"></i>Paiement sécurisé Stripe, Orange Money et MTN MoMo · Résiliation libre · Agrément CSSA n° 045</p>
+  </div>
+</section>
+</main>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="site">
+  <div class="wrap">
+    <div class="f-grid">
+      <div class="f-brand">
+        <a href="#" class="logo" id="logoHome2">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#097268"/><rect x="13" y="6" width="6" height="20" rx="3" fill="#fff"/><rect x="6" y="13" width="20" height="6" rx="3" fill="#fff"/><path d="M7 16h5l2-3.5 3 7 2-3.5h6" stroke="#D97706" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="logo-txt"><b style="color:#fff">Mulema<i>Care</i></b><span style="color:#64748B">Mutuelle Santé</span></span>
+        </a>
+        <p>La première mutuelle santé digitale et solidaire pour l'Afrique et la diaspora. Cotisez depuis l'Europe ou l'Amérique, protégez vos proches au pays, sans avance de frais.</p>
+        <div class="f-badges">
+          <span><i data-lucide="shield-check"></i>Agréé CSSA n° 045</span>
+          <span><i data-lucide="lock"></i>Paiement sécurisé</span>
+          <span><i data-lucide="globe"></i>6 pays couverts</span>
+        </div>
+      </div>
+      <div>
+        <h4>Produit</h4>
+        <ul class="f-links">
+          <li><a href="#simulateur">Simulateur de cotisation</a></li>
+          <li><a href="#garanties">Grille des garanties</a></li>
+          <li><a href="#services">Lisacare &amp; Ongwa</a></li>
+          <li><a href="#reseau">Réseau conventionné</a></li>
+          <li><button data-info="partner">Devenir clinique partenaire</button></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aide</h4>
+        <ul class="f-links">
+          <li><a href="https://wa.me/23765145837?text=Bonjour%20MulemaCare%2C%20j%27ai%20une%20question." target="_blank" rel="noopener">WhatsApp support</a></li>
+          <li><button data-info="faq">Questions fréquentes</button></li>
+          <li><button data-info="legal">Mentions légales</button></li>
+          <li><button data-info="legal">Conditions générales</button></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul class="f-contact">
+          <li><i data-lucide="phone-call"></i><a href="tel:+23752112021" class="num">+237 521 120 21</a></li>
+          <li><i data-lucide="mail"></i><a href="mailto:bonjour@mulemacare.com">bonjour@mulemacare.com</a></li>
+          <li><i data-lucide="map-pin"></i><span>Rue Njo-Njo, Bonapriso<br>Douala — Cameroun</span></li>
+          <li><i data-lucide="clock"></i><span>Support 7j/7 · Urgences 24/7</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="f-bottom">
+      <span>© 2025 MulemaCare Mutuelle Santé — Tous droits réservés.</span>
+      <span class="f-legal">
+        <button data-info="legal">Mentions légales</button>
+        <button data-info="legal">Confidentialité</button>
+        <button data-info="legal">Cookies</button>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════ MODALE SOUSCRIPTION ═══════════ -->
+<div class="overlay" id="subModal" role="dialog" aria-modal="true" aria-labelledby="subTitle">
+  <div class="modal">
+    <div class="m-head">
+      <div class="m-head-top">
+        <h3 id="subTitle">Adhésion en ligne — 2 minutes</h3>
+        <button class="m-close" data-close-sub aria-label="Fermer"><i data-lucide="x"></i></button>
+      </div>
+      <div class="stepper-bar" id="subStepper">
+        <div class="stp cur" data-step="1"><span class="stp-dot">1</span><span class="stp-label">Identité</span></div>
+        <div class="stp-line"></div>
+        <div class="stp" data-step="2"><span class="stp-dot">2</span><span class="stp-label">Bénéficiaires</span></div>
+        <div class="stp-line"></div>
+        <div class="stp" data-step="3"><span class="stp-dot">3</span><span class="stp-label">Paiement</span></div>
+      </div>
+    </div>
+    <div class="m-body" id="subBody">
+      <!-- Étape 1 -->
+      <div data-step-view="1">
+        <div class="field">
+          <label>Vous souscrivez en tant que…</label>
+          <div class="res-cards">
+            <label class="res-card on"><input type="radio" name="res" value="diaspora" checked><span class="o-ic"><i data-lucide="globe"></i></span><span><b>Diaspora</b><small>Europe / USA / Canada</small></span></label>
+            <label class="res-card"><input type="radio" name="res" value="local"><span class="o-ic"><i data-lucide="map-pin"></i></span><span><b>Résident local</b><small>Je vis en Afrique</small></span></label>
+          </div>
+        </div>
+        <div class="f-grid2">
+          <div class="field"><label for="fPrenom">Prénom</label><input id="fPrenom" type="text" placeholder="Ex. Éric" autocomplete="given-name"><span class="err"></span></div>
+          <div class="field"><label for="fNom">Nom</label><input id="fNom" type="text" placeholder="Ex. Awono Mballa" autocomplete="family-name"><span class="err"></span></div>
+        </div>
+        <div class="field"><label for="fEmail">Adresse e-mail</label><input id="fEmail" type="email" placeholder="vous@exemple.com" autocomplete="email"><span class="err"></span></div>
+        <div class="field"><label for="fPhone">Téléphone (WhatsApp de préférence)</label>
+          <div class="phone-row">
+            <select id="phoneCode" aria-label="Indicatif téléphonique">
+              <option value="+33">+33 FR</option><option value="+32">+32 BE</option><option value="+1">+1 CA/US</option>
+              <option value="+237" selected>+237 CM</option><option value="+236">+236 CF</option><option value="+225">+225 CI</option>
+              <option value="+221">+221 SN</option><option value="+243">+243 CD</option><option value="+241">+241 GA</option>
+            </select>
+            <input id="fPhone" type="tel" placeholder="6XX XX XX XX" autocomplete="tel" style="flex:1">
+          </div><span class="err"></span>
+        </div>
+      </div>
+      <!-- Étape 2 -->
+      <div data-step-view="2" style="display:none">
+        <div class="recap-strip"><i data-lucide="info"></i><span>Le souscripteur est automatiquement le premier bénéficiaire. Ajoutez ensuite votre conjoint, vos enfants ou vos parents.</span></div>
+        <div class="ben-list" id="benList"></div>
+        <button type="button" class="ben-add" id="benAdd"><i data-lucide="plus"></i>Ajouter un bénéficiaire</button>
+      </div>
+      <!-- Étape 3 -->
+      <div data-step-view="3" style="display:none">
+        <div class="recap-strip" id="subRecap"></div>
+        <div class="pay-opts" id="payOpts">
+          <label class="pay-opt on"><input type="radio" name="pay" value="card" checked><span class="o-ic"><i data-lucide="credit-card"></i></span><span><b>Carte bancaire</b><small>Stripe · Visa, Mastercard</small></span></label>
+          <label class="pay-opt"><input type="radio" name="pay" value="apple"><span class="o-ic"><i data-lucide="apple"></i></span><span><b>Apple Pay</b><small>Paiement en un geste</small></span></label>
+          <label class="pay-opt"><input type="radio" name="pay" value="om"><span class="o-ic" style="background:#FFE8D2;color:#C2410C"><i data-lucide="smartphone"></i></span><span><b>Orange Money</b><small class="num">Marchand +237 521 120 21</small></span></label>
+          <label class="pay-opt"><input type="radio" name="pay" value="momo"><span class="o-ic" style="background:#FFE8D2;color:#C2410C"><i data-lucide="smartphone"></i></span><span><b>MTN MoMo</b><small class="num">Marchand +237 65 14 58 37</small></span></label>
+        </div>
+        <div class="pay-panel" id="payCard">
+          <div class="field"><label for="cardName">Nom sur la carte</label><input id="cardName" type="text" placeholder="ÉRIC AWONO MBALLA" autocomplete="cc-name"><span class="err"></span></div>
+          <div class="field"><label for="cardNum">Numéro de carte</label><input id="cardNum" type="text" inputmode="numeric" placeholder="4242 4242 4242 4242" autocomplete="cc-number"><span class="err"></span></div>
+          <div class="f-grid2">
+            <div class="field"><label for="cardExp">Expiration (MM/AA)</label><input id="cardExp" type="text" inputmode="numeric" placeholder="12/28" autocomplete="cc-exp"><span class="err"></span></div>
+            <div class="field"><label for="cardCvc">CVC</label><input id="cardCvc" type="text" inputmode="numeric" placeholder="123" autocomplete="cc-csc"><span class="err"></span></div>
+          </div>
+        </div>
+        <div class="pay-panel" id="payApple" style="display:none">
+          <button type="button" class="apple-pay" id="applePayBtn"><i data-lucide="apple"></i>Pay</button>
+          <p style="font:500 12.5px var(--font-b);color:var(--ink-3);margin-top:12px;text-align:center">Vous confirmez le paiement avec Face ID / Touch ID à l'étape suivante.</p>
+        </div>
+        <div class="pay-panel" id="payOM" style="display:none">
+          <div class="mm-info"><i data-lucide="info"></i><span>Une demande de débit sera envoyée sur votre application Orange Money. Validez-la avec votre code secret. Marchand : <b>MulemaCare</b> — <b>+237 521 120 21</b>.</span></div>
+          <div class="field"><label for="omPhone">Votre numéro Orange Money</label><input id="omPhone" type="tel" placeholder="6XX XX XX XX"><span class="err"></span></div>
+        </div>
+        <div class="pay-panel" id="payMTN" style="display:none">
+          <div class="mm-info"><i data-lucide="info"></i><span>Vous recevrez une notification MoMo à valider, ou composez <b>*126#</b> puis suivez les instructions. Marchand : <b>MulemaCare</b> — <b>+237 65 14 58 37</b>.</span></div>
+          <div class="field"><label for="mtnPhone">Votre numéro MTN MoMo</label><input id="mtnPhone" type="tel" placeholder="6XX XX XX XX"><span class="err"></span></div>
+        </div>
+      </div>
+      <!-- Succès -->
+      <div data-step-view="success" style="display:none">
+        <div class="succ-wrap">
+          <svg class="succ-check" viewBox="0 0 74 74" fill="none"><circle cx="37" cy="37" r="34" stroke="#D9F1EC" stroke-width="4"/><circle class="sc" cx="37" cy="37" r="34" stroke="#097268" stroke-width="4" stroke-linecap="round" transform="rotate(-90 37 37)"/><path class="sp" d="M23 38.5 L33 48 L52 28" stroke="#0D9488" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Adhésion confirmée</h3>
+          <p>Votre carte mutuelle digitale est active dès maintenant. Présentez le QR code à l'accueil de n'importe quel établissement conventionné.</p>
+          <div class="succ-card-zone"><div class="member-card static" id="succCard" data-plan="silver"></div></div>
+          <div class="succ-meta" id="succMeta"></div>
+          <div class="succ-actions">
+            <button class="btn btn-primary" id="btnPdf"><i data-lucide="download"></i>Télécharger la carte (PDF)</button>
+            <a class="btn btn-ghost" id="btnWa" href="#" target="_blank" rel="noopener"><i data-lucide="message-circle"></i>Recevoir sur WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="m-foot" id="subFoot">
+      <button class="btn btn-ghost" id="subBack" style="display:none"><i data-lucide="arrow-left"></i>Retour</button>
+      <span class="m-secure"><i data-lucide="lock"></i>Connexion chiffrée · Données hébergées en Europe</span>
+      <button class="btn btn-primary" id="subNext">Continuer<i data-lucide="arrow-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MODALE INFO GÉNÉRIQUE ═══════════ -->
+<div class="overlay" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+  <div class="modal" style="width:min(560px,100%)">
+    <div class="m-head"><div class="m-head-top"><h3 id="infoTitle"></h3><button class="m-close" data-close-info aria-label="Fermer"><i data-lucide="x"></i></button></div></div>
+    <div class="m-body" id="infoBody"></div>
+  </div>
+</div>
+
+<!-- ═══════════ TOASTS / FAB / PRINT ═══════════ -->
+<div id="toasts" aria-live="polite"></div>
+<a class="wa-fab" href="https://wa.me/23765145837?text=Bonjour%20MulemaCare%2C%20je%20souhaite%20des%20informations%20sur%20l%27adh%C3%A9sion." target="_blank" rel="noopener" aria-label="Discuter sur WhatsApp"><i data-lucide="message-circle"></i></a>
+<div id="printArea"></div>
+
+<script>
+/* ══════════════════ OUTILS ══════════════════ */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const icons=()=>{try{lucide.createIcons()}catch(e){}};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ══════════════════ DEVISES ══════════════════ */
+const CURS={EUR:{r:1,s:'€',after:true},USD:{r:1.08,s:'$',after:false},XAF:{r:655.957,s:'FCFA',after:true}};
+let cur='EUR';
+function fmt(eur){
+  const c=CURS[cur]; let v=eur*c.r;
+  v=(c.s==='FCFA')?Math.round(v/500)*500:Math.round(v);
+  const n=v.toLocaleString('fr-FR');
+  return c.after?`${n} ${c.s}`:`${c.s}${n}`;
+}
+function refreshCurrency(){
+  $$('[data-cur-seg] button').forEach(b=>b.classList.toggle('on',b.dataset.cur===cur));
+  $$('[data-base-eur]').forEach(el=>{el.textContent=fmt(parseFloat(el.dataset.baseEur));});
+  updateSim(); renderHeroCard();
+}
+ $$('[data-cur-seg] button').forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.cur===cur)return;
+  cur=b.dataset.cur; refreshCurrency();
+  toast('Devise mise à jour','Tous les tarifs sont désormais affichés en '+cur+'.');
+}));
+
+/* ══════════════════ DONNÉES TARIFAIRES ══════════════════ */
+const PLANS={
+  bronze:{label:'Bronze',base:23,cap:1220,tier:38},
+  silver:{label:'Silver',base:42,cap:3810,tier:62},
+  gold:{label:'Gold',base:68,cap:9145,tier:86},
+  platinium:{label:'Platinium',base:115,cap:Infinity,tier:100}
+};
+const PROFILES={
+  solo:{label:'Moi seul',units:1,f:1},
+  couple:{label:'Mon couple',units:2,f:.95},
+  famille:{label:'Ma famille au pays (2 adultes + 3 enfants)',units:3.5,f:.92},
+  seniors:{label:'Mes parents âgés (2 seniors)',units:2,f:1.35},
+  pme:{label:'Mes salariés PME',units:0,f:.85}
+};
+const CITIES={douala:'Douala',yaounde:'Yaoundé',kinshasa:'Kinshasa',abidjan:'Abidjan',dakar:'Dakar',libreville:'Libreville',bangui:'Bangui'};
+const CITY_F={douala:1,yaounde:1,kinshasa:1.05,abidjan:1,dakar:1.05,libreville:1.1,bangui:1.15};
+let sim={profile:'solo',city:'douala',plan:'silver',cycle:'monthly',pme:8};
+
+function simPrice(){
+  const p=PLANS[sim.plan], pr=PROFILES[sim.profile];
+  const n=(sim.profile==='pme')?sim.pme:pr.units;
+  const perHead=p.base*pr.f*CITY_F[sim.city];
+  const m=perHead*n;
+  return {m, a:m*12*.9, perHead, n};
+}
+function updateSim(){
+  const pr=simPrice();
+  $('#qProfile').textContent=PROFILES[sim.profile].label;
+  $('#qCity').textContent=CITIES[sim.city];
+  $('#qPlan').textContent=PLANS[sim.plan].label;
+  $('#bigPrice').textContent=sim.cycle==='monthly'?fmt(pr.m):fmt(pr.a);
+  $('#bigUnit').textContent=sim.cycle==='monthly'?'/ mois':'/ an';
+  $('#spSaveTxt').textContent=sim.cycle==='monthly'
+    ?`Économisez ${fmt(pr.m*12-pr.a)} en payant à l'année`
+    :`Vous économisez ${fmt(pr.m*12-pr.a)} cette année`;
+  let d='';
+  if(sim.profile==='pme') d+=`<span>${pr.n} salariés couverts · <b>${fmt(pr.perHead)}</b> / salarié / mois</span>`;
+  else if(pr.n>1) d+=`<span>${pr.n} personnes couvertes · <b>${fmt(pr.m/pr.n)}</b> / personne / mois</span>`;
+  else d+=`<span><b>1</b> personne couverte</span>`;
+  d+=`<span>Équivalent : <b>${fmt(cur==='XAF'?pr.m/655.957:pr.m*655.957)}</b> ${cur==='XAF'?'EUR':'FCFA'}</span>`;
+  $('#spDetail').innerHTML=d;
+  $('#pmeUnit').textContent=`≈ ${fmt(pr.perHead)} / salarié / mois`;
+  // synchronise sélections visuelles
+  $$('#planOpts .p-opt').forEach(o=>o.classList.toggle('on',o.querySelector('input').value===sim.plan));
+  $$('.plan-card').forEach(c=>c.classList.toggle('sel',c.dataset.planc===sim.plan));
+  $$('#cityChips .chip').forEach(c=>c.classList.toggle('on',c.querySelector('input').value===sim.city));
+  $$('[data-col]').forEach(td=>td.classList.toggle('sel',td.dataset.col===sim.plan));
+  $('#heroFront')&&renderHeroCard();
+}
+
+/* listeners simulateur */
+ $('#profileGrid').addEventListener('change',e=>{
+  sim.profile=e.target.value;
+  $('#pmeBox').classList.toggle('show',sim.profile==='pme');
+  updateSim();
+});
+ $('#cityChips').addEventListener('change',e=>{sim.city=e.target.value;updateSim();});
+ $('#planOpts').addEventListener('change',e=>{sim.plan=e.target.value;updateSim();});
+ $('#cycleSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  sim.cycle=b.dataset.cycle;
+  $$('#cycleSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  updateSim();
+});
+ $('#pmeMinus').onclick=()=>{if(sim.pme>3){sim.pme--;$('#pmeCount').textContent=sim.pme;updateSim();}};
+ $('#pmePlus').onclick=()=>{if(sim.pme<200){sim.pme++;$('#pmeCount').textContent=sim.pme;updateSim();}};
+ $('#simAdhere').onclick=()=>openSub(sim.plan);
+
+/* ══════════════════ CARTE MUTUELLE DIGITALE ══════════════════ */
+function qrSVG(text,px){
+  try{
+    const q=qrcode(0,'M'); q.addData(text); q.make();
+    return q.createSvgTag({cellSize:3,margin:0});
+  }catch(e){ return `<div style="width:100%;height:100%;display:grid;place-items:center;font:600 9px var(--font-b);color:#334155">QR</div>`; }
+}
+function cardFrontHTML(o){ // {name,no,plan,validThru}
+  const p=PLANS[o.plan];
+  const capTxt=(p.cap===Infinity)?'Sans plafond':fmt(p.cap);
+  const capBar=(p.cap===Infinity)?100:p.tier;
+  return `
+  <svg class="cf-guilloche" viewBox="0 0 340 214" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-opacity=".09"><circle cx="316" cy="26" r="24"/><circle cx="316" cy="26" r="46"/><circle cx="316" cy="26" r="68"/><circle cx="18" cy="198" r="26"/><circle cx="18" cy="198" r="48"/></g></svg>
+  <div class="cf-top">
+    <div class="cf-brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="rgba(255,255,255,.14)"/><rect x="13" y="6" width="6" height="20" rx="3" fill="#fff"/><rect x="6" y="13" width="20" height="6" rx="3" fill="#fff"/><path d="M7 16h5l2-3.5 3 7 2-3.5h6" stroke="#D97706" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="cf-bname"><b>MulemaCare</b><i>Mutuelle Santé · CSSA</i></span>
+    </div>
+    <span class="cf-status"><i></i>Tiers-payant actif</span>
+  </div>
+  <div class="cf-mid">
+    <div class="cf-chip"></div>
+    <div>
+      <span class="cf-label">N° de carte CSSA</span>
+      <div class="cf-number">CSSA <b>${o.no}</b></div>
+    </div>
+  </div>
+  <div class="cf-mid" style="flex-direction:row;justify-content:space-between;align-items:flex-end">
+    <div><span class="cf-label">Adhérent</span><div class="cf-holder"><b>${esc(o.name)}</b></div></div>
+    <div style="text-align:right"><span class="cf-label">Valide jusqu'au</span><div class="cf-valid num">${o.validThru}</div></div>
+  </div>
+  <div class="cf-bottom">
+    <div>
+      <span class="cf-plan">${p.label}</span>
+      <div class="cf-capline"><span class="cap-bar"><i style="width:${capBar}%"></i></span><em>Plafond hosp. / an : <b class="num">${capTxt}</b></em></div>
+      <span class="cf-emerg"><i data-lucide="phone-call"></i>Urgences 24/7 · +237 521 120 21</span>
+    </div>
+    <div class="cf-qr">${qrSVG('MULEMACARE|CSSA|'+o.no+'|TIERS-PAYANT|mulemacare.com/verifier',76)}</div>
+  </div>`;
+}
+function renderHeroCard(){
+  const el=$('#cardTilt'); if(!el)return;
+  el.dataset.plan=sim.plan;
+  $('#heroFront').innerHTML=cardFrontHTML({name:'Éric Awono Mballa',no:'2025 · 8842 0173',plan:sim.plan,validThru:'12/2028'});
+  icons();
+}
+/* tilt + flip + glare */
+(function(){
+  const scene=$('#cardScene'), tilt=$('#cardTilt'), flip=$('#cardFlip');
+  scene.addEventListener('mousemove',e=>{
+    const r=scene.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+    tilt.classList.add('gliding');
+    tilt.style.transform=`rotateY(${(x-.5)*16}deg) rotateX(${(.5-y)*12}deg)`;
+    const f=$('#heroFront'); f.style.setProperty('--gx',(x*100)+'%'); f.style.setProperty('--gy',(y*100)+'%');
+  });
+  scene.addEventListener('mouseleave',()=>{tilt.classList.remove('gliding');tilt.style.transform='';});
+  const toggle=()=>flip.classList.toggle('flipped');
+  flip.addEventListener('click',toggle);
+  flip.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});
+})();
+
+/* ══════════════════ RÉSEAU DE SOINS ══════════════════ */
+const NET=[
+{n:"Clinique de l'Étoile",c:"douala",q:"Bonapriso",t:"clinic",tp:true,r:4.7,specs:["Urgences 24/7","Imagerie","Maternité"]},
+{n:"Polyclinique Bonanjo",c:"douala",q:"Bonanjo",t:"clinic",tp:true,r:4.5,specs:["Cardiologie","Laboratoire"]},
+{n:"Centre Médical Bonamoussadi",c:"douala",q:"Bonamoussadi",t:"center",tp:false,r:4.2,specs:["Médecine générale","Vaccination"]},
+{n:"Pharmacie du Centre",c:"douala",q:"Akwa",t:"pharmacy",tp:true,r:4.6,specs:["Garde 24/7","Tiers-payant"]},
+{n:"Clinique Bastos",c:"yaounde",q:"Bastos",t:"clinic",tp:true,r:4.8,specs:["Urgences","Pédiatrie","Maternité"]},
+{n:"Clinique de la Cathédrale",c:"yaounde",q:"Centre-ville",t:"clinic",tp:true,r:4.4,specs:["Spécialistes","Laboratoire"]},
+{n:"Pharmacie Obili",c:"yaounde",q:"Obili",t:"pharmacy",tp:true,r:4.3,specs:["Garde de nuit"]},
+{n:"Clinique Ngaliema",c:"kinshasa",q:"Gombe",t:"clinic",tp:true,r:4.6,specs:["Urgences","Imagerie"]},
+{n:"Centre Médical du Fleuve",c:"kinshasa",q:"Gombe",t:"center",tp:true,r:4.5,specs:["Médecine générale","Laboratoire"]},
+{n:"Pharmacie du Boulevard",c:"kinshasa",q:"Gombe",t:"pharmacy",tp:false,r:4.1,specs:["Ouvert 7j/7"]},
+{n:"Clinique PISAM",c:"abidjan",q:"Cocody",t:"clinic",tp:true,r:4.7,specs:["Urgences","Cardiologie","Maternité"]},
+{n:"Pharmacie Cocody Centre",c:"abidjan",q:"Cocody",t:"pharmacy",tp:true,r:4.4,specs:["Tiers-payant"]},
+{n:"Clinique de la Madeleine",c:"dakar",q:"Point E",t:"clinic",tp:true,r:4.6,specs:["Urgences","Néonatologie"]},
+{n:"Pharmacie Mermoz",c:"dakar",q:"Mermoz",t:"pharmacy",tp:true,r:4.2,specs:["Garde 24/7"]}
+];
+const TYPE_LABEL={clinic:'Clinique',pharmacy:'Pharmacie',center:'Centre médical'};
+const TYPE_IC={clinic:'building-2',pharmacy:'cross',center:'stethoscope'};
+let net={city:'all',type:'all',tp:false,q:''};
+function initNetChips(){
+  const cities=[...new Set(NET.map(f=>f.c))];
+  $('#netCityChips').innerHTML=[['all','Toutes les villes'],...cities.map(c=>[c,CITIES[c]])]
+    .map(([v,l],i)=>`<label class="chip${i===0?' on':''}"><input type="radio" name="netcity" value="${v}"${i===0?' checked':''}>${l}</label>`).join('');
+  $('#netCityChips').addEventListener('change',e=>{net.city=e.target.value;renderNet();});
+}
+function renderNet(){
+  const list=NET.filter(f=>
+    (net.city==='all'||f.c===net.city)&&
+    (net.type==='all'||f.t===net.type)&&
+    (!net.tp||f.tp)&&
+    (!net.q||(f.n+' '+f.q+' '+CITIES[f.c]+' '+f.specs.join(' ')).toLowerCase().includes(net.q))
+  );
+  $('#netCount').textContent=list.length?`${list.length} établissement${list.length>1?'s':''} conventionné${list.length>1?'s':''} trouvé${list.length>1?'s':''}`:'';
+  if(!list.length){
+    $('#netList').innerHTML=`<div class="net-empty"><i data-lucide="search-x"></i><b>Aucun établissement trouvé</b>Essayez une autre ville ou désactivez le filtre tiers-payant — de nouveaux partenaires rejoignent le réseau chaque mois.</div>`;
+    icons();return;
+  }
+  $('#netList').innerHTML=list.map(f=>`
+    <div class="net-row">
+      <span class="net-ic k-${f.t}"><i data-lucide="${TYPE_IC[f.t]}"></i></span>
+      <div class="net-main">
+        <div class="net-title"><h4>${esc(f.n)}</h4>${f.tp?'<span class="tp-badge"><i data-lucide="shield-check"></i>Tiers-payant accepté</span>':''}</div>
+        <div class="net-meta"><i data-lucide="map-pin"></i>${esc(f.q)}, ${CITIES[f.c]}<span class="dot-sep"></span><span class="net-rate"><i data-lucide="star"></i>${f.r.toFixed(1)}</span><span class="dot-sep"></span>${TYPE_LABEL[f.t]}</div>
+        <div class="net-specs">${f.specs.map(s=>`<span>${esc(s)}</span>`).join('')}</div>
+      </div>
+      <div class="net-actions">
+        <a class="btn btn-ghost btn-sm" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(f.n+' '+f.q+' '+CITIES[f.c])}" target="_blank" rel="noopener"><i data-lucide="navigation"></i>Itinéraire</a>
+      </div>
+    </div>`).join('');
+  icons();
+}
+ $('#netTypeSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  net.type=b.dataset.t;
+  $$('#netTypeSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  renderNet();
+});
+ $('#netTp').addEventListener('change',e=>{net.tp=e.target.checked;renderNet();});
+ $('#netSearch').addEventListener('input',e=>{net.q=e.target.value.trim().toLowerCase();renderNet();});
+initNetChips();
+
+/* ══════════════════ CHAT WHATSAPP LISACARE ══════════════════ */
+const CHAT=[
+['me','<p>Bonsoir docteur, mon fils de 3 ans a 38,9 °C de fièvre depuis ce soir. Que faire ?</p>','23:47'],
+['doc','<p>Bonsoir Mme Awono. Rassurez-vous, je vais vous guider. A-t-il d\'autres symptômes — vomissements, éruption ?</p>','23:49'],
+['me','<p>Un peu de toux, rien d\'autre. Il boit normalement.</p>','23:50'],
+['doc','<p>Parfait. Donnez du paracétamol 15 mg/kg (3,2 ml s\'il fait environ 9 kg) toutes les 6 h si fièvre &gt; 38,5 °. Surveillez-le cette nuit.</p>','23:51'],
+['file','<b>ordonnance_paracetamol.pdf</b><small>Couverture 100 % — remboursée par votre mutuelle</small>','23:51'],
+['doc','<p>Si la fièvre persiste au-delà de 48 h ou s\'il refuse de boire, direction la Clinique de l\'Étoile (Douala) : tiers-payant, sans avance de frais.</p>','23:52'],
+['me','<p>Merci infiniment docteur, je suis rassurée.</p>','23:53']
+];
+let chatTimers=[],chatPlayed=false;
+function playChat(){
+  chatTimers.forEach(clearTimeout); chatTimers=[];
+  const box=$('#phoneChat'); box.innerHTML='';
+  CHAT.forEach((m,i)=>{
+    chatTimers.push(setTimeout(()=>{
+      const html=m[0]==='file'
+        ?`<div class="msg-doc"><i data-lucide="file-text"></i><div>${m[1]}<div style="font:500 9.5px var(--font-n);color:#94A3B8;text-align:right;margin-top:3px">${m[2]}</div></div></div>`
+        :`<div class="msg${m[0]==='me'?' me':''}">${m[1]}<span>${m[2]}</span></div>`;
+      box.insertAdjacentHTML('beforeend',html);
+      box.scrollTop=box.scrollHeight; icons();
+    },500+i*900));
+  });
+}
+new IntersectionObserver((es,obs)=>{
+  if(es[0].isIntersecting&&!chatPlayed){chatPlayed=true;playChat();obs.disconnect();}
+},{threshold:.35}).observe($('#phoneMock'));
+ $('#waReplay').onclick=playChat;
+
+/* ══════════════════ TUNNEL DE SOUSCRIPTION ══════════════════ */
+let sub={step:1,pay:'card',done:false,member:null};
+const subModal=$('#subModal');
+
+function openSub(plan){
+  if(plan&&PLANS[plan]){sim.plan=plan;updateSim();}
+  if(sub.done)resetSub();
+  subModal.classList.add('open');
+  document.body.style.overflow='hidden';
+  renderSubRecap();
+}
+function closeSub(){subModal.classList.remove('open');document.body.style.overflow='';}
+function resetSub(){
+  sub={step:1,pay:'card',done:false,member:null};
+  goSubStep(1); $('#subFoot').style.display='flex';
+}
+ $$('[data-open-sub]').forEach(b=>b.addEventListener('click',()=>{closeMenu();openSub(b.dataset.openSub||null);}));
+ $$('[data-close-sub]').forEach(b=>b.addEventListener('click',closeSub));
+subModal.addEventListener('click',e=>{if(e.target===subModal)closeSub();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSub();closeInfo();}});
+
+function goSubStep(n){
+  sub.step=n;
+  $$('[data-step-view]').forEach(v=>v.style.display=(v.dataset.stepView==String(n)||(n>=1&&n<=3&&v.dataset.stepView=='success'&&false))?'':'none');
+  $$('[data-step-view]').forEach(v=>{v.style.display=(v.dataset.stepView===String(n)||(n==='processing'&&false))?'':'none';});
+  $$('#subStepper .stp').forEach(s=>{
+    const sn=+s.dataset.step;
+    s.classList.toggle('cur',sn===n); s.classList.toggle('done',sn<n);
+    s.querySelector('.stp-dot').innerHTML=sn<n?'<i data-lucide="check"></i>':sn;
+  });
+  $$('#subStepper .stp-line').forEach((l,i)=>l.classList.toggle('done',n>i+1));
+  $('#subBack').style.display=n>1?'inline-flex':'none';
+  const next=$('#subNext');
+  if(n===3){next.innerHTML=`<i data-lucide="lock"></i>Payer ${fmt(simPrice()[sim.cycle==='monthly'?'m':'a'])} — ${sim.cycle==='monthly'?'mois':'an'}`;}
+  else{next.innerHTML='Continuer<i data-lucide="arrow-right"></i>';}
+  if(n===2)syncLockedBen();
+  icons();
+}
+function renderSubRecap(){
+  const pr=simPrice();
+  const price=sim.cycle==='monthly'?fmt(pr.m)+' / mois':fmt(pr.a)+' / an';
+  $('#subRecap').innerHTML=`<i data-lucide="shield-check"></i><span>Formule <b>${PLANS[sim.plan].label}</b> · ${PROFILES[sim.profile].label.split('(')[0].trim()} · <b>${price}</b></span>`;
+  const next=$('#subNext');
+  if(sub.step===3&&!sub.done)next.innerHTML=`<i data-lucide="lock"></i>Payer ${fmt(simPrice()[sim.cycle==='monthly'?'m':'a'])} — ${sim.cycle==='monthly'?'mois':'an'}`;
+  icons();
+}
+/* validation */
+function setErr(input,msg){
+  const f=input.closest('.field'); if(!f)return;
+  f.classList.toggle('invalid',!!msg); f.classList.toggle('ok',!msg);
+  const e=f.querySelector('.err'); if(e)e.textContent=msg||'';
+}
+function validStep1(){
+  let ok=true;
+  const p=$('#fPrenom'),n=$('#fNom'),m=$('#fEmail'),t=$('#fPhone');
+  const vp=v=>{const b=v.trim().length>=2;setErr(p,b?'':'Indiquez votre prénom (2 caractères min.).');return b;};
+  vp(p.value); ok=ok&&vp(p.value);
+  const vn=v=>{const b=v.trim().length>=2;setErr(n,b?'':'Indiquez votre nom.');return b;};
+  vn(n.value); ok=ok&&vn(n.value);
+  const vm=v=>{const b=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());setErr(m,b?'':'Adresse e-mail invalide.');return b;};
+  vm(m.value); ok=ok&&vm(m.value);
+  const vt=v=>{const b=v.replace(/\D/g,'').length>=8;setErr(t,b?'':'Numéro trop court (8 chiffres min.).');return b;};
+  vt(t.value); ok=ok&&vt(t.value);
+  return ok;
+}
+/* bénéficiaires */
+function benRowHTML(name,locked){
+  return `<div class="ben-row${locked?' locked':''}">
+    ${locked?'<span class="ben-tag">Souscripteur — vous</span>':''}
+    <div class="ben-grid">
+      <div class="field"><label>Nom complet</label><input type="text" class="ben-name" placeholder="Ex. Marthe Awono" value="${esc(name||'')}" ${locked?'readonly':''}><span class="err"></span></div>
+      <div class="field"><label>Date de naissance</label><input type="date" class="ben-date" max="${new Date().toISOString().slice(0,10)}"><span class="err"></span></div>
+      <label class="ben-photo" title="Ajouter une photo d'identité"><i data-lucide="camera"></i><input type="file" accept="image/*"></label>
+      ${locked?'<span></span>':'<button type="button" class="ben-del" aria-label="Retirer ce bénéficiaire"><i data-lucide="trash-2"></i></button>'}
+    </div>
+  </div>`;
+}
+function syncLockedBen(){
+  const name=($('#fPrenom').value.trim()+' '+$('#fNom').value.trim()).trim()||'Votre nom';
+  const list=$('#benList');
+  if(!list.querySelector('.ben-row.locked')){
+    list.insertAdjacentHTML('afterbegin',benRowHTML(name,true));
+    wireBenEvents(list.firstElementChild);
+  }else{
+    list.querySelector('.ben-row.locked .ben-name').value=name;
+  }
+}
+function wireBenEvents(row){
+  const photo=row.querySelector('.ben-photo');
+  photo.querySelector('input').addEventListener('change',e=>{
+    const f=e.target.files[0]; if(!f)return;
+    if(f.size>5*1024*1024){toast('Photo trop lourde','Choisissez une image de moins de 5 Mo.','error');return;}
+    const rd=new FileReader();
+    rd.onload=()=>{photo.innerHTML=`<img src="${rd.result}" alt="Photo d'identité">`;photo.style.borderStyle='solid';};
+    rd.readAsDataURL(f);
+  });
+  const del=row.querySelector('.ben-del');
+  if(del)del.onclick=()=>{
+    if($$('#benList .ben-row').length<=1)return;
+    row.remove(); toast('Bénéficiaire retiré','Vous pouvez en ajouter un autre à tout moment.','info');
+  };
+}
+ $('#benAdd').onclick=()=>{
+  const list=$('#benList');
+  if($$('#benList .ben-row').length>=7){toast('Limite atteinte','7 bénéficiaires maximum par adhésion en ligne. Contactez le support pour une offre groupe.','info');return;}
+  list.insertAdjacentHTML('beforeend',benRowHTML('',false));
+  wireBenEvents(list.lastElementChild); icons();
+};
+function validStep2(){
+  let ok=true;
+  $$('#benList .ben-row').forEach(row=>{
+    const n=row.querySelector('.ben-name'), d=row.querySelector('.ben-date');
+    const vn=v=>{const b=v.trim().length>=3;setErr(n,b?'':'Nom complet requis (3 caractères min.).');return b;};
+    vn(n.value); ok=ok&&vn(n.value);
+    const vd=v=>{const b=v&&new Date(v)<new Date()&&new Date(v)>new Date('1925-01-01');setErr(d,b?'':'Date de naissance invalide.');return b;};
+    vd(d.value); ok=ok&&vd(d.value);
+  });
+  return ok;
+}
+/* paiement */
+ $('#payOpts').addEventListener('change',e=>{
+  sub.pay=e.target.value;
+  $$('#payOpts .pay-opt').forEach(o=>o.classList.toggle('on',o.querySelector('input').checked));
+  $('#payCard').style.display=sub.pay==='card'?'':'none';
+  $('#payApple').style.display=sub.pay==='apple'?'':'none';
+  $('#payOM').style.display=sub.pay==='om'?'':'none';
+  $('#payMTN').style.display=sub.pay==='momo'?'':'none';
+});
+ $('#cardNum').addEventListener('input',e=>{
+  e.target.value=e.target.value.replace(/\D/g,'').slice(0,16).replace(/(\d{4})(?=\d)/g,'$1 ');
+});
+ $('#cardExp').addEventListener('input',e=>{
+  let v=e.target.value.replace(/\D/g,'').slice(0,4);
+  e.target.value=v.length>2?v.slice(0,2)+'/'+v.slice(2):v;
+});
+ $('#cardCvc').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,4);});
+function luhn(num){let s=0,alt=false;for(let i=num.length-1;i>=0;i--){let d=+num[i];if(alt){d*=2;if(d>9)d-=9;}s+=d;alt=!alt;}return s%10===0;}
+function validStep3(){
+  if(sub.pay==='apple')return true;
+  if(sub.pay==='card'){
+    let ok=true;
+    const cn=$('#cardNum'),ce=$('#cardExp'),cc=$('#cardCvc'),cm=$('#cardName');
+    const num=cn.value.replace(/\D/g,'');
+    const vc=()=>{const b=num.length===16&&luhn(num);setErr(cn,b?'':'Numéro de carte invalide.');return b;};
+    vc(); ok=ok&&vc();
+    const ve=()=>{const v=ce.value;const b=/^(0[1-9]|1[0-2])\/\d{2}$/.test(v);let okd=b;
+      if(b){const[y,m]=[2000+ +v.slice(3),+v.slice(0,2)];const now=new Date();okd=y>now.getFullYear()||(y===now.getFullYear()&&m>=now.getMonth()+1);}
+      setErr(ce,okd?'':'Date expirée ou invalide.');return okd;};
+    ve(); ok=ok&&ve();
+    const vv=()=>{const b=cc.value.length>=3;setErr(cc,b?'':'CVC invalide.');return b;};
+    vv(); ok=ok&&vv();
+    const vm=()=>{const b=cm.value.trim().length>=3;setErr(cm,b?'':'Nom requis.');return b;};
+    vm(); ok=ok&&vm();
+    return ok;
+  }
+  const ph=sub.pay==='om'?$('#omPhone'):$('#mtnPhone');
+  const b=ph.value.replace(/\D/g,'').length>=8;
+  setErr(ph,b?'':'Numéro Mobile Money requis (8 chiffres min.).');
+  return b;
+}
+ $('#applePayBtn').onclick=()=>{ /* confirme la sélection, le paiement se fait au bouton Payer */ toast('Apple Pay prêt','Confirmez le paiement avec le bouton « Payer » ci-dessous.','info'); };
+
+/* navigation du tunnel */
+ $('#subBack').onclick=()=>goSubStep(sub.step-1);
+ $('#subNext').onclick=async()=>{
+  if(sub.step===1){ if(!validStep1()){toast('Champs à corriger','Vérifiez les informations en rouge.','error');return;} goSubStep(2); return; }
+  if(sub.step===2){
+    if(!$$('#benList .ben-row').length){toast('Aucun bénéficiaire','Ajoutez au moins le souscripteur.','error');return;}
+    if(!validStep2()){toast('Champs à corriger','Vérifiez les noms et dates de naissance.','error');return;}
+    goSubStep(3); renderSubRecap(); return;
+  }
+  if(sub.step===3){
+    if(!validStep3()){toast('Paiement incomplet','Vérifiez vos informations de paiement.','error');return;}
+    await processPayment();
+  }
+};
+async function processPayment(){
+  const btn=$('#subNext'), old=btn.innerHTML;
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Traitement sécurisé en cours…';
+  await wait(1900);
+  btn.disabled=false; btn.innerHTML=old;
+  buildMember(); showSuccess();
+  toast('Paiement confirmé','Bienvenue chez MulemaCare — votre carte digitale est active.','success');
+}
+function buildMember(){
+  const name=($('#fPrenom').value.trim()+' '+$('#fNom').value.trim()).trim().toUpperCase();
+  const no='2025 · '+String(Math.floor(1000+Math.random()*9000))+' '+String(Math.floor(1000+Math.random()*9000));
+  const d=new Date(); d.setFullYear(d.getFullYear()+1);
+  sub.member={name,no,plan:sim.plan,validThru:String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(),
+    cssa:'CSSA-2025-'+String(Math.floor(100000+Math.random()*900000)),
+    adh:'ADH-'+Date.now().toString(36).toUpperCase()};
+}
+function showSuccess(){
+  sub.done=true;
+  $$('#subStepper .stp').forEach(s=>{s.classList.add('done');s.classList.remove('cur');});
+  $$('#subStepper .stp-line').forEach(l=>l.classList.add('done'));
+  $$('#subStepper .stp-dot').forEach(d=>d.innerHTML='<i data-lucide="check"></i>');
+  $$('[data-step-view]').forEach(v=>v.style.display=v.dataset.stepView==='success'?'':'none');
+  $('#subFoot').style.display='none';
+  const m=sub.member, card=$('#succCard');
+  card.dataset.plan=m.plan;
+  card.innerHTML=`<div class="card-face card-front">${cardFrontHTML(m)}</div>`;
+  const today=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  $('#succMeta').innerHTML=`
+    <div><span>N° d'adhésion</span><b class="num">${m.adh}</b></div>
+    <div><span>Carte CSSA</span><b class="num">${m.cssa}</b></div>
+    <div><span>Effective dès</span><b>${today}</b></div>
+    <div><span>Bénéficiaires</span><b class="num">${$$('#benList .ben-row').length}</b></div>`;
+  $('#btnWa').href='https://wa.me/23765145837?text='+encodeURIComponent(`Bonjour MulemaCare, je viens d'adhérer (${m.cssa}). Merci de m'activer mon espace adhérent.`);
+  icons();
+}
+ $('#btnPdf').onclick=()=>{
+  const m=sub.member;
+  $('#printArea').innerHTML=`
+    <h2>MulemaCare Mutuelle Santé — Carte d'adhérent</h2>
+    <p class="pa-sub">Émise le ${new Date().toLocaleDateString('fr-FR')} · Agrément CSSA n° 045/CSSA/2024 · mulemacare.com</p>
+    <div class="member-card static" data-plan="${m.plan}"><div class="card-face card-front">${cardFrontHTML(m)}</div></div>
+    <div class="pa-meta">
+      <div><b>N° d'adhésion :</b> <span class="num">${m.adh}</span></div>
+      <div><b>Adhérent :</b> ${esc(m.name)}</div>
+      <div><b>Formule :</b> ${PLANS[m.plan].label} · ${sim.cycle==='monthly'?'cotisation mensuelle':'cotisation annuelle'} de <span class="num">${fmt(simPrice()[sim.cycle==='monthly'?'m':'a'])}</span></div>
+      <div><b>Urgences 24/7 :</b> <span class="num">+237 521 120 21</span> · <b>Médecin de garde :</b> WhatsApp Lisacare</div>
+    </div>`;
+  window.print();
+};
+
+/* ══════════════════ MODALE INFO GÉNÉRIQUE ══════════════════ */
+const infoModal=$('#infoModal');
+function openInfo(kind){
+  const T={ongwa:'Planifier une visite Ongwa Senior Care',partner:'Devenir clinique partenaire',faq:'Questions fréquentes',legal:'Informations légales'};
+  $('#infoTitle').textContent=T[kind]||'Information';
+  const B={
+    ongwa:`<p style="font-size:14.5px;color:var(--ink-2);margin-bottom:18px">Une infirmière conventionnée Ongwa se déplace au domicile de votre parent, partout dans nos villes couvertes. La première visite de découverte est <b>gratuite</b> pour tout adhérent MulemaCare.</p>
+      <div class="field"><label>Ville du parent</label><select id="ogCity"><option>Douala</option><option>Yaoundé</option><option>Kinshasa</option><option>Abidjan</option><option>Dakar</option><option>Libreville</option></select></div>
+      <div class="field"><label>Nom du parent</label><input id="ogName" type="text" placeholder="Ex. Marthe Ekwalla"></div>
+      <div class="field"><label>Fréquence souhaitée</label><select id="ogFreq"><option>1 visite par semaine</option><option>2 visites par semaine</option><option>1 visite par mois</option></select></div>
+      <button class="btn btn-primary btn-block" id="ogSubmit" style="margin-top:8px"><i data-lucide="calendar-check"></i>Confirmer la planification</button>`,
+    partner:`<p style="font-size:14.5px;color:var(--ink-2);margin-bottom:14px">Vous dirigez une clinique, un centre médical ou une pharmacie ? Rejoindre le réseau MulemaCare, c'est garantir le paiement sous <b>72 h</b>, remplir vos lits grâce à 12 400 adhérents et recevoir les patients en tiers-payant sans gestion papier.</p>
+      <ul class="ally-feats" style="margin-bottom:18px"><li><i data-lucide="check"></i>Remboursement numérique sous 72 heures</li><li><i data-lucide="check"></i>Validation des prises en charge par QR code</li><li><i data-lucide="check"></i>Formation et supports offerts à vos équipes d'accueil</li></ul>
+      <a class="btn btn-primary btn-block" href="mailto:partenaires@mulemacare.com?subject=Conventionnement%20clinique%20MulemaCare"><i data-lucide="mail"></i>Écrire à partenaires@mulemacare.com</a>`,
+    faq:`<div style="display:flex;flex-direction:column;gap:16px;font-size:14.5px;color:var(--ink-2)">
+      <div><b style="color:var(--ink)">Mes parents doivent-ils avancer de l'argent ?</b><br>Non. Dans les 45+ établissements conventionnés, la prise en charge est immédiate : ils présentent simplement le QR code de la carte digitale.</div>
+      <div><b style="color:var(--ink)">Je paie depuis l'Europe, est-ce possible ?</b><br>Oui : carte bancaire via Stripe, virement SEPA, ou débit automatique. Les tarifs s'affichent dans votre devise.</div>
+      <div><b style="color:var(--ink)">Y a-t-il un délai de carence ?</b><br>Aucun. Votre couverture est effective dès le lendemain de l'adhésion, urgences dès le premier jour.</div>
+      <div><b style="color:var(--ink)">Puis-je ajouter un bénéficiaire plus tard ?</b><br>Oui, à tout moment depuis votre espace adhérent ou par WhatsApp — l'ajout est actif sous 24 h.</div></div>`,
+    legal:`<div style="font-size:13.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:12px">
+      <p><b>MulemaCare Mutuelle Santé</b> — Établissement d'assurance mutuelle agréé sous le n° 045/CSSA/2024 par la Conférence de la Santé et de la Sécurité en Afrique (CSSA). Siège : Rue Njo-Njo, Bonapriso, Douala — Cameroun.</p>
+      <p>Les garanties présentées sur cette page constituent une synthèse commerciale. Les conditions exactes (plafonds, exclusions, délais) figurent dans la notice d'information remise avant toute adhésion, conformément à la réglementation CIMA/CEMAC applicable.</p>
+      <p>Données personnelles traitées conformément à la loi n° 2010/012 du 21 décembre 2010 (Cameroun) et au RGPD pour les souscripteurs résidant dans l'Union européenne. Hébergement des données médicales sur infrastructure certifiée, située en Europe.</p>
+      <p>Paiements sécurisés : Stripe (PCI-DSS niveau 1), Orange Money, MTN Mobile Money. Aucune donnée bancaire n'est stockée sur nos serveurs.</p></div>`
+  };
+  $('#infoBody').innerHTML=B[kind]||B.faq;
+  infoModal.classList.add('open'); document.body.style.overflow='hidden';
+  icons();
+  const s=$('#ogSubmit');
+  if(s)s.onclick=()=>{
+    const nm=$('#ogName');
+    if(nm.value.trim().length<3){setErr(nm,'Indiquez le nom de votre parent.');return;}
+    closeInfo();
+    toast('Visite planifiée',`Une infirmière Ongwa contactera ${nm.value.trim().split(' ')[0]} sous 48 h pour convenir de la première visite.`);
+  };
+}
+function closeInfo(){infoModal.classList.remove('open');document.body.style.overflow=subModal.classList.contains('open')?'hidden':'';}
+ $$('[data-close-info]').forEach(b=>b.addEventListener('click',closeInfo));
+infoModal.addEventListener('click',e=>{if(e.target===infoModal)closeInfo();});
+ $$('[data-info]').forEach(b=>b.addEventListener('click',()=>{closeMenu();openInfo(b.dataset.info);}));
+
+/* ══════════════════ TOASTS ══════════════════ */
+function toast(title,msg,type='success'){
+  const ic={success:'check-circle-2',info:'info',error:'alert-circle'}[type];
+  const el=document.createElement('div');
+  el.className='toast'+(type==='info'?' t-info':type==='error'?' t-error':'');
+  el.innerHTML=`<span class="t-ic"><i data-lucide="${ic}"></i></span><div><b>${esc(title)}</b><p>${esc(msg)}</p></div><button class="t-close" aria-label="Fermer"><i data-lucide="x"></i></button>`;
+  $('#toasts').appendChild(el); icons();
+  const kill=()=>{el.classList.add('out');setTimeout(()=>el.remove(),300);};
+  el.querySelector('.t-close').onclick=kill;
+  setTimeout(kill,5200);
+}
+
+/* ══════════════════ UI GÉNÉRALE ══════════════════ */
+const header=$('#siteHeader'), burger=$('#burger');
+function closeMenu(){header.classList.remove('open');burger.setAttribute('aria-expanded','false');}
+burger.onclick=()=>{
+  const open=header.classList.toggle('open');
+  burger.setAttribute('aria-expanded',open);
+  burger.innerHTML=`<i data-lucide="${open?'x':'menu'}"></i>`; icons();
+};
+ $$('#mNav a').forEach(a=>a.addEventListener('click',closeMenu));
+window.addEventListener('scroll',()=>header.classList.toggle('scrolled',window.scrollY>10),{passive:true});
+[['#logoHome'],['#logoHome2']].forEach(([s])=>$(s).addEventListener('click',e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});}));
+/* choix formule via tableau comparatif */
+ $$('.th-choose').forEach(b=>b.addEventListener('click',()=>{
+  sim.plan=b.dataset.pick; updateSim();
+  toast('Formule '+PLANS[sim.plan].label+' sélectionnée','Le simulateur et la carte digitale ont été mis à jour.');
+}));
+/* reveal au scroll */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
+ $$('.reveal').forEach(el=>io.observe(el));
+
+/* ══════════════════ INIT ══════════════════ */
+icons(); refreshCurrency(); renderNet(); goSubStep(1);
+</script>
+</body>
+</html>

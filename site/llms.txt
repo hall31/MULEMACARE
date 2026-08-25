@@ -1,0 +1,33 @@
+# MulemaCare Health Group — https://mulemacare.com
+
+> Le premier écosystème de santé intégrée et mutuelle solidaire en Afrique subsaharienne et pour la Diaspora.
+
+## Résumé Exécutif
+MulemaCare Health Group réunit :
+1. **Mutuelle Santé Solidaire** : 4 formules (Bronze, Silver, Gold, Platinium) avec tiers-payant à 100% sans avance de frais dans 45+ cliniques et pharmacies partenaires (Douala, Yaoundé, Kinshasa, Abidjan, Dakar). Cotisations dès 15 000 FCFA / 23 € par mois.
+2. **MulemaCare Pro (Entreprises & PME)** : Couverture santé collective des salariés en Afrique, 100% déductible fiscalement avec remises de 10% à 25% dès 10 collaborateurs.
+3. **Lisacare Telehealth** (https://lisacare.mulemacare.com) : Télétriage & consultation médicale vidéo 24/7 sur WhatsApp avec médecins régulateurs.
+4. **Ongwa Senior Care** (https://ongwa.mulemacare.com) : Soins, nursing et maintien à domicile des personnes âgées en Afrique financés par la diaspora.
+
+## Entités Juridiques & Agréments
+- **France & Diaspora :** SOCIETE E-SANTE MULEMACARE FRANCE — SIRET n° 8807 7661 2000 17 — 208 Avenue Aristide Briand, 92220 Bagneux, France.
+- **Afrique :** MULEMACARE MUTUELLE SANTÉ CAMEROUN — Agrément CSSA n° 045/CSSA/2024 — 85 Avenue de l'Indépendance, Douala, Cameroun.
+
+## Formules de Mutuelle Santé (Particuliers & Familles)
+- **Mulema Bronze (Urgences & SAMU)** : 15 000 FCFA (23 € / 25 $) par mois. Plafond 760 € (500 000 FCFA/an). Carence 0 jour urgences & réanimation, régulation Lisacare 24/7.
+- **Mulema Silver (Famille & Soins Courants - Recommandé)** : 27 500 FCFA (42 € / 45 $) par mois. Plafond 2 290 € (1 500 000 FCFA/an). Carence 30j soins/pharmacie, 90j hospit, 300j maternité. Hospitalisation 100% sans avance, consultations 80%, pharmacie 80%.
+- **Mulema Gold (Confort Total & Tiers-Payant 100%)** : 44 600 FCFA (68 € / 73 $) par mois. Plafond 5 335 € (3 500 000 FCFA/an). Carence 30j soins, 90j hospit, 180j dentaire/optique. Tiers-payant intégral 100% clinique & pharmacie, chambre individuelle, 1 visite Ongwa/mois.
+- **Mulema Platinium (Diaspora & Évacuation Sanitaire)** : 75 400 FCFA (115 € / 124 $) par mois. Plafond 12 200 € (8 000 000 FCFA/an). Carence 180j évacuation sanitaire (Plafond 8M FCFA), suite VIP, suivi gériatrique complet, médecin dédié 24/7.
+
+## Réseau de Soins & Tiers-Payant
+- Plus de 45 cliniques et hôpitaux agréés (ex: Polyclinique Mermoz à Douala, Centre Médical Bastos à Yaoundé, Centre Médical de la Gombe à Kinshasa, PISAM à Abidjan, Clinique Madeleine à Dakar).
+- Carte Mutuelle Digitale CSSA avec QR Code pour vérification instantanée des droits en clinique.
+
+## Moyens de Paiement & Contact Officiel
+- France & Diaspora : `+33 6 59 51 34 58` (Tél & WhatsApp)
+- Cameroun Desk : `+237 521 120 21` (Tél & WhatsApp)
+- Orange Money Cameroun : `+237 521 120 21` (#150*1*1*52112021*MONTANT#)
+- MTN Mobile Money : `+237 65 14 58 37` (*126*1*65145837*MONTANT#)
+- Carte Bancaire / Stripe / Apple Pay pour la diaspora
+- Email Support : `contact@mulemacare.com` · Entreprises : `entreprises@mulemacare.com`
+- Réseaux Sociaux : Facebook (`https://www.facebook.com/Mulemacare-2117419645247839`) · Instagram (`https://www.instagram.com/mulemacare`)
