@@ -218,22 +218,51 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
 
 /* ================= ALLIANCE ================= */
 #services{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.ally-grid{display:grid;grid-template-columns:1.18fr .82fr;gap:22px}
-.ally-card{border:1.5px solid var(--line);border-radius:24px;padding:34px;display:flex;flex-direction:column;gap:18px}
-.ally-tag{display:inline-flex;align-items:center;gap:9px;align-self:flex-start;font:700 11.5px var(--font-b);letter-spacing:.14em;text-transform:uppercase;border-radius:999px;padding:7px 14px}
-.ally-tag.a1{background:var(--emerald-050);color:var(--emerald)}
+.ally-grid{display:grid;grid-template-columns:1.24fr .76fr;gap:24px}
+.ally-card{border:1.5px solid var(--line);border-radius:26px;padding:34px;display:flex;flex-direction:column;gap:20px;position:relative;background:#fff;transition:box-shadow .3s,border-color .3s}
+.ally-card.lisa-card{background:linear-gradient(155deg,#ffffff 0%,#f0fdf4 100%);border-color:rgba(16,185,129,.28);box-shadow:0 18px 45px -18px rgba(16,185,129,.14)}
+.ally-card.lisa-card:hover{border-color:rgba(16,185,129,.45);box-shadow:0 26px 56px -18px rgba(16,185,129,.2)}
+
+.ally-header-badges{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ally-tag{display:inline-flex;align-items:center;gap:9px;font:700 11.5px var(--font-b);letter-spacing:.14em;text-transform:uppercase;border-radius:999px;padding:7px 14px}
+.ally-tag.a1{background:rgba(16,185,129,.12);color:var(--emerald-800)}
 .ally-tag.a2{background:var(--gold-100);color:#92400E}
 .ally-tag svg{width:14px;height:14px}
-.ally-card h3{font-size:clamp(1.35rem,2vw,1.7rem)}
-.ally-card>p{font-size:15px;color:var(--ink-2)}
+.live-pulse-badge{display:inline-flex;align-items:center;gap:7px;background:#ECFDF5;border:1px solid rgba(16,185,129,.3);padding:5px 12px;border-radius:999px;font:700 11px var(--font-b);color:#047857;letter-spacing:.04em}
+.live-pulse-badge i{width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 0 3px rgba(16,185,129,.35);animation:pulseDot 1.8s infinite}
+@keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}70%{box-shadow:0 0 0 6px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
+
+.ally-card h3{font-size:clamp(1.35rem,2vw,1.72rem);color:var(--ink);line-height:1.25}
+.ally-card>p{font-size:15px;color:var(--ink-2);line-height:1.55}
+
+.lisa-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:#fff;border:1px solid rgba(16,185,129,.2);border-radius:14px;padding:12px 14px;box-shadow:0 4px 12px -6px rgba(16,185,129,.08)}
+.lisa-kpi{display:flex;align-items:center;gap:9px}
+.lisa-kpi .kpi-ic{width:32px;height:32px;border-radius:9px;background:rgba(16,185,129,.1);color:var(--emerald-800);display:grid;place-items:center;flex:none}
+.lisa-kpi .kpi-ic svg{width:16px;height:16px}
+.lisa-kpi b{display:block;font:700 12.5px var(--font-b);color:var(--ink);line-height:1.2}
+.lisa-kpi span{display:block;font:500 10.5px var(--font-b);color:var(--ink-3)}
+
 .ally-feats{list-style:none;display:flex;flex-direction:column;gap:11px}
 .ally-feats li{display:flex;gap:11px;font:500 14px var(--font-b);color:var(--ink-2);align-items:flex-start}
 .ally-feats svg{width:16px;height:16px;color:var(--emerald);flex:none;margin-top:3px}
 .ally-feats li.strong{font-weight:600;color:var(--ink)}
-.lisa-body{display:grid;grid-template-columns:1fr 300px;gap:32px;align-items:center;flex:1}
-.lisa-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.lisa-note{font:500 12.5px var(--font-b);color:var(--ink-3);display:flex;align-items:center;gap:7px}
-.lisa-note svg{width:14px;height:14px;color:var(--emerald)}
+
+.lisa-body{display:grid;grid-template-columns:1fr 300px;gap:30px;align-items:center;flex:1}
+.lisa-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:6px}
+
+.btn-whatsapp-hero{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 22px;border-radius:12px;background:linear-gradient(135deg,#25D366 0%,#128C7E 100%);color:#fff;font:700 14.5px var(--font-b);box-shadow:0 10px 24px -6px rgba(37,211,102,.5);transition:all .2s ease;border:0;cursor:pointer;text-decoration:none}
+.btn-whatsapp-hero:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 16px 32px -6px rgba(37,211,102,.65);color:#fff}
+.btn-whatsapp-hero svg{width:19px;height:19px;stroke-width:2.2}
+
+.lisa-team-strip{display:flex;align-items:center;gap:12px;padding-top:14px;border-top:1px solid rgba(16,185,129,.15);margin-top:4px}
+.doctor-avatars{display:flex;align-items:center}
+.doc-av{width:30px;height:30px;border-radius:50%;border:2px solid #fff;display:grid;place-items:center;font:700 10.5px var(--font-b);color:#fff;margin-left:-8px;background:var(--emerald);box-shadow:0 2px 5px rgba(0,0,0,.12)}
+.doc-av:first-child{margin-left:0;background:#059669}
+.doc-av:nth-child(2){background:#0D9488}
+.doc-av:nth-child(3){background:#10B981}
+.doc-caption{font:500 12px var(--font-b);color:var(--ink-2)}
+.doc-caption b{font-weight:600;color:var(--emerald-800)}
+
 .phone{background:#0F172A;border-radius:30px;padding:10px;box-shadow:0 24px 44px -18px rgba(15,23,42,.5);width:100%;max-width:300px;justify-self:center}
 .phone-scr{background:#EFEAE2;border-radius:21px;overflow:hidden;display:flex;flex-direction:column;height:430px}
 .ph-head{background:var(--emerald-900);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:11px;flex:none}
@@ -652,23 +681,52 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
       </div>
     </div>
     <div class="ally-grid">
-      <article class="ally-card reveal">
-        <span class="ally-tag a1"><i data-lucide="message-circle"></i>Lisacare Telehealth</span>
+      <article class="ally-card lisa-card reveal">
+        <div class="ally-header-badges">
+          <span class="ally-tag a1"><i data-lucide="message-circle"></i>Lisacare Telehealth</span>
+          <span class="live-pulse-badge"><i></i>EN DIRECT · 24H/24 &amp; 7J/7</span>
+        </div>
         <h3>Un médecin de garde en ligne 24/7 sur WhatsApp, inclus dans votre mutuelle.</h3>
-        <p>Fievre nocturne d'un enfant à Yaoundé pendant que vous dormez à Bruxelles ? Le médecin de garde de Lisacare répond en moyenne en 4 minutes, prescrit et oriente vers la clinique conventionnée la plus proche si nécessaire.</p>
+        <p>Fièvre nocturne d'un enfant à Yaoundé pendant que vous êtes à Paris ou Bruxelles ? Le médecin régulateur de garde Lisacare répond en direct, prescrit une ordonnance numérique et déclenche la prise en charge en tiers-payant dans la clinique ou pharmacie partenaire la plus proche.</p>
+        
+        <div class="lisa-kpis">
+          <div class="lisa-kpi">
+            <div class="kpi-ic"><i data-lucide="zap"></i></div>
+            <div><b>&lt; 4 min</b><span>Délai moyen constaté</span></div>
+          </div>
+          <div class="lisa-kpi">
+            <div class="kpi-ic"><i data-lucide="shield-check"></i></div>
+            <div><b>100 % Inclus</b><span>Dès l'offre Bronze</span></div>
+          </div>
+          <div class="lisa-kpi">
+            <div class="kpi-ic"><i data-lucide="file-check"></i></div>
+            <div><b>Ordonnance</b><span>Pharmacies agréées</span></div>
+          </div>
+        </div>
+
         <div class="lisa-body">
           <div>
             <ul class="ally-feats">
-              <li class="strong"><i data-lucide="check"></i>Télétriage et téléconsultation illimités, inclus dès la formule Bronze</li>
-              <li><i data-lucide="check"></i>Ordonnances numériques acceptées dans les pharmacies partenaires</li>
-              <li><i data-lucide="check"></i>Orientation directe en tiers-payant dans le réseau MulemaCare</li>
-              <li><i data-lucide="check"></i>Conseils prévention, carnet de vaccination et rappels de suivi</li>
+              <li class="strong"><i data-lucide="check"></i>Télétriage médical &amp; téléconsultation illimités, sans avance d'argent</li>
+              <li><i data-lucide="check"></i>Ordonnances électroniques sécurisées acceptées dans toutes les pharmacies agréées</li>
+              <li><i data-lucide="check"></i>Orientation et réservation prioritaire dans le réseau clinique MulemaCare</li>
+              <li><i data-lucide="check"></i>Carnet de santé digital, rappels vaccinaux et suivi post-consultation</li>
             </ul>
             <div class="lisa-actions">
-              <a class="btn btn-primary" href="https://wa.me/23752112021?text=Bonjour%20Lisacare%2C%20je%20souhaite%20discuter%20avec%20un%20m%C3%A9decin%20de%20garde." target="_blank" rel="noopener"><i data-lucide="message-circle"></i>Ouvrir WhatsApp Lisacare</a>
-              <button class="btn btn-ghost" data-open-sub><i data-lucide="badge-check"></i>Adhérer</button>
+              <a class="btn-whatsapp-hero" href="https://wa.me/23752112021?text=Bonjour%20Lisacare%2C%20je%20souhaite%20discuter%20avec%20un%20m%C3%A9decin%20de%20garde." target="_blank" rel="noopener">
+                <i data-lucide="message-circle"></i>
+                <span>Discuter sur WhatsApp 24/7</span>
+              </a>
+              <button class="btn btn-outline" data-open-sub><i data-lucide="badge-check"></i>Adhérer</button>
             </div>
-            <p class="lisa-note" style="margin-top:16px"><i data-lucide="clock"></i>Temps de réponse moyen constaté : 4 minutes, de jour comme à 3 h du matin.</p>
+            <div class="lisa-team-strip">
+              <div class="doctor-avatars">
+                <span class="doc-av" title="Dr. Ekwalla">EK</span>
+                <span class="doc-av" title="Dr. Mbeki">MB</span>
+                <span class="doc-av" title="Dr. Vance">VA</span>
+              </div>
+              <p class="doc-caption"><b>3 médecins régulateurs</b> en veille active en ce moment</p>
+            </div>
           </div>
           <div class="phone" id="phoneMock">
             <div class="phone-scr">

@@ -130,11 +130,13 @@ header.site.scrolled{border-color:var(--line);box-shadow:0 6px 24px -18px rgba(1
 .logo-txt b{display:block;font:700 19px var(--font-h);color:var(--ink);letter-spacing:-.02em;line-height:1}
 .logo-txt b i{font-style:normal;color:var(--emerald)}
 .logo-txt span{font:600 9.5px var(--font-b);letter-spacing:.22em;color:var(--ink-3);text-transform:uppercase}
-nav.main{display:flex;gap:26px;margin:0 auto}
-nav.main a{font:600 14.5px var(--font-b);color:var(--ink-2);position:relative;padding:6px 0}
-nav.main a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--emerald-500);border-radius:2px;transition:width .2s}
-nav.main a:hover,nav.main a.active{color:var(--emerald)}
-nav.main a:hover::after,nav.main a.active::after{width:100%}
+nav.main{display:flex;gap:10px;margin:0 auto;align-items:center}
+nav.main a{display:inline-flex;align-items:center;gap:7px;font:600 13.5px var(--font-b);color:var(--ink-2);position:relative;padding:7px 12px;border-radius:10px;transition:all .18s ease}
+nav.main a svg{width:15px;height:15px;stroke-width:2.2;color:var(--ink-3);transition:color .18s,transform .18s}
+nav.main a:hover{color:var(--emerald-800);background:rgba(16,185,129,.07)}
+nav.main a:hover svg{color:var(--emerald);transform:translateY(-1px)}
+nav.main a.active{color:var(--emerald-800);background:rgba(16,185,129,.1);font-weight:700}
+nav.main a.active svg{color:var(--emerald)}
 .h-right{display:flex;align-items:center;gap:14px;flex:none}
 .burger{display:none;background:none;border:1.5px solid var(--line);border-radius:10px;width:42px;height:42px;place-items:center;color:var(--ink)}
 .burger svg{width:20px;height:20px}
@@ -144,8 +146,10 @@ nav.main a:hover::after,nav.main a.active::after{width:100%}
   .burger{display:grid}
   .m-nav{display:block;position:absolute;top:70px;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);box-shadow:var(--shadow-1);padding:14px 24px 22px;transform:translateY(-8px);opacity:0;pointer-events:none;transition:.22s}
   header.site.open .m-nav{transform:none;opacity:1;pointer-events:auto}
-  .m-nav a{display:flex;align-items:center;justify-content:space-between;padding:13px 4px;font:600 15px var(--font-b);color:var(--ink-2);border-bottom:1px solid var(--line-2)}
-  .m-nav a svg{width:16px;height:16px;color:var(--ink-3)}
+  .m-nav a{display:flex;align-items:center;justify-content:space-between;padding:12px 6px;font:600 14.5px var(--font-b);color:var(--ink-2);border-bottom:1px solid var(--line-2)}
+  .m-nav a .m-nav-item{display:inline-flex;align-items:center;gap:10px}
+  .m-nav a .m-nav-item svg{width:17px;height:17px;color:var(--emerald)}
+  .m-nav a .m-chev{width:16px;height:16px;color:var(--ink-3)}
   .m-nav .btn{margin-top:16px}
 }
 </style>
@@ -175,15 +179,15 @@ $isAdmin = str_starts_with($reqPath, '/admin');
 <!-- ═══════════ HEADER ═══════════ -->
 <header class="site" id="siteHeader">
   <div class="h-in">
-    <a href="/" class="logo" id="logoHome" aria-label="MulemaCare — retour en haut de page">
-      <img src="/assets/img/logo.png" alt="MulemaCare" height="46" style="height:46px;width:auto;display:block">
+    <a href="/" class="logo" id="logoHome" aria-label="MulemaCare — Mutuelle santé solidaire">
+      <img src="/assets/img/logo.png" alt="MulemaCare — Mutuelle santé solidaire" height="46" style="height:46px;width:auto;display:block">
     </a>
     <nav class="main" aria-label="Navigation principale">
-      <a href="/#simulateur">Simulateur</a>
-      <a href="/#garanties">Garanties</a>
-      <a href="/entreprises" class="<?= $isEntreprises ? 'active' : '' ?>">Entreprises</a>
-      <a href="/reseau-soins" class="<?= $isReseau ? 'active' : '' ?>">Annuaire</a>
-      <a href="/partenaires" class="<?= $isPartenaires ? 'active' : '' ?>">Partenaires</a>
+      <a href="/#simulateur"><i data-lucide="calculator"></i><span>Simulateur</span></a>
+      <a href="/#garanties"><i data-lucide="shield-check"></i><span>Garanties</span></a>
+      <a href="/entreprises" class="<?= $isEntreprises ? 'active' : '' ?>"><i data-lucide="building-2"></i><span>Entreprises</span></a>
+      <a href="/reseau-soins" class="<?= $isReseau ? 'active' : '' ?>"><i data-lucide="map-pin"></i><span>Annuaire</span></a>
+      <a href="/partenaires" class="<?= $isPartenaires ? 'active' : '' ?>"><i data-lucide="handshake"></i><span>Partenaires</span></a>
     </nav>
     <div class="h-right">
       <div class="seg" data-cur-seg role="group" aria-label="Choix de la devise">
@@ -196,13 +200,13 @@ $isAdmin = str_starts_with($reqPath, '/admin');
     </div>
   </div>
   <div class="m-nav" id="mNav">
-    <a href="/#simulateur">Simulateur<i data-lucide="arrow-right"></i></a>
-    <a href="/#garanties">Garanties<i data-lucide="arrow-right"></i></a>
-    <a href="/entreprises" class="<?= $isEntreprises ? 'active' : '' ?>">Entreprises &amp; PME<i data-lucide="arrow-right"></i></a>
-    <a href="/reseau-soins" class="<?= $isReseau ? 'active' : '' ?>">Annuaire Cliniques &amp; Pharmacies<i data-lucide="arrow-right"></i></a>
-    <a href="/partenaires" class="<?= $isPartenaires ? 'active' : '' ?>">Devenir Établissement Partenaire<i data-lucide="arrow-right"></i></a>
-    <a href="/admin" class="<?= $isAdmin ? 'active' : '' ?>">Tour de Contrôle Admin<i data-lucide="arrow-right"></i></a>
-    <div class="seg" data-cur-seg role="group" aria-label="Choix de la devise" style="margin:12px 0">
+    <a href="/#simulateur"><span class="m-nav-item"><i data-lucide="calculator"></i>Simulateur de Tarifs</span><i data-lucide="chevron-right" class="m-chev"></i></a>
+    <a href="/#garanties"><span class="m-nav-item"><i data-lucide="shield-check"></i>Garanties &amp; Couvertures</span><i data-lucide="chevron-right" class="m-chev"></i></a>
+    <a href="/entreprises" class="<?= $isEntreprises ? 'active' : '' ?>"><span class="m-nav-item"><i data-lucide="building-2"></i>Entreprises &amp; PME</span><i data-lucide="chevron-right" class="m-chev"></i></a>
+    <a href="/reseau-soins" class="<?= $isReseau ? 'active' : '' ?>"><span class="m-nav-item"><i data-lucide="map-pin"></i>Annuaire Cliniques &amp; Pharmacies</span><i data-lucide="chevron-right" class="m-chev"></i></a>
+    <a href="/partenaires" class="<?= $isPartenaires ? 'active' : '' ?>"><span class="m-nav-item"><i data-lucide="handshake"></i>Devenir Établissement Partenaire</span><i data-lucide="chevron-right" class="m-chev"></i></a>
+    <a href="/admin" class="<?= $isAdmin ? 'active' : '' ?>"><span class="m-nav-item"><i data-lucide="layout-dashboard"></i>Tour de Contrôle Admin</span><i data-lucide="chevron-right" class="m-chev"></i></a>
+    <div class="seg" data-cur-seg role="group" aria-label="Choix de la devise" style="margin:14px 0 8px">
       <button type="button" data-cur="EUR" class="on">€ EUR</button>
       <button type="button" data-cur="USD">$ USD</button>
       <button type="button" data-cur="XAF">FCFA</button>
