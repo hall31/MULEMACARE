@@ -56,8 +56,8 @@ footer.site h4{font:700 13px var(--font-b);letter-spacing:.14em;text-transform:u
   <div class="wrap">
     <div class="f-grid">
       <div class="f-brand">
-        <a href="/" class="logo" id="logoHome2" style="margin-bottom:16px">
-          <img src="/assets/img/logofooter.svg" alt="MulemaCare" height="38" style="height:38px;width:auto;display:block" onerror="this.onerror=null;this.src='/assets/img/logo.png'">
+        <a href="/" class="logo" id="logoHome2" style="margin-bottom:16px" aria-label="MulemaCare — Accueil">
+          <img src="/assets/img/logofooter.png" alt="MulemaCare" height="42" style="height:42px;width:auto;display:block" onerror="this.onerror=null;this.src='/assets/img/logo.png'">
         </a>
         <p>La première mutuelle santé digitale et solidaire pour l'Afrique et la diaspora. Cotisez depuis l'Europe ou l'Amérique, protégez vos proches au pays, sans avance de frais.</p>
         <div class="f-badges">
