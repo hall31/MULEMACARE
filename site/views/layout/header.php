@@ -126,7 +126,7 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);bac
 header.site.scrolled{border-color:var(--line);box-shadow:0 6px 24px -18px rgba(15,23,42,.25)}
 .h-in{max-width:1200px;margin:0 auto;padding:0 24px;height:70px;display:flex;align-items:center;gap:28px}
 .logo{display:flex;align-items:center;gap:10px;flex:none}
-.logo svg{width:36px;height:36px}
+.logo img{height:46px;max-height:50px;width:auto;display:block;object-fit:contain}
 .logo-txt b{display:block;font:700 19px var(--font-h);color:var(--ink);letter-spacing:-.02em;line-height:1}
 .logo-txt b i{font-style:normal;color:var(--emerald)}
 .logo-txt span{font:600 9.5px var(--font-b);letter-spacing:.22em;color:var(--ink-3);text-transform:uppercase}
@@ -169,7 +169,6 @@ $reqPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
 $isEntreprises = ($reqPath === '/entreprises' || str_starts_with($reqPath, '/mutuelle-entreprises'));
 $isReseau = ($reqPath === '/reseau-soins' || $reqPath === '/annuaire');
 $isPartenaires = ($reqPath === '/partenaires' || $reqPath === '/devenir-partenaire');
-$isAdherent = str_starts_with($reqPath, '/espace-adherent');
 $isAdmin = str_starts_with($reqPath, '/admin');
 ?>
 
@@ -177,7 +176,7 @@ $isAdmin = str_starts_with($reqPath, '/admin');
 <header class="site" id="siteHeader">
   <div class="h-in">
     <a href="/" class="logo" id="logoHome" aria-label="MulemaCare — retour en haut de page">
-      <img src="/assets/img/logo.png" alt="MulemaCare" height="42" style="height:42px;width:auto;display:block">
+      <img src="/assets/img/logo.png" alt="MulemaCare" height="46" style="height:46px;width:auto;display:block">
     </a>
     <nav class="main" aria-label="Navigation principale">
       <a href="/#simulateur">Simulateur</a>
@@ -185,7 +184,6 @@ $isAdmin = str_starts_with($reqPath, '/admin');
       <a href="/entreprises" class="<?= $isEntreprises ? 'active' : '' ?>">Entreprises</a>
       <a href="/reseau-soins" class="<?= $isReseau ? 'active' : '' ?>">Annuaire</a>
       <a href="/partenaires" class="<?= $isPartenaires ? 'active' : '' ?>">Partenaires</a>
-      <a href="/espace-adherent" class="<?= $isAdherent ? 'active' : '' ?>">Espace Adhérent</a>
     </nav>
     <div class="h-right">
       <div class="seg" data-cur-seg role="group" aria-label="Choix de la devise">
@@ -203,7 +201,6 @@ $isAdmin = str_starts_with($reqPath, '/admin');
     <a href="/entreprises" class="<?= $isEntreprises ? 'active' : '' ?>">Entreprises &amp; PME<i data-lucide="arrow-right"></i></a>
     <a href="/reseau-soins" class="<?= $isReseau ? 'active' : '' ?>">Annuaire Cliniques &amp; Pharmacies<i data-lucide="arrow-right"></i></a>
     <a href="/partenaires" class="<?= $isPartenaires ? 'active' : '' ?>">Devenir Établissement Partenaire<i data-lucide="arrow-right"></i></a>
-    <a href="/espace-adherent" class="<?= $isAdherent ? 'active' : '' ?>">Espace Adhérent<i data-lucide="arrow-right"></i></a>
     <a href="/admin" class="<?= $isAdmin ? 'active' : '' ?>">Tour de Contrôle Admin<i data-lucide="arrow-right"></i></a>
     <div class="seg" data-cur-seg role="group" aria-label="Choix de la devise" style="margin:12px 0">
       <button type="button" data-cur="EUR" class="on">€ EUR</button>
