@@ -33,9 +33,11 @@
 .cf-guilloche{position:absolute;inset:0;width:100%;height:100%;color:#fff;pointer-events:none}
 .cf-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:2}
 .cf-brand{display:flex;align-items:center;gap:10px}
-.cf-brand>svg{width:34px;height:34px}
+.cf-brand>img{height:26px;width:auto;display:block}
 .cf-bname b{display:block;font:700 15.5px var(--font-h);letter-spacing:-.01em;line-height:1.1}
 .cf-bname i{font:600 8.5px var(--font-b);font-style:normal;letter-spacing:.2em;text-transform:uppercase;opacity:.72}
+.cf-photo-wrap{width:46px;height:46px;border-radius:12px;overflow:hidden;border:2px solid rgba(255,255,255,.35);box-shadow:0 4px 10px rgba(0,0,0,.25);flex:none;transform:translateZ(20px)}
+.cf-photo{width:100%;height:100%;object-fit:cover;display:block}
 .cf-status{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:5.5px 12px;font:600 10.5px var(--font-b);letter-spacing:.06em;text-transform:uppercase;transform:translateZ(26px)}
 .cf-status i{width:6.5px;height:6.5px;border-radius:50%;background:#34D399;box-shadow:0 0 0 3px rgba(52,211,153,.25);animation:blink 2.4s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
@@ -394,8 +396,7 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
             <svg class="cf-guilloche" viewBox="0 0 340 214" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-opacity=".09"><circle cx="312" cy="30" r="20"/><circle cx="312" cy="30" r="42"/><circle cx="312" cy="30" r="64"/><circle cx="20" cy="196" r="30"/><circle cx="20" cy="196" r="52"/></g></svg>
             <div class="cf-top">
               <div class="cf-brand">
-                <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="rgba(255,255,255,.14)"/><rect x="13" y="6" width="6" height="20" rx="3" fill="#fff"/><rect x="6" y="13" width="20" height="6" rx="3" fill="#fff"/><path d="M7 16h5l2-3.5 3 7 2-3.5h6" stroke="#D97706" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span class="cf-bname"><b>MulemaCare</b><i>Mutuelle Santé · CSSA</i></span>
+                <img src="/assets/img/logofooter.png" alt="MulemaCare" height="26" style="height:26px;width:auto;display:block;filter:brightness(0) invert(1)" onerror="this.onerror=null;this.src='/assets/img/logo.png'">
               </div>
               <span class="cf-status"><i></i>Carte active</span>
             </div>

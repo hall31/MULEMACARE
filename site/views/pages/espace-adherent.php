@@ -136,10 +136,15 @@ $capPercent = round((($member['consumed_cap'] ?? 0) / ($member['annual_cap'] ?? 
               </div>
               <div class="cc-number"><?= htmlspecialchars($member['cssa_id']) ?></div>
               <div class="cc-bottom">
-                <div class="cc-holder">
-                  <span>Titulaire Adhérent</span>
-                  <b><?= htmlspecialchars($member['subscriber_name']) ?></b>
-                  <small style="display:block;font-size:11px;color:#D1FAE5;margin-top:2px"><?= htmlspecialchars($member['plan_name']) ?> · Valide jusqu'au <?= htmlspecialchars($member['valid_until_label'] ?? date('d/m/Y', strtotime('+1 year'))) ?></small>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div style="width:48px;height:48px;border-radius:12px;overflow:hidden;border:2px solid rgba(255,255,255,.4);box-shadow:0 4px 10px rgba(0,0,0,.25);flex:none">
+                    <img src="/assets/img/member-avatar.jpg" alt="<?= htmlspecialchars($member['subscriber_name']) ?>" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.src='/assets/img/member-photo.jpg'">
+                  </div>
+                  <div class="cc-holder">
+                    <span>Titulaire Adhérent</span>
+                    <b><?= htmlspecialchars($member['subscriber_name']) ?></b>
+                    <small style="display:block;font-size:11px;color:#D1FAE5;margin-top:2px"><?= htmlspecialchars($member['plan_name']) ?> · Valide jusqu'au <?= htmlspecialchars($member['valid_until_label'] ?? date('d/m/Y', strtotime('+1 year'))) ?></small>
+                  </div>
                 </div>
                 <div class="cc-qr">
                   <!-- QR Code dynamique pointant vers la vérification officielle -->

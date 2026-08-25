@@ -7,10 +7,12 @@
       <!-- Top Card Banner -->
       <div style="background:linear-gradient(135deg,#064A43,#097268);color:#fff;padding:28px 32px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <span style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#A7F3D0">CONTRÔLE DE PRISE EN CHARGE MÉDICALE</span>
-          <span style="background:#10B981;color:#fff;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:800">✅ ACTIF</span>
+          <img src="/assets/img/logofooter.png" alt="MulemaCare" height="28" style="height:28px;width:auto;display:block;filter:brightness(0) invert(1)" onerror="this.onerror=null;this.src='/assets/img/logo.png'">
+          <span style="background:#10B981;color:#fff;padding:4px 12px;border-radius:999px;font-size:11.5px;font-weight:800;display:inline-flex;align-items:center;gap:6px">
+            <i data-lucide="shield-check" style="width:14px;height:14px"></i> ACTIF
+          </span>
         </div>
-        <h1 style="font-size:26px;font-weight:800;color:#fff;margin-bottom:4px">Carte Mutuelle Digitale CSSA</h1>
+        <h1 style="font-size:24px;font-weight:800;color:#fff;margin-bottom:4px">Carte Mutuelle Digitale CSSA</h1>
         <div style="font-family:var(--font-num);font-size:18px;color:#FCD34D;letter-spacing:.08em;font-weight:700">
           N° <?= htmlspecialchars($memberId) ?>
         </div>
@@ -18,12 +20,17 @@
 
       <!-- Card Verification Body -->
       <div style="padding:32px">
-        <div style="display:grid;gap:18px;margin-bottom:28px">
-          
-          <div style="background:#F8FAFC;border-radius:12px;padding:16px;display:flex;justify-content:space-between">
-            <span style="color:var(--muted);font-size:14px">Titulaire Assuré :</span>
-            <strong style="color:var(--ink);font-size:15px"><?= htmlspecialchars($cardData['subscriber_name'] ?? 'Adhérent MulemaCare') ?></strong>
+        <div style="display:flex;align-items:center;gap:16px;background:#F8FAFC;border-radius:16px;padding:16px 20px;margin-bottom:20px;border:1px solid #E2E8F0">
+          <div style="width:54px;height:54px;border-radius:14px;overflow:hidden;border:2px solid var(--emerald);flex:none;box-shadow:0 4px 10px rgba(0,0,0,.1)">
+            <img src="/assets/img/member-avatar.jpg" alt="<?= htmlspecialchars($cardData['subscriber_name'] ?? 'Adhérent') ?>" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.src='/assets/img/member-photo.jpg'">
           </div>
+          <div>
+            <span style="color:var(--muted);font-size:12px;text-transform:uppercase;font-weight:700;display:block">Titulaire Assuré</span>
+            <strong style="color:var(--ink);font-size:17px"><?= htmlspecialchars($cardData['subscriber_name'] ?? 'Adhérent MulemaCare') ?></strong>
+          </div>
+        </div>
+
+        <div style="display:grid;gap:14px;margin-bottom:28px">
 
           <div style="background:#F8FAFC;border-radius:12px;padding:16px;display:flex;justify-content:space-between">
             <span style="color:var(--muted);font-size:14px">Formule de Garantie :</span>

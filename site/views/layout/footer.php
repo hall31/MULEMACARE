@@ -249,8 +249,7 @@ function cardFrontHTML(o){
   <svg class="cf-guilloche" viewBox="0 0 340 214" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-opacity=".09"><circle cx="316" cy="26" r="24"/><circle cx="316" cy="26" r="46"/><circle cx="316" cy="26" r="68"/><circle cx="18" cy="198" r="26"/><circle cx="18" cy="198" r="48"/></g></svg>
   <div class="cf-top">
     <div class="cf-brand">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="rgba(255,255,255,.14)"/><rect x="13" y="6" width="6" height="20" rx="3" fill="#fff"/><rect x="6" y="13" width="20" height="6" rx="3" fill="#fff"/><path d="M7 16h5l2-3.5 3 7 2-3.5h6" stroke="#D97706" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="cf-bname"><b>MulemaCare</b><i>Mutuelle Santé · CSSA</i></span>
+      <img src="/assets/img/logofooter.png" alt="MulemaCare" height="26" style="height:26px;width:auto;display:block;filter:brightness(0) invert(1)" onerror="this.onerror=null;this.src='/assets/img/logo.png'">
     </div>
     <span class="cf-status"><i></i>Tiers-payant actif</span>
   </div>
@@ -261,9 +260,18 @@ function cardFrontHTML(o){
       <div class="cf-number">CSSA <b>${o.no}</b></div>
     </div>
   </div>
-  <div class="cf-mid" style="flex-direction:row;justify-content:space-between;align-items:flex-end">
-    <div><span class="cf-label">Adhérent</span><div class="cf-holder"><b>${esc(o.name)}</b></div></div>
-    <div style="text-align:right"><span class="cf-label">Valide jusqu'au</span><div class="cf-valid num">${o.validThru}</div></div>
+  <div class="cf-mid" style="flex-direction:row;justify-content:space-between;align-items:center">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="cf-photo-wrap"><img src="/assets/img/member-avatar.jpg" alt="${esc(o.name)}" class="cf-photo" onerror="this.src='/assets/img/member-photo.jpg'"></div>
+      <div>
+        <span class="cf-label">Adhérent Titulaire</span>
+        <div class="cf-holder"><b>${esc(o.name)}</b></div>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <span class="cf-label">Valide jusqu'au</span>
+      <div class="cf-valid num">${o.validThru}</div>
+    </div>
   </div>
   <div class="cf-bottom">
     <div>

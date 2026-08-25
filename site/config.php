@@ -355,4 +355,13 @@ return [
             ]
         ],
     ],
+
+    // Bridge HealthOS v1. Il reste inactif tant que l'hébergement ne fournit
+    // pas explicitement les variables d'environnement requises.
+    'healthos_bridge' => [
+        'enabled'    => filter_var(getenv('MULEMACARE_HEALTHOS_BRIDGE_ENABLED') ?: false, FILTER_VALIDATE_BOOL),
+        'base_url'   => rtrim((string) (getenv('HEALTHOS_BASE_URL') ?: ''), '/'),
+        'api_key'    => (string) (getenv('HEALTHOS_PARTNER_API_KEY') ?: ''),
+        'timeout_ms' => max(250, (int) (getenv('HEALTHOS_TIMEOUT_MS') ?: 2500)),
+    ],
 ];
