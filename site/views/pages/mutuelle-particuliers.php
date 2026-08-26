@@ -1,3 +1,15 @@
+<style>
+/* ================= ADAPTATION MOBILE (≤ 760px) ================= */
+@media(max-width:760px){
+  .mp-compare{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;margin-inline:-16px;padding-inline:16px}
+  .mp-compare table{min-width:680px !important}
+  .mp-compare th,.mp-compare td{padding:13px 12px !important;font-size:13px !important}
+  .mp-cta .btn{width:100%;white-space:normal;line-height:1.35;text-align:center;padding:15px 20px !important;min-height:54px}
+  .mp-cta{padding:22px 0 !important}
+  .seg{flex-wrap:wrap;justify-content:center}
+}
+</style>
+
 <!-- ================= HERO MUTUELLE PARTICULIERS & DIASPORA ================= -->
 <section class="sec" style="background:linear-gradient(180deg,#F8FAFC 0%,#EEF8F6 100%);border-bottom:1px solid var(--line);padding:72px 0 84px">
   <div class="wrap">
@@ -31,7 +43,8 @@
       </div>
     </div>
 
-    <div style="overflow-x:auto">
+    <p class="table-hint"><i data-lucide="move-horizontal"></i>Faites glisser le tableau vers la gauche pour comparer les 4 formules</p>
+    <div class="mp-compare" style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;min-width:780px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:var(--shadow-sm);border:1.5px solid var(--line)">
         <thead>
           <tr style="background:#064A43;color:#fff;text-align:left">
@@ -138,7 +151,7 @@
       </div>
     </div>
 
-    <div style="text-align:center;padding:32px 0">
+    <div class="mp-cta" style="text-align:center;padding:32px 0">
       <a href="/#simulateur" class="btn btn-primary" style="font-size:16px;padding:15px 32px">
         <i data-lucide="calculator"></i>Lancer le Simulateur de Cotisation Personnalisé
       </a>

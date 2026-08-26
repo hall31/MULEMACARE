@@ -75,6 +75,35 @@
 @media(max-width:600px){
   .part-pillars-grid{grid-template-columns:1fr}
 }
+
+/* ================= ADAPTATION MOBILE (≤ 760px) ================= */
+@media(max-width:760px){
+  .part-hero{padding:36px 0 52px}
+  .part-hero h1{font-size:clamp(1.95rem,8.2vw,2.5rem);margin:16px 0 14px}
+  .part-hero-sub{font-size:15.5px;margin-bottom:24px}
+  .part-hero-cta{gap:10px}
+  .part-hero-cta .btn{flex:1 1 100%;min-height:50px}
+  .part-badges{gap:12px 18px;margin-top:24px;padding-top:20px}
+
+  .part-hero-visual,.part-hero-visual *{min-width:0}
+  .part-hero-card-frame{padding:12px;border-radius:20px}
+  .part-hero-img-wrap{height:210px;border-radius:14px}
+  .part-float-top{top:20px;right:20px;padding:6px 11px}
+  .part-float-top b{font-size:11.5px}
+  .part-hero-overlay-card{flex-wrap:wrap;padding:13px 15px;gap:10px}
+
+  .part-pillars-sec{padding:56px 0}
+  .part-card{padding:22px 18px}
+
+  .part-form-grid{gap:24px}
+  .part-form-grid>*,.part-left-col,.part-left-col>*{min-width:0}
+  .part-info-card,.part-contact-box{padding:22px 17px;border-radius:18px}
+  .part-contact-item{padding:11px 13px;font-size:13px;overflow-wrap:anywhere}
+  .part-form-box{padding:22px 17px;border-radius:18px}
+  .part-form-box .btn{min-height:50px}
+  /* Sur iOS, une police < 16px déclenche un zoom automatique à la saisie */
+  .field input,.field select,.field textarea{font-size:16px}
+}
 </style>
 
 <!-- ═══════════ HERO CONVENTIONNEMENT ═══════════ -->

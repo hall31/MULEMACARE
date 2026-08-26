@@ -35,8 +35,14 @@ class QuoteService {
         $selectedAmount = ($cycle === 'monthly') ? $monthlyAmount : $annualAmount;
         $savingsAnnual = round(($monthlyAmount * 12) - $annualAmount, 2);
 
-        $ceilingXaf = $plan['ceiling_xaf'];
-        $ceilingEur = (int) round($ceilingXaf / 655.957);
+        // Le plafond est stocké soit en entier, soit en libellé ("1 500 000 FCFA / an ...")
+        $ceilingRaw = (string) ($plan['ceiling_xaf'] ?? '0');
+        preg_match('/\d[\d\s\x{00A0}\x{202F}]*/u', $ceilingRaw, $ceilingMatch);
+        $ceilingXaf = (int) preg_replace('/\D/u', '', $ceilingMatch[0] ?? '0');
+        $ceilingEur = $ceilingXaf > 0 ? (int) round($ceilingXaf / 655.957) : 0;
+        $ceilingLabel = is_numeric($ceilingRaw)
+            ? number_format($ceilingXaf, 0, ',', ' ') . ' FCFA (' . number_format($ceilingEur, 0, ',', ' ') . ' €) / an'
+            : $ceilingRaw;
 
         return [
             'plan_id'            => $plan['id'],
@@ -55,7 +61,7 @@ class QuoteService {
             'sub'                => $priceObj['sub'],
             'ceiling_xaf'        => $ceilingXaf,
             'ceiling_eur'        => $ceilingEur,
-            'ceiling_label'      => number_format($ceilingXaf, 0, ',', ' ') . ' FCFA (' . number_format($ceilingEur, 0, ',', ' ') . ' €) / an',
+            'ceiling_label'      => $ceilingLabel,
             'features'           => $plan['features'],
             'tiers_payant'       => $plan['tiers_payant'],
             'waiting_periods'    => [

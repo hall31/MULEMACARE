@@ -1,0 +1,230 @@
+{
+  "_": "Grille tarifaire canonique MulemaCare Diaspora. Source unique : le site, le simulateur, le devis et le contrat lisent ce fichier. Ne jamais recopier un montant ailleurs.",
+  "version": "6.1.0",
+  "effective_date": "2026-08-23",
+  "status": "validated",
+  "status_note": "Grille validée par Dajan le 2026-08-26 (validation actuarielle et réglementaire prononcée).",
+  "premium_currency": "EUR",
+  "minor_unit": 100,
+  "xaf_per_eur": 655.957,
+  "rules": {
+    "annual_equals_twelve_monthly": true,
+    "famille_au_pays_max_premium_ratio_pct": 56
+  },
+  "lines": {
+    "europe": {
+      "label": "Europe — offres digitales",
+      "ceiling_currency": "EUR",
+      "offers": [
+        {
+          "id": "essentiel",
+          "label": "Essentiel",
+          "monthly_cents": 1599,
+          "annual_cents": 19188,
+          "coverage_rate_pct": 50,
+          "ceiling_cents": 40000,
+          "beneficiaries_min": 1,
+          "beneficiaries_max": 1,
+          "scope": "Individuel"
+        },
+        {
+          "id": "famille_plus",
+          "label": "Famille +",
+          "monthly_cents": 4999,
+          "annual_cents": 59988,
+          "coverage_rate_pct": 70,
+          "ceiling_cents": 120000,
+          "beneficiaries_min": 3,
+          "beneficiaries_max": 6,
+          "scope": "3 à 6 bénéficiaires"
+        },
+        {
+          "id": "chronique",
+          "label": "Chronique",
+          "monthly_cents": 3299,
+          "annual_cents": 39588,
+          "coverage_rate_pct": 60,
+          "ceiling_cents": 65000,
+          "beneficiaries_min": 1,
+          "beneficiaries_max": 1,
+          "scope": "Individuel"
+        },
+        {
+          "id": "premium",
+          "label": "Premium",
+          "monthly_cents": 9999,
+          "annual_cents": 119988,
+          "coverage_rate_pct": 80,
+          "ceiling_cents": 240000,
+          "beneficiaries_min": 1,
+          "beneficiaries_max": 1,
+          "scope": "Individuel"
+        }
+      ]
+    },
+    "famille_au_pays": {
+      "label": "Famille au pays — formules A / B / C",
+      "ceiling_currency": "XAF",
+      "formulas": [
+        "A",
+        "B",
+        "C"
+      ],
+      "profiles": [
+        {
+          "id": "collegien",
+          "label": "Collégien",
+          "beneficiaries_min": 1,
+          "beneficiaries_max": 1,
+          "age_min": 10,
+          "age_max": 25,
+          "age_label": "10–25 ans",
+          "tiers": {
+            "A": {
+              "monthly_cents": 249,
+              "coverage_rate_pct": 50,
+              "ceiling_xaf": 35000
+            },
+            "B": {
+              "monthly_cents": 399,
+              "coverage_rate_pct": 70,
+              "ceiling_xaf": 60000
+            },
+            "C": {
+              "monthly_cents": 499,
+              "coverage_rate_pct": 80,
+              "ceiling_xaf": 75000
+            }
+          }
+        },
+        {
+          "id": "etudiant",
+          "label": "Étudiant",
+          "beneficiaries_min": 1,
+          "beneficiaries_max": 1,
+          "age_min": 18,
+          "age_max": 30,
+          "age_label": "18–30 ans",
+          "tiers": {
+            "B": {
+              "monthly_cents": 1399,
+              "coverage_rate_pct": 70,
+              "ceiling_xaf": 210000
+            },
+            "C": {
+              "monthly_cents": 2599,
+              "coverage_rate_pct": 80,
+              "ceiling_xaf": 400000
+            }
+          }
+        },
+        {
+          "id": "celibataire",
+          "label": "Célibataire",
+          "beneficiaries_min": 1,
+          "beneficiaries_max": 1,
+          "age_min": 18,
+          "age_max": 120,
+          "age_label": "18–120 ans",
+          "tiers": {
+            "A": {
+              "monthly_cents": 799,
+              "coverage_rate_pct": 50,
+              "ceiling_xaf": 120000
+            },
+            "B": {
+              "monthly_cents": 1599,
+              "coverage_rate_pct": 70,
+              "ceiling_xaf": 250000
+            },
+            "C": {
+              "monthly_cents": 2599,
+              "coverage_rate_pct": 80,
+              "ceiling_xaf": 400000
+            }
+          }
+        },
+        {
+          "id": "couple",
+          "label": "Couple",
+          "beneficiaries_min": 2,
+          "beneficiaries_max": 3,
+          "age_min": 18,
+          "age_max": null,
+          "age_label": "Adulte",
+          "tiers": {
+            "A": {
+              "monthly_cents": 1199,
+              "coverage_rate_pct": 50,
+              "ceiling_xaf": 180000
+            },
+            "B": {
+              "monthly_cents": 2599,
+              "coverage_rate_pct": 70,
+              "ceiling_xaf": 400000
+            },
+            "C": {
+              "monthly_cents": 4799,
+              "coverage_rate_pct": 80,
+              "ceiling_xaf": 750000
+            }
+          }
+        },
+        {
+          "id": "famille",
+          "label": "Famille",
+          "beneficiaries_min": 3,
+          "beneficiaries_max": 10,
+          "age_min": 18,
+          "age_max": null,
+          "age_label": "Adulte",
+          "tiers": {
+            "A": {
+              "monthly_cents": 1999,
+              "coverage_rate_pct": 50,
+              "ceiling_xaf": 300000
+            },
+            "B": {
+              "monthly_cents": 3199,
+              "coverage_rate_pct": 70,
+              "ceiling_xaf": 500000
+            },
+            "C": {
+              "monthly_cents": 5399,
+              "coverage_rate_pct": 80,
+              "ceiling_xaf": 850000
+            }
+          }
+        },
+        {
+          "id": "senior",
+          "label": "Senior",
+          "beneficiaries_min": 1,
+          "beneficiaries_max": 1,
+          "age_min": 45,
+          "age_max": null,
+          "age_label": "45 ans et plus",
+          "tiers": {
+            "A": {
+              "monthly_cents": 2299,
+              "coverage_rate_pct": 50,
+              "ceiling_xaf": 350000
+            },
+            "B": {
+              "monthly_cents": 3899,
+              "coverage_rate_pct": 70,
+              "ceiling_xaf": 600000
+            },
+            "C": {
+              "monthly_cents": 5799,
+              "coverage_rate_pct": 80,
+              "ceiling_xaf": 900000
+            }
+          }
+        }
+      ]
+    }
+  },
+  "validated_by": "Dajan",
+  "validated_at": "2026-08-26"
+}

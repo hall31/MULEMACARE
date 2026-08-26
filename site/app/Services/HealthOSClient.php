@@ -11,7 +11,7 @@ use RuntimeException;
  * Il est désactivé par défaut : aucune page ni API historique MulemaCare ne
  * dépend de ce client avant l'activation explicite du feature flag serveur.
  */
-final class HealthOSClient
+final class HealthOSClient implements HealthOSRightsReader
 {
     private array $bridge;
 

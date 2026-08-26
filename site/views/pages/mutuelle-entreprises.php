@@ -75,6 +75,48 @@
   .pro-hero-overlay-card{position:static;margin-top:16px;max-width:100%}
   .pro-pillars-grid,.steps-grid,.drh-grid{grid-template-columns:1fr}
 }
+
+/* ================= ADAPTATION MOBILE (≤ 760px) ================= */
+@media(max-width:760px){
+  .pro-hero{padding:36px 0 52px}
+  .pro-hero h1{font-size:clamp(1.95rem,8.2vw,2.5rem);margin:16px 0 14px}
+  .pro-hero-sub{font-size:15.5px;margin-bottom:24px}
+  .pro-hero-cta{gap:10px}
+  .pro-hero-cta .btn{flex:1 1 100%;min-height:50px}
+  .pro-badges{gap:12px 18px;margin-top:24px;padding-top:20px}
+
+  .pro-hero-visual,.pro-hero-visual *{min-width:0}
+  .pro-hero-card-frame{padding:12px;border-radius:20px}
+  .pro-hero-img-wrap{height:210px;border-radius:14px}
+  .pro-float-top{top:20px;right:20px;padding:6px 11px}
+  .pro-float-top b{font-size:11.5px}
+  .pro-hero-overlay-card{flex-wrap:wrap;padding:13px 15px;gap:10px}
+
+  .pro-calc-sec,.pro-pillars-sec,.steps-sec,.drh-sec{padding:56px 0}
+  .pro-calc-grid>*{min-width:0}
+  .calc-box{padding:20px 17px;border-radius:18px;min-width:0}
+  .calc-box *{min-width:0}
+  .range-header{flex-direction:column;align-items:flex-start;gap:4px}
+  .range-header .emp-count{font-size:21px}
+  .pro-slider{height:22px;margin-bottom:6px}
+  /* 4 repères ne tiennent pas sur 343px : on garde les bornes utiles */
+  .range-scales{font-size:11px;gap:8px;margin-bottom:22px}
+  .range-scales span:nth-child(2),.range-scales span:nth-child(3){display:none}
+  .b2b-summary{padding:16px 15px;gap:14px}
+  .b2b-row{flex-direction:column;gap:3px;font-size:13.5px}
+  .b2b-row strong{font-size:14px}
+  .b2b-total{flex-direction:column;align-items:flex-start;gap:4px}
+  .b2b-total b{font-size:25px}
+
+  #proForm{padding:22px 17px !important;border-radius:18px !important}
+  #proForm h3{font-size:19px}
+  #proForm .btn{min-height:50px}
+
+  .pillar-card{padding:24px 19px}
+  .step-card{padding:20px 17px}
+  .drh-card{padding:24px 19px}
+  .drh-quote{font-size:14px;margin-bottom:18px}
+}
 </style>
 
 <!-- ═══════════ HERO ENTREPRISES ═══════════ -->

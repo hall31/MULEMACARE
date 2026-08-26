@@ -23,6 +23,27 @@ footer.site h4{font:700 13px var(--font-b);letter-spacing:.14em;text-transform:u
 @media(max-width:960px){.f-grid{grid-template-columns:1fr 1fr;gap:36px}}
 @media(max-width:540px){.f-grid{grid-template-columns:1fr}}
 
+/* ================= FOOTER : ADAPTATION MOBILE ================= */
+@media(max-width:760px){
+  footer.site{padding:48px 0 28px}
+  .f-grid{gap:30px;padding-bottom:32px}
+  .f-brand p{margin:14px 0 16px;max-width:none}
+  footer.site h4{margin-bottom:12px}
+  /* Zones tactiles : 44px de haut minimum sur les liens de navigation */
+  .f-links{gap:0}
+  .f-links a,.f-links button{display:flex;align-items:center;min-height:44px;padding:4px 0}
+  .f-contact li{gap:10px}
+  .f-contact a{overflow-wrap:anywhere;display:inline-flex;align-items:center;min-height:38px}
+  .f-bottom{gap:14px;padding-top:22px;font-size:12.5px}
+  .f-legal{gap:8px 16px;flex-wrap:wrap}
+  .f-legal button{min-height:40px;display:inline-flex;align-items:center}
+  /* Le FAB WhatsApp ne doit pas recouvrir les actions de bas de page */
+  .wa-fab{bottom:calc(16px + env(safe-area-inset-bottom));right:16px;width:50px;height:50px}
+  .wa-fab svg{width:25px;height:25px}
+  #toasts{bottom:calc(78px + env(safe-area-inset-bottom));right:12px;left:12px}
+  .toast{min-width:0;max-width:none;width:100%}
+}
+
 /* ================= TOASTS & FAB ================= */
 #toasts{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;gap:10px;pointer-events:none}
 .toast{background:#0F172A;color:#fff;border-radius:14px;padding:14px 18px;display:flex;gap:12px;align-items:center;box-shadow:0 18px 36px -12px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.1);pointer-events:auto;min-width:280px;max-width:380px;animation:tin .3s cubic-bezier(.2,.8,.3,1)}

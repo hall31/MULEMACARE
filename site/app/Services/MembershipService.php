@@ -201,6 +201,11 @@ class MembershipService {
         if (isset($members[$cleanId])) {
             $m = $members[$cleanId];
             return [
+                // `record` : la réponse vient d'une adhésion réellement stockée.
+                // Le rapprochement HealthOS ne compare que celles-là — comparer
+                // la décision du site à une décision de démonstration produirait
+                // des écarts qui ne disent rien de la production.
+                'source'              => 'record',
                 'cssa_id'             => $m['cssa_id'],
                 'subscriber_name'     => $m['subscriber_name'],
                 'plan_name'           => $m['plan_name'],
@@ -223,6 +228,9 @@ class MembershipService {
         // Fallback démo certifié si format CSSA
         if (str_starts_with($cleanId, 'CSSA-')) {
             return [
+                // `demo_fallback` : personne réelle derrière ce numéro. Tout
+                // consommateur qui prend une décision doit le savoir.
+                'source'              => 'demo_fallback',
                 'cssa_id'             => $cleanId,
                 'subscriber_name'     => 'Éric Awono Mballa',
                 'plan_name'           => 'Mulema Silver (Famille & Soins Courants)',

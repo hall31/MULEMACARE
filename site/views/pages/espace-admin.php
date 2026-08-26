@@ -63,10 +63,40 @@ $claims = $memService->listClaims(20);
 
 @media(max-width:1020px){
   .admin-kpis{grid-template-columns:repeat(2,1fr)}
-  .admin-table-wrap{overflow-x:auto}
+  .admin-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+  .admin-table-wrap .admin-table{min-width:820px}
 }
 @media(max-width:640px){
   .admin-kpis{grid-template-columns:1fr}
+}
+
+/* ================= ADAPTATION MOBILE (≤ 760px) ================= */
+@media(max-width:760px){
+  .admin-hub{padding:22px 0 56px}
+  .admin-top{gap:14px;margin-bottom:24px}
+  .admin-top h1{font-size:25px;line-height:1.2}
+  .admin-top p{font-size:13.5px}
+  .admin-top>div:last-child{display:flex;flex-direction:column;gap:10px;width:100%}
+  .admin-top .btn{width:100%;justify-content:center;min-height:48px}
+
+  .admin-kpis{gap:12px;margin-bottom:24px}
+  .admin-kpi{padding:17px 16px;border-radius:15px}
+  .admin-kpi b{font-size:24px}
+
+  /* Onglets : bande défilante plutôt qu'un empilement de 4 lignes */
+  .admin-nav-tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;gap:9px;margin-inline:-16px;padding:0 16px 12px;scrollbar-width:none}
+  .admin-nav-tabs::-webkit-scrollbar{display:none}
+  .admin-tab{flex:none;padding:10px 15px;font-size:12.5px;min-height:42px;white-space:nowrap}
+
+  .admin-section{padding:18px 15px;border-radius:18px;margin-bottom:22px}
+  .admin-section-head{gap:12px;margin-bottom:16px}
+  .admin-section-head h2{font-size:17px;line-height:1.3}
+  .search-box-admin{width:100%}
+  .search-box-admin input{font-size:16px;min-height:40px}
+  .admin-table-wrap{margin-inline:-15px;padding-inline:15px}
+  .admin-table th,.admin-table td{padding:11px 13px}
+  .btn-action-sm{padding:9px 12px;min-height:38px;display:inline-flex;align-items:center}
+  .table-hint{color:#94A3B8}
 }
 </style>
 
@@ -141,6 +171,7 @@ $claims = $memService->listClaims(20);
           </div>
         </div>
 
+        <p class="table-hint"><i data-lucide="move-horizontal"></i>Faites glisser le tableau horizontalement pour voir toutes les colonnes</p>
         <div class="admin-table-wrap">
           <table class="admin-table" id="membersTable">
             <thead>
@@ -203,6 +234,7 @@ $claims = $memService->listClaims(20);
           <h2><i data-lucide="file-text" style="color:#FCD34D"></i>Suivi des Devis &amp; Propositions Tarifaires</h2>
         </div>
 
+        <p class="table-hint"><i data-lucide="move-horizontal"></i>Faites glisser le tableau horizontalement pour voir toutes les colonnes</p>
         <div class="admin-table-wrap">
           <table class="admin-table">
             <thead>
@@ -252,6 +284,7 @@ $claims = $memService->listClaims(20);
           <h2><i data-lucide="shield-check" style="color:#34D399"></i>Régulation Médicale &amp; Prises en Charge Réseau</h2>
         </div>
 
+        <p class="table-hint"><i data-lucide="move-horizontal"></i>Faites glisser le tableau horizontalement pour voir toutes les colonnes</p>
         <div class="admin-table-wrap">
           <table class="admin-table">
             <thead>
@@ -290,6 +323,7 @@ $claims = $memService->listClaims(20);
           <h2><i data-lucide="activity" style="color:#A78BFA"></i>Journal d'Audit Immuable (Audit Trail)</h2>
         </div>
 
+        <p class="table-hint"><i data-lucide="move-horizontal"></i>Faites glisser le tableau horizontalement pour voir toutes les colonnes</p>
         <div class="admin-table-wrap">
           <table class="admin-table">
             <thead>

@@ -2,10 +2,18 @@
 <html lang="fr" dir="ltr" itemscope itemtype="https://schema.org/MedicalOrganization">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#097268">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MulemaCare">
+<meta name="format-detection" content="telephone=yes">
 
 <?= $seo->renderMetaTags() ?>
 
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/assets/img/icon-512.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23097268'/%3E%3Crect x='13' y='6' width='6' height='20' rx='3' fill='white'/%3E%3Crect x='6' y='13' width='20' height='6' rx='3' fill='white'/%3E%3Cpath d='M7 16h5l2-3.5 3 7 2-3.5h6' stroke='%23D97706' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,6 +53,7 @@ button{font-family:inherit;cursor:pointer}
 input,select{font-family:inherit}
 section{scroll-margin-top:84px}
 .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
 h1,h2,h3,h4{font-family:var(--font-h);line-height:1.15;letter-spacing:-.02em}
 .num{font-family:var(--font-n);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 :focus-visible{outline:2.5px solid var(--emerald-500);outline-offset:2px;border-radius:6px}
@@ -144,14 +153,80 @@ nav.main a.active svg{color:var(--emerald)}
 @media(max-width:960px){
   nav.main,.h-right .seg{display:none}
   .burger{display:grid}
-  .m-nav{display:block;position:absolute;top:70px;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);box-shadow:var(--shadow-1);padding:14px 24px 22px;transform:translateY(-8px);opacity:0;pointer-events:none;transition:.22s}
+  .m-nav{display:block;position:absolute;top:100%;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);box-shadow:var(--shadow-1);padding:14px 24px 22px;transform:translateY(-8px);opacity:0;pointer-events:none;transition:.22s;max-height:calc(100dvh - 110px);overflow-y:auto;-webkit-overflow-scrolling:touch}
   header.site.open .m-nav{transform:none;opacity:1;pointer-events:auto}
-  .m-nav a{display:flex;align-items:center;justify-content:space-between;padding:12px 6px;font:600 14.5px var(--font-b);color:var(--ink-2);border-bottom:1px solid var(--line-2)}
+  .m-nav a{display:flex;align-items:center;justify-content:space-between;padding:12px 6px;font:600 14.5px var(--font-b);color:var(--ink-2);border-bottom:1px solid var(--line-2);min-height:48px}
   .m-nav a .m-nav-item{display:inline-flex;align-items:center;gap:10px}
   .m-nav a .m-nav-item svg{width:17px;height:17px;color:var(--emerald)}
   .m-nav a .m-chev{width:16px;height:16px;color:var(--ink-3)}
   .m-nav .btn{margin-top:16px}
+  /* Le CTA du tiroir est un <a> : il ne doit pas hériter du style des liens de menu */
+  .m-nav a.btn{justify-content:center;gap:9px;border-bottom:0;color:#fff;min-height:50px}
+  .m-nav .seg button{padding:10px 14px;min-height:42px}
 }
+
+/* ================= COUCHE MOBILE : ADAPTATION < 720px ================= */
+@media(max-width:720px){
+  .wrap,.container{padding:0 16px}
+  .h-in{padding:0 16px;height:62px;gap:12px}
+  .logo img{height:34px}
+  .m-nav{padding:12px 16px 20px}
+  .h-right{gap:8px}
+  .h-right .btn-sm{padding:9px 13px;font-size:13px}
+  .burger{width:40px;height:40px}
+  section{scroll-margin-top:70px}
+  /* Les libellés longs doivent passer à la ligne au lieu de déborder du bouton */
+  .btn{white-space:normal;text-align:center;line-height:1.3}
+  .h-right .btn{white-space:nowrap}
+}
+@media(max-width:430px){
+  .logo img{height:27px}
+  .h-in{gap:8px;height:58px}
+  .h-right .btn-sm{padding:9px 11px;font-size:12.5px;gap:6px;border-radius:9px}
+  .h-right .btn-sm svg{width:15px;height:15px}
+  .burger{width:38px;height:38px;border-radius:9px}
+  .burger svg{width:19px;height:19px}
+}
+/* iPhone SE / très petits écrans : le CTA passe en icône seule (libellé repris dans le tiroir) */
+@media(max-width:360px){
+  .h-in{padding:0 12px;gap:6px}
+  .logo img{height:24px}
+  .hj-label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .h-right .btn-sm{padding:0;width:40px;min-height:40px;gap:0}
+  .burger{width:36px;height:36px}
+}
+
+/* ================= FIL D'ARIANE ================= */
+.breadcrumb{background:#fff;border-bottom:1px solid var(--line);font:500 13px var(--font-b);color:var(--ink-3)}
+.breadcrumb .wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+.breadcrumb a{color:inherit;transition:color .18s}
+.breadcrumb a:hover{color:var(--emerald)}
+
+/* Zones tactiles : minimum 40px de hauteur sur les contrôles compacts */
+@media(max-width:960px){
+  .seg{flex-wrap:wrap;max-width:100%}
+  .seg button{min-height:40px;padding:10px 14px}
+  .btn-sm{min-height:40px}
+  .logo{min-height:44px}
+  .link-arrow{min-height:40px}
+  .breadcrumb a{min-height:38px;display:inline-flex;align-items:center}
+}
+
+/* Tableaux larges : défilement horizontal confiné au lieu de casser la page */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;max-width:100%}
+.table-scroll>table{min-width:640px}
+@media(max-width:720px){
+  .table-scroll{margin-inline:-16px;padding-inline:16px;scroll-snap-type:x proximity}
+  .table-scroll::-webkit-scrollbar{height:6px}
+  .table-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+  .table-hint{display:flex;align-items:center;gap:6px;font:600 12px var(--font-b);color:var(--ink-3);margin-bottom:10px}
+  .table-hint svg{width:14px;height:14px}
+}
+.table-hint{display:none}
+
+/* Média & champs : jamais plus larges que leur conteneur */
+img,svg,video,canvas{max-width:100%}
+input,select,textarea{max-width:100%}
 </style>
 
 <?= $seo->renderSchemaOrgJsonLd() ?>
@@ -180,7 +255,7 @@ $isAdmin = str_starts_with($reqPath, '/admin');
 <header class="site" id="siteHeader">
   <div class="h-in">
     <a href="/" class="logo" id="logoHome" aria-label="MulemaCare — Mutuelle santé solidaire">
-      <img src="/assets/img/logo.png" alt="MulemaCare — Mutuelle santé solidaire" height="46" style="height:46px;width:auto;display:block">
+      <img src="/assets/img/logo.png" alt="MulemaCare — Mutuelle santé solidaire" width="306" height="46" style="width:auto;display:block">
     </a>
     <nav class="main" aria-label="Navigation principale">
       <a href="/#simulateur"><i data-lucide="calculator"></i><span>Simulateur</span></a>
@@ -195,7 +270,7 @@ $isAdmin = str_starts_with($reqPath, '/admin');
         <button type="button" data-cur="USD">$ USD</button>
         <button type="button" data-cur="XAF">FCFA</button>
       </div>
-      <a href="/adhesion" class="btn btn-primary btn-sm"><i data-lucide="badge-check"></i>Adhérer</a>
+      <a href="/adhesion" class="btn btn-primary btn-sm" id="headerJoin" aria-label="Adhérer en ligne"><i data-lucide="badge-check"></i><span class="hj-label">Adhérer</span></a>
       <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false"><i data-lucide="menu"></i></button>
     </div>
   </div>

@@ -363,5 +363,32 @@ return [
         'base_url'   => rtrim((string) (getenv('HEALTHOS_BASE_URL') ?: ''), '/'),
         'api_key'    => (string) (getenv('HEALTHOS_PARTNER_API_KEY') ?: ''),
         'timeout_ms' => max(250, (int) (getenv('HEALTHOS_TIMEOUT_MS') ?: 2500)),
+
+        // Étape du déploiement du bridge. `observe` est la seule valeur qui
+        // fasse quelque chose aujourd'hui : le rapprochement compare les
+        // décisions des deux systèmes hors ligne, aucune page ne consulte
+        // HealthOS et aucun adhérent n'est affecté par un écart. Les étapes
+        // suivantes (lecture des droits affichée, puis préautorisations)
+        // s'ouvriront quand le rapport de rapprochement sera expliqué —
+        // et les portées de la clé partenaire, côté HealthOS, devront être
+        // élargies en même temps. Voir `docs/HEALTHOS_BRIDGE.md`.
+        'mode'       => strtolower((string) (getenv('MULEMACARE_HEALTHOS_BRIDGE_MODE') ?: 'observe')),
+
+        // Tenant pilote attendu. La table de correspondance déclare le sien ;
+        // s'ils diffèrent, elle est refusée plutôt qu'appliquée au mauvais
+        // périmètre.
+        'pilot_tenant' => (string) (getenv('HEALTHOS_PILOT_TENANT') ?: ''),
+
+        // Table de correspondance CSSA -> patient_id HealthOS. Produite par la
+        // migration de données et relue par un humain ; jamais devinée.
+        'identity_map_path' => (string) (getenv('HEALTHOS_IDENTITY_MAP_PATH') ?: ''),
+
+        // HealthOS compte en unités mineures, le site en francs CFA. Le franc
+        // CFA n'a pas de subdivision en usage : 1. Une valeur fausse ferait
+        // diverger tous les plafonds d'un facteur constant.
+        'minor_units_per_unit' => max(1, (int) (getenv('HEALTHOS_MINOR_UNITS_PER_UNIT') ?: 1)),
+
+        // Écart de plafond toléré avant d'être signalé, dans l'unité du site.
+        'cap_tolerance' => max(0.0, (float) (getenv('HEALTHOS_CAP_TOLERANCE') ?: 0.0)),
     ],
 ];

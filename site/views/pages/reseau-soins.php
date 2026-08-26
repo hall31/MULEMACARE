@@ -43,7 +43,7 @@
 
 /* ================= GRILLE DES ÉTABLISSEMENTS (ICÔNES UNIES) ================= */
 .dir-grid-sec{background:var(--bg);padding:48px 0 88px}
-.dir-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:26px}
+.dir-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:26px}
 .clinic-card{background:#fff;border:1.5px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .2s}
 .clinic-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-1);border-color:#CBD5E1}
 
@@ -86,6 +86,44 @@
   .dir-hub-grid{grid-template-columns:1fr}
   .dir-grid{grid-template-columns:1fr}
   .dir-cta-box{flex-direction:column;text-align:center}
+}
+
+/* ================= ADAPTATION MOBILE (≤ 760px) ================= */
+@media(max-width:760px){
+  .dir-hero{padding:36px 0 52px}
+  .dir-hero h1{font-size:clamp(1.95rem,8.2vw,2.5rem);margin:16px 0 14px}
+  .dir-hero p{font-size:15.5px;margin-bottom:24px}
+  .dir-stats{gap:10px;margin-top:22px;padding-top:18px}
+  .dir-stat{flex:1 1 45%;padding:11px 14px}
+  .dir-stat b{font-size:19px}
+
+  .dir-hub-card{padding:20px 17px;border-radius:20px}
+  .dir-hub-top{margin-bottom:18px;padding-bottom:14px;flex-wrap:wrap;gap:10px}
+  .dir-hub-box{padding:13px}
+  .dir-hub-foot{flex-wrap:wrap;padding:13px 15px}
+  .dir-hub-tag{min-height:36px;display:inline-flex;align-items:center}
+
+  .dir-search-sec{padding:32px 0 16px}
+  .dir-input-box{min-width:0;flex:1 1 100%}
+  /* Sur iOS, une police < 16px déclenche un zoom automatique à la saisie */
+  .dir-input-box input{font-size:16px;height:52px}
+  .dir-bar-wrap .btn{width:100%;justify-content:center;min-height:50px}
+  .dir-chips-wrap{justify-content:flex-start;gap:7px;margin-inline:-16px;padding:0 16px 4px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none}
+  .dir-chips-wrap::-webkit-scrollbar{display:none}
+  .dir-chip{flex:none;min-height:40px;white-space:nowrap}
+
+  .dir-grid-sec{padding:32px 0 56px}
+  .dir-grid{gap:16px}
+  .clinic-icon-hero{height:112px;padding:14px}
+  .clinic-body{padding:18px 16px}
+  .clinic-title{font-size:16.5px}
+  .clinic-foot{padding:0 16px 18px;flex-direction:column}
+  .clinic-foot .btn{min-height:46px}
+
+  .dir-cta-box{padding:28px 20px;border-radius:20px;margin-top:36px;gap:20px}
+  .dir-cta-box h3{font-size:20px}
+  .dir-cta-box p{font-size:14px}
+  .dir-cta-box .btn{width:100%;justify-content:center;min-height:50px}
 }
 </style>
 

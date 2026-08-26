@@ -1,3 +1,40 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# FERMETURE TEMPORAIRE DES SURFACES NON AUTHENTIFIÉES  (lot 0)
+#
+# Le site n'a aucune authentification applicative : ni session, ni mot de passe
+# dans tout site/app. La tour de contrôle, les dossiers d'adhérent et deux API
+# d'écriture étaient joignables par n'importe qui. Ces surfaces partent vers
+# app.mulemacare.com (HealthOS) ; en attendant, elles sont fermées ici plutôt
+# que par du code PHP jetable.
+#
+# Attention : /admin et /espace-adherent n'existent pas comme fichiers — le
+# rewrite ci-dessous envoie tout sur index.php. Une protection posée sur des
+# fichiers (<Files>, <Directory>) ne les verrait donc jamais. Il faut agir sur
+# REQUEST_URI, et pour les blocages, avant la règle de routage.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Les deux écritures n'ont aucun appelant légitime aujourd'hui : émettre un bon
+# de prise en charge crée une dette pour la mutuelle, et changer le statut d'une
+# carte coupe les droits d'un adhérent au comptoir d'une clinique. Refus sec —
+# elles rouvriront authentifiées côté HealthOS.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    RewriteCond %{REQUEST_URI} ^/api/(claim|admin/toggle-status)/?$ [NC]
+    RewriteRule ^ - [F,L]
+</IfModule>
+
+# Les surfaces de lecture restent accessibles à l'équipe, derrière un mot de
+# passe. `Require expr` s'applique à l'URI demandée, donc au chemin virtuel.
+AuthType Basic
+AuthName "MulemaCare - acces restreint"
+AuthUserFile /homepages/2/d338919305/htdocs/www/services/mulemacare/mulemacarev2/.htpasswd
+<RequireAny>
+    Require expr "!(%{REQUEST_URI} =~ m#^/(admin|espace-admin|espace-adherent|carte/|api/adherent/lookup)#)"
+    Require valid-user
+</RequireAny>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
@@ -11,6 +48,11 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ index.php [QSA,L]
 </IfModule>
+
+# Le fichier de mots de passe ne doit jamais être servi.
+<Files ".htpasswd">
+    Require all denied
+</Files>
 
 # Cache & GZIP Compression
 <IfModule mod_deflate.c>

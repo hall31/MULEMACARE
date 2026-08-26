@@ -49,6 +49,37 @@ $cardData = $memService->verifyCard($initialCode);
   .rc-grid{grid-template-columns:1fr}
   .cc-list{grid-template-columns:1fr}
 }
+
+/* ================= ADAPTATION MOBILE (≤ 760px) ================= */
+@media(max-width:760px){
+  .borne-page{padding:24px 0 56px}
+  .borne-head{margin-bottom:26px}
+  .borne-head h1{font-size:25px;line-height:1.2}
+  .borne-head p{font-size:14px}
+
+  .search-card{padding:17px 15px;border-radius:17px;margin-bottom:24px}
+  .search-input-wrap{min-width:0;flex:1 1 100%}
+  .search-input-wrap input{font-size:16px;padding:13px 15px 13px 42px}
+  .search-form .btn{width:100%;justify-content:center;min-height:50px}
+
+  .result-card{padding:20px 16px;border-radius:19px;margin-bottom:22px}
+  .rc-head{gap:12px;padding-bottom:16px;margin-bottom:18px}
+  .rc-user{gap:13px}
+  .rc-avatar{width:46px;height:46px;font-size:17px;border-radius:13px}
+  .rc-user h3{font-size:17px}
+  .rc-box{padding:14px}
+  .rc-box b{font-size:16px}
+  .carence-checker{padding:16px 14px}
+  .claim-emitter{padding:18px 15px}
+
+  /* Le champ « Acte médical » a des libellés très longs : il doit rester borné */
+  .claim-emitter .f-group,.claim-emitter select,.claim-emitter input{width:100%;min-width:0;max-width:100%}
+  .claim-emitter select,.claim-emitter input{font-size:16px;padding:12px 14px;border-radius:11px;border:1.5px solid #334155}
+  .claim-emitter .form-grid-2{display:flex;flex-direction:column;gap:13px}
+  .claim-emitter .f-group{display:flex;flex-direction:column;gap:6px}
+  .claim-emitter .f-group label{font:600 12.5px var(--font-b)}
+  #btnEmitClaim{width:100%;justify-content:center;min-height:50px}
+}
 </style>
 
 <div class="breadcrumb" style="background:#0B1329;border-color:#1E293B">

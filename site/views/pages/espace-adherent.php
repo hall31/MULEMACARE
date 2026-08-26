@@ -91,6 +91,40 @@ $capPercent = round((($member['consumed_cap'] ?? 0) / ($member['annual_cap'] ?? 
 
 @media(max-width:960px){
   .adh-main-grid{grid-template-columns:1fr}
+  .adh-main-grid>*{min-width:0}
+  .box-white{min-width:0}
+}
+
+/* ================= ADAPTATION MOBILE (≤ 760px) ================= */
+@media(max-width:760px){
+  .adherent-hub{padding:22px 0 56px}
+  .adh-welcome-bar{padding:22px 18px;border-radius:20px;margin-bottom:24px;gap:18px}
+  .aw-left h1{font-size:23px}
+  .aw-left p{font-size:14px}
+  .aw-status-badge{font-size:11.5px;padding:6px 12px;line-height:1.35}
+  .adh-welcome-bar>div:last-child,.adh-welcome-bar .btn{width:100%;justify-content:center}
+  .adh-main-grid{gap:0;margin-bottom:0}
+  .box-white{padding:19px 16px;border-radius:18px;margin-bottom:18px}
+  .box-white h3{font-size:16px;line-height:1.3}
+
+  .cssa-card-3d{height:auto;min-height:212px;padding:18px;border-radius:18px}
+  .cssa-card-3d:hover{transform:none}
+  .cc-number{font-size:16px;letter-spacing:.08em}
+  .cc-chip{width:36px;height:28px}
+  .cc-qr{width:64px;height:64px}
+  .card-3d-wrap{margin-bottom:18px}
+
+  .gauge-labels{flex-direction:column;gap:3px;font-size:13px}
+  .carence-pill-grid{grid-template-columns:1fr;gap:10px}
+
+  /* Tableaux → fiches empilées : plus lisible qu'un défilement horizontal */
+  .ben-table thead,.claims-table thead{display:none}
+  .ben-table,.claims-table,.ben-table tbody,.claims-table tbody{display:block;width:100%}
+  .ben-table tr,.claims-table tr{display:block;border:1px solid #E2E8F0;border-radius:14px;padding:12px 14px;margin-bottom:10px;background:#fff}
+  .ben-table tr:last-child,.claims-table tr:last-child{margin-bottom:0}
+  .ben-table td,.claims-table td{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:5px 0;border:0;font-size:13.5px;text-align:right}
+  .ben-table td::before,.claims-table td::before{content:attr(data-label);font:600 12px var(--font-b);color:#64748B;text-align:left;flex:none}
+  .ben-table td:first-child,.claims-table td:first-child{padding-bottom:9px;margin-bottom:5px;border-bottom:1px solid #F1F5F9}
 }
 </style>
 
@@ -221,10 +255,10 @@ $capPercent = round((($member['consumed_cap'] ?? 0) / ($member['annual_cap'] ?? 
               <tbody>
                 <?php foreach (($member['beneficiaries'] ?? []) as $b): ?>
                 <tr>
-                  <td><b><?= htmlspecialchars($b['name']) ?></b></td>
-                  <td><?= htmlspecialchars($b['relation'] ?? 'Ayant droit') ?></td>
-                  <td><?= htmlspecialchars($b['city'] ?? $member['city']) ?></td>
-                  <td><span style="color:#047857;font-weight:700">100 % Actif</span></td>
+                  <td data-label="Nom"><b><?= htmlspecialchars($b['name']) ?></b></td>
+                  <td data-label="Rôle"><?= htmlspecialchars($b['relation'] ?? 'Ayant droit') ?></td>
+                  <td data-label="Ville"><?= htmlspecialchars($b['city'] ?? $member['city']) ?></td>
+                  <td data-label="Tiers-payant"><span style="color:#047857;font-weight:700">100 % Actif</span></td>
                 </tr>
                 <?php endforeach; ?>
               </tbody>
@@ -249,11 +283,11 @@ $capPercent = round((($member['consumed_cap'] ?? 0) / ($member['annual_cap'] ?? 
               <tbody>
                 <?php foreach (($member['claims_history'] ?? []) as $cl): ?>
                 <tr>
-                  <td><?= htmlspecialchars($cl['date']) ?></td>
-                  <td><b><?= htmlspecialchars($cl['clinic']) ?></b></td>
-                  <td><?= htmlspecialchars($cl['act']) ?></td>
-                  <td><?= htmlspecialchars($cl['amount']) ?></td>
-                  <td><span style="color:#047857;font-weight:700;background:#ECFDF5;padding:3px 8px;border-radius:6px"><?= htmlspecialchars($cl['copay']) ?></span></td>
+                  <td data-label="Date"><?= htmlspecialchars($cl['date']) ?></td>
+                  <td data-label="Établissement"><b><?= htmlspecialchars($cl['clinic']) ?></b></td>
+                  <td data-label="Acte médical"><?= htmlspecialchars($cl['act']) ?></td>
+                  <td data-label="Montant"><?= htmlspecialchars($cl['amount']) ?></td>
+                  <td data-label="Avance adhérent"><span style="color:#047857;font-weight:700;background:#ECFDF5;padding:3px 8px;border-radius:6px"><?= htmlspecialchars($cl['copay']) ?></span></td>
                 </tr>
                 <?php endforeach; ?>
               </tbody>

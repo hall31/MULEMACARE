@@ -68,6 +68,31 @@ $isAnnual = ($quote['cycle'] ?? 'annual') === 'annual';
   .quote-carence-grid{grid-template-columns:1fr}
   .quote-meta-box{text-align:left}
 }
+
+/* ================= ADAPTATION MOBILE (≤ 760px) ================= */
+@media(max-width:760px){
+  .quote-page{padding:24px 0 56px}
+  .quote-card{padding:20px 16px;border-radius:18px}
+  .quote-head{gap:16px;padding-bottom:20px;margin-bottom:20px}
+  .quote-title h1{font-size:22px}
+  .quote-title p{font-size:13.5px}
+  .quote-meta-box{width:100%;padding:14px 16px}
+  .quote-grid{gap:14px;margin-bottom:22px}
+  .quote-box{padding:17px 15px}
+  .quote-row{flex-direction:column;align-items:flex-start;gap:2px;font-size:13.5px}
+
+  .quote-pricing-banner{padding:20px 17px;gap:16px;margin-bottom:22px;border-radius:16px}
+  .qpb-left h2{font-size:27px}
+  .qpb-right{width:100%;flex-direction:column;gap:10px}
+  .qpb-right .btn{width:100%;justify-content:center;min-height:50px}
+
+  .quote-carence-box{padding:16px 15px;margin-bottom:22px}
+
+  .quote-actions{flex-direction:column;align-items:stretch;gap:12px}
+  .quote-actions-left{flex-direction:column;gap:10px;min-width:0}
+  .quote-actions-left .btn{width:100%;justify-content:center;min-height:50px}
+  .quote-actions>div:last-child{display:flex;justify-content:center;padding-top:4px}
+}
 </style>
 
 <div class="breadcrumb">

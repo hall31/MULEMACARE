@@ -97,7 +97,7 @@
 .step-f{border:0;margin-bottom:38px}
 .step-f legend{font:700 12px var(--font-b);letter-spacing:.14em;text-transform:uppercase;color:var(--emerald);margin-bottom:16px;display:flex;align-items:center;gap:10px}
 .stno{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--emerald-050);color:var(--emerald);font:800 11.5px var(--font-n)}
-.opt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.opt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:12px}
 .opt{display:flex;gap:13px;align-items:center;padding:14px;border:1.5px solid var(--line);border-radius:var(--r-md);background:#fff;cursor:pointer;transition:.18s;position:relative}
 .opt input{position:absolute;opacity:0;pointer-events:none}
 .opt:hover{border-color:rgba(13,148,136,.55)}
@@ -123,7 +123,7 @@
 .stepper button svg{width:15px;height:15px}
 .stepper b{font:700 17px var(--font-n);min-width:44px;text-align:center}
 .pme-unit{font:600 13px var(--font-b);color:var(--emerald)}
-.p-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px}
+.p-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(165px,100%),1fr));gap:12px}
 .p-opt{padding:14px;border:1.5px solid var(--line);border-radius:var(--r-md);cursor:pointer;transition:.18s;background:#fff;position:relative}
 .p-opt input{position:absolute;opacity:0;pointer-events:none}
 .p-opt:hover{border-color:rgba(13,148,136,.55)}
@@ -357,6 +357,62 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
 .cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 .cta-note{margin-top:30px;font:500 13px var(--font-b);color:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap}
 .cta-note svg{width:14px;height:14px;color:#5EEAD4}
+
+/* ================= ADAPTATION MOBILE (≤ 760px) ================= */
+@media(max-width:760px){
+  .hero{padding:36px 0 52px}
+  .hero h1{font-size:clamp(1.95rem,8.4vw,2.5rem);margin:16px 0 14px}
+  .hero h1 .hl{white-space:normal}
+  .hero-sub{font-size:15.5px;margin-bottom:24px}
+  .hero-grid{gap:38px}
+  .hero-cta{gap:10px}
+  .hero-cta .btn{flex:1 1 100%;min-height:50px}
+  .hero-proof{gap:12px;margin-top:24px;padding-top:20px}
+  .proof-sep{display:none}
+  .scene-hint{margin-top:16px;font-size:12px;text-align:center}
+
+  /* Simulateur */
+  .step-f{margin-bottom:28px}
+  .opt-grid{grid-template-columns:1fr;gap:10px}
+  .p-opts{grid-template-columns:1fr 1fr;gap:10px}
+  .opt,.p-opt{padding:12px;min-width:0}
+  .opt b{font-size:14px}
+  .chips{gap:7px}
+  .chip{padding:10px 14px;font-size:13px}
+  .pme-box{padding:13px 14px;gap:12px}
+  .sim-panel{padding:22px 18px;border-radius:18px}
+  .sim-panel .btn{min-height:50px}
+
+  /* Comparateur : on annonce le défilement horizontal */
+  .cmp-wrap table{min-width:720px}
+  .cmp-wrap th,.cmp-wrap td{padding:11px 13px;font-size:12.5px}
+  .cmp-wrap td:first-child,.cmp-wrap th:first-child{min-width:150px;font-size:12.5px}
+  .cmp-title h3{font-size:19px}
+  .th-choose{min-height:40px;padding:9px 15px}
+
+  /* Alliance Lisacare / Ongwa */
+  .ally-card{padding:22px 17px;border-radius:20px;gap:16px;min-width:0}
+  .ally-card>*{min-width:0}
+  .lisa-kpis{grid-template-columns:1fr;gap:11px;padding:13px}
+  .vr-metrics{grid-template-columns:1fr 1fr;gap:8px}
+  .visit-report,.ongwa-next{padding:14px}
+  .phone-scr{height:380px}
+  .lisa-actions{gap:10px}
+  .lisa-actions>*{flex:1 1 100%;justify-content:center}
+
+  /* Réseau de soins */
+  .net-row{padding:15px 14px;gap:13px}
+  .net-search{padding:3px 13px}
+  .net-search input{font-size:16px}
+
+  /* CTA final */
+  .cta-final{padding:64px 0}
+  .cta-btns .btn{flex:1 1 100%;min-height:50px}
+}
+@media(max-width:430px){
+  .p-opts{grid-template-columns:1fr}
+  .vr-metrics{grid-template-columns:1fr}
+}
 </style>
 
 <!-- ═══════════ HERO ═══════════ -->
@@ -656,6 +712,7 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
         <h3>Comparateur détaillé</h3>
         <p>Cliquez sur « Choisir » pour sélectionner une formule — les prix s'adaptent à votre devise.</p>
       </div>
+      <p class="table-hint"><i data-lucide="move-horizontal"></i>Faites glisser le tableau vers la gauche pour voir toutes les formules</p>
       <div class="cmp-wrap">
         <table>
           <thead>
@@ -834,7 +891,7 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
         <p class="sec-sub">De Paris à Douala, de Bruxelles à Abidjan — découvrez pourquoi la diaspora fait confiance à MulemaCare pour protéger ses proches.</p>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:28px">
       
       <div class="reveal" style="background:var(--bg);border:1.5px solid var(--line);border-radius:22px;padding:32px 28px;display:flex;flex-direction:column;justify-content:space-between">
         <div>

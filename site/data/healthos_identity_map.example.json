@@ -1,0 +1,24 @@
+{
+  "_lisez_moi": [
+    "Modèle de la table de correspondance CSSA -> patient_id HealthOS.",
+    "Le fichier réel s'appelle healthos_identity_map.json et n'est pas versionné :",
+    "il contient des identifiants d'adhérents.",
+    "",
+    "Chaque ligne doit porter validated_at et validated_by. Une ligne sans",
+    "validation est ignorée : une correspondance non relue vaut une",
+    "correspondance devinée, et le bridge n'a pas le droit de deviner.",
+    "",
+    "Deux lignes qui rapprochent le même numéro CSSA de deux patients — ou le",
+    "même patient de deux numéros — annulent la table entière. Voir",
+    "app/Services/HealthOSIdentityMap.php."
+  ],
+  "tenant": "mulemacare-pilote",
+  "entries": [
+    {
+      "cssa_number": "CSSA-0000-26",
+      "healthos_patient_id": "patient-exemple",
+      "validated_at": "2026-08-26",
+      "validated_by": "migration de données, relue par la mutuelle"
+    }
+  ]
+}

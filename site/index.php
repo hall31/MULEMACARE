@@ -9,23 +9,9 @@ if (!headers_sent()) {
     http_response_code(200);
 }
 
-// Autoloader PSR-4 natif sans dépendance externe
-spl_autoload_register(function (string $class) {
-    $prefix = 'App\\';
-    $baseDir = __DIR__ . '/app/';
-
-    $len = strlen($prefix);
-    if (strncmp($prefix, $class, $len) !== 0) {
-        return;
-    }
-
-    $relativeClass = substr($class, $len);
-    $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
-
-    if (file_exists($file)) {
-        require $file;
-    }
-});
+// Autoloader PSR-4 natif sans dépendance externe, partagé avec les scripts
+// d'exploitation et la suite de tests.
+require __DIR__ . '/app/autoload.php';
 
 use App\Core\Router;
 use App\Controllers\HomeController;

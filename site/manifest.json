@@ -1,0 +1,45 @@
+{
+  "name": "MulemaCare — Mutuelle Santé Solidaire",
+  "short_name": "MulemaCare",
+  "description": "Mutuelle santé digitale et solidaire pour l'Afrique et la diaspora : tiers-payant 100 %, carte CSSA digitale et réseau de cliniques conventionnées.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F8FAFC",
+  "theme_color": "#097268",
+  "categories": ["health", "medical", "finance"],
+  "icons": [
+    {
+      "src": "/assets/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Espace Adhérent 360°",
+      "short_name": "Ma carte",
+      "url": "/espace-adherent"
+    },
+    {
+      "name": "Adhérer en ligne",
+      "short_name": "Adhérer",
+      "url": "/adhesion"
+    },
+    {
+      "name": "Annuaire des cliniques",
+      "short_name": "Annuaire",
+      "url": "/reseau-soins"
+    }
+  ]
+}

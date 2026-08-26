@@ -35,7 +35,7 @@ $initialCurr = $initialQuote['currency'] ?? ($_GET['curr'] ?? 'EUR');
 .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
 .f-group{display:flex;flex-direction:column;gap:7px}
 .f-group label{font:600 13.5px var(--font-b);color:var(--ink)}
-.f-group input, .f-group select{padding:12px 16px;border:1.5px solid #CBD5E1;border-radius:12px;font:500 14.5px var(--font-b);background:#fff;color:var(--ink);outline:none;transition:border-color .2s}
+.f-group input, .f-group select{width:100%;min-width:0;max-width:100%;padding:12px 16px;border:1.5px solid #CBD5E1;border-radius:12px;font:500 14.5px var(--font-b);background:#fff;color:var(--ink);outline:none;transition:border-color .2s}
 .f-group input:focus, .f-group select:focus{border-color:var(--emerald);box-shadow:0 0 0 3px rgba(16,185,129,.15)}
 
 .plan-picker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
@@ -67,6 +67,34 @@ $initialCurr = $initialQuote['currency'] ?? ($_GET['curr'] ?? 'EUR');
   .form-grid-2{grid-template-columns:1fr}
   .beneficiary-row{grid-template-columns:1fr;gap:8px}
   .pay-methods{grid-template-columns:1fr}
+}
+
+/* ================= ADAPTATION MOBILE (≤ 760px) ================= */
+@media(max-width:760px){
+  .adh-page{padding:24px 0 56px}
+  .adh-card{padding:20px 16px;border-radius:18px}
+  .adh-head{margin-bottom:20px}
+  .adh-head h2{font-size:20px;line-height:1.25}
+  .adh-head p{font-size:13.5px}
+
+  /* Stepper compact : 4 étapes doivent tenir sur 343px */
+  .stepper{margin-bottom:26px}
+  .stepper::before{top:17px;left:28px;right:28px}
+  .step-item{flex:1 1 0;min-width:0;padding:0 2px;gap:6px}
+  .step-circle{width:35px;height:35px;font-size:13.5px;border-width:2px}
+  .step-item.active .step-circle{box-shadow:0 0 0 4px rgba(16,185,129,.2)}
+  .step-label{font-size:10px;letter-spacing:0;text-align:center;line-height:1.25;overflow-wrap:anywhere}
+
+  .form-grid-2{gap:14px;margin-bottom:14px}
+  /* Sur iOS, une police < 16px déclenche un zoom automatique à la saisie */
+  .f-group input,.f-group select{font-size:16px;padding:13px 14px}
+  .plan-picker-grid{gap:11px}
+  .plan-opt-box{padding:14px 13px;border-radius:14px}
+  .plan-opt-box h4{font-size:15px}
+  .plan-opt-box .pop-price{font-size:17px}
+  .beneficiary-row{padding:14px}
+  .pay-card{padding:16px}
+  .adh-card .btn{min-height:50px}
 }
 </style>
 

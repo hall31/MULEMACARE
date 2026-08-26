@@ -30,12 +30,32 @@ $countryInfo = $countryInfo ?? [
 .pays-kpi-item b{font:800 19px var(--font-n);color:#fff}
 
 .pays-clinics-sec{padding:80px 0;background:#fff}
-.pays-clinics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px;margin-top:36px}
+.pays-clinics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:22px;margin-top:36px}
 .pays-clinic-card{background:var(--bg);border:1.5px solid var(--line);border-radius:18px;padding:22px;transition:.18s}
 .pays-clinic-card:hover{border-color:var(--emerald);transform:translateY(-3px);box-shadow:var(--shadow-1)}
 
 @media(max-width:960px){
   .pays-hero-in{grid-template-columns:1fr}
+}
+
+/* ================= ADAPTATION MOBILE (≤ 760px) ================= */
+@media(max-width:760px){
+  .pays-hero{padding:38px 0 52px}
+  .pays-hero-in{gap:30px}
+  .pays-hero h1{font-size:clamp(1.9rem,8vw,2.4rem);margin:14px 0 13px}
+  .pays-hero-sub{font-size:15.5px;margin-bottom:22px}
+  .pays-hero .btn{width:100%;justify-content:center;min-height:50px}
+
+  .pays-kpi-card{padding:20px 17px;border-radius:19px}
+  .pays-kpi-card h3{font-size:17px}
+  .pays-kpi-grid{gap:10px;margin:16px 0}
+  .pays-kpi-item{padding:11px}
+  .pays-kpi-item b{font-size:17px}
+
+  .pays-clinics-sec{padding:52px 0}
+  .pays-clinics-grid{grid-template-columns:1fr;gap:14px;margin-top:26px}
+  .pays-clinic-card{padding:17px 16px}
+  .pays-clinic-card button,.pays-clinic-card .btn{min-height:44px}
 }
 </style>
 
