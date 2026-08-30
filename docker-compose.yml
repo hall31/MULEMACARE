@@ -1,0 +1,44 @@
+services:
+  mulemacare-redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - mulemacare-redis-data:/data
+
+  mulemacare-api:
+    image: cybernecs/mulemacare-api:${CYBERNECS_IMAGE_TAG:-local}
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "8088:8080"
+    depends_on:
+      mulemacare-redis:
+        condition: service_healthy
+    environment:
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_ENABLED: ${STRIPE_ENABLED:-false}
+      DATABASE_URL: ${DATABASE_URL:-sqlite+aiosqlite:///./mulemacare_os.db}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-32chars-min}
+      MCARE_ENABLED: ${MCARE_ENABLED:-false}
+      # HealthOS bridge configuration
+      MULEMACARE_HEALTHOS_BRIDGE_ENABLED: ${MULEMACARE_HEALTHOS_BRIDGE_ENABLED:-false}
+      HEALTHOS_BASE_URL: ${HEALTHOS_BASE_URL:-}
+      HEALTHOS_PARTNER_API_KEY: ${HEALTHOS_PARTNER_API_KEY:-}
+      HEALTHOS_TIMEOUT_MS: ${HEALTHOS_TIMEOUT_MS:-5000}
+      HEALTHOS_PILOT_TENANT: ${HEALTHOS_PILOT_TENANT:-mulemacare}
+      REDIS_URL: ${REDIS_URL:-redis://mulemacare-redis:6379/0}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  mulemacare-redis-data:
