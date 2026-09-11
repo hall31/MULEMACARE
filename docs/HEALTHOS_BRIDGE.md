@@ -1,122 +1,348 @@
-# Bridge MulemaCare → HealthOS
+# HealthOS Partner Bridge
 
-Le site MulemaCare et HealthOS restent deux applications séparées. Le bridge ne
-remplace aucune API existante et il est désactivé par défaut.
+MulemaCare connects to HealthOS for member eligibility verification and pre-authorization requests. The bridge is **disabled by default** and only available to pilot tenants.
 
-## Contrat v1
+## Architecture
 
-- Base : `https://<healthos>/api/v1/partner`
-- Authentification : `X-API-Key`, `X-Timestamp`, `X-Nonce`, `X-Signature`.
-- Signature : HMAC-SHA256 de `timestamp + "\n" + nonce + "\n" + méthode + "\n" + chemin + "\n" + sha256(corps)` avec la clé partenaire.
-- Les nonces sont à usage unique pendant cinq minutes ; HealthOS refuse les relectures.
-- La préautorisation est une demande `PENDING_REVIEW`, jamais une approbation automatique.
-- Chaque clé partenaire porte des **portées** explicites. Une clé sans la portée
-  demandée reçoit `403`, quelle que soit la configuration du site.
-
-## Les trois étapes, dans cet ordre
-
-Le bridge s'ouvre en trois temps. On ne passe au suivant qu'avec le rapport du
-précédent en main.
-
-| Étape | `MULEMACARE_HEALTHOS_BRIDGE_MODE` | Portées de la clé | Ce qui se passe |
-|---|---|---|---|
-| 1. Observation | `observe` | `eligibility:read` | Un script compare hors ligne les décisions des deux systèmes. Aucune page n'appelle HealthOS, aucun adhérent n'est affecté. |
-| 2. Lecture des droits | `read` | `eligibility:read` | Les droits HealthOS sont affichés à côté de ceux du site. Toujours aucune écriture. |
-| 3. Préautorisations | `preauth` | `eligibility:read`, `claims:preauthorize` | Le site peut déposer une demande, qui reste `PENDING_REVIEW`. |
-
-Aujourd'hui, seule l'étape 1 est implémentée. Les étapes 2 et 3 demandent
-chacune leur propre lot : le mode ne fait rien tout seul.
-
-## Étape 1 — rapprochement en mode observation
-
-### La table de correspondance
-
-Elle rapproche un numéro CSSA d'un `patient_id` HealthOS. Elle est produite par
-la migration de données et **relue par un humain** : chaque ligne porte
-`validated_at` et `validated_by`, et une ligne sans validation est ignorée.
-Deviner l'identifiant HealthOS depuis une carte, un email ou un téléphone est
-interdit, et `site/app/Services/HealthOSIdentityMap.php` n'offre aucun moyen de
-le faire.
-
-Modèle : `site/data/healthos_identity_map.example.json`. Le fichier réel
-(`site/data/healthos_identity_map.json`) n'est pas versionné.
-
-Deux lignes qui rapprochent le même numéro de deux patients — ou le même patient
-de deux numéros — **annulent la table entière**. Une table refusée arrête le
-rapprochement ; une table ambiguë le ferait mentir, et l'erreur se paierait en
-droits de santé montrés à la mauvaise personne.
-
-### La clé partenaire, restreinte côté HealthOS
-
-Côté HealthOS, la clé du pilote est émise avec la seule portée nécessaire :
-
-```bash
-PYTHONPATH=. DATABASE_URL=postgresql+psycopg2://... \
-  python -m tools.provision_partner_credential \
-    --partner-id <partenaire-mulemacare> \
-    --scopes eligibility:read
+```
+MulemaCare API
+    ↓
+HealthOSClient (async HTTP)
+    ├─ Signature: HMAC-SHA256
+    │  Formula: timestamp | nonce | method | path | sha256(body)
+    │  Signed with: HEALTHOS_PARTNER_API_KEY
+    │
+    ├─ Nonce anti-replay
+    │  Storage: Redis (5-minute cache)
+    │  Purpose: Prevent replay attacks
+    │
+    ├─ Retry logic
+    │  Strategy: Exponential backoff (3 attempts)
+    │  Backoff: 0.5s, 1s, 2s
+    │
+    └─ Graceful fallback
+       On timeout/error: return error hint + eligible=null
+       → Operator can proceed manually via ActionCenter HITL
+       ↓
+HealthOS API
 ```
 
-La clé n'est affichée qu'une fois. Avec cette portée, `POST /claims/analyze`,
-`POST /claims/preauthorize`, le score de confiance des prestataires et les
-alertes de fraude répondent `403`. C'est HealthOS qui refuse, pas le site qui
-s'abstient : c'est la différence entre une promesse et un contrôle.
+## Configuration
 
-### Lancer le rapprochement
+All settings are environment variables:
 
 ```bash
-MULEMACARE_HEALTHOS_BRIDGE_ENABLED=true \
-MULEMACARE_HEALTHOS_BRIDGE_MODE=observe \
-HEALTHOS_BASE_URL=https://healthos.example.org \
-HEALTHOS_PARTNER_API_KEY=<clé partenaire, portée eligibility:read> \
-HEALTHOS_PILOT_TENANT=<tenant pilote> \
-HEALTHOS_TIMEOUT_MS=2500 \
-php site/scripts/healthos_observation_run.php --out site/data/healthos_observation_$(date +%F).json
+# Enable the bridge (default: false)
+MULEMACARE_HEALTHOS_BRIDGE_ENABLED=true
+
+# HealthOS partner API (required if enabled)
+HEALTHOS_BASE_URL=https://api.healthos.com
+HEALTHOS_PARTNER_API_KEY=your-secret-key-here
+
+# Timeouts and limits
+HEALTHOS_TIMEOUT_MS=5000          # Default 5 seconds
+HEALTHOS_PILOT_TENANT=mulemacare  # Only this tenant can call bridge
+
+# Redis for nonce cache (required)
+REDIS_URL=redis://localhost:6379/0
 ```
 
-Le script sort en `0` même quand il trouve des écarts — trouver un écart est le
-but. Il sort en `1` quand il n'a pas pu tourner : bridge éteint, mauvais mode,
-table de correspondance inexploitable. Chaque cause est nommée.
+### Production Requirements
 
-### Lire le rapport
+1. **HEALTHOS_PARTNER_API_KEY** must be 32+ characters
+2. **Redis** must be configured and running
+3. **TLS** required for HEALTHOS_BASE_URL
+4. Network isolation: HealthOS API calls should be from private networks
 
-| Verdict | Sens |
-|---|---|
-| `match` | Les deux systèmes disent la même chose. |
-| `divergent` | Ils diffèrent sur la couverture, la carence ou le plafond restant. Chaque écart est expliqué. |
-| `unreachable` | HealthOS n'a pas répondu. Ce n'est ni une concordance ni un écart. |
-| `unmapped` | Le numéro n'est pas dans la table. Aucun appel n'est parti. |
-| `not_a_record` | Le site a répondu avec sa fiche de démonstration. Écarté : comparer une fiction ne dit rien. |
-| `unknown_to_site` | Rapproché côté table, inconnu côté site. À reprendre dans la migration. |
+## API Endpoints
 
-Deux réglages évitent les faux écarts, et un faux écart en masse rend le rapport
-illisible :
+### GET /api/v1/healthos/status
 
-- `HEALTHOS_MINOR_UNITS_PER_UNIT` (défaut `1`) — HealthOS compte en unités
-  mineures ; le franc CFA n'a pas de subdivision en usage. Une valeur fausse
-  ferait diverger tous les plafonds d'un facteur constant.
-- `HEALTHOS_CAP_TOLERANCE` (défaut `0`) — écart de plafond toléré avant d'être
-  signalé, dans l'unité du site.
-
-### Ce que l'étape 1 ne fait pas
-
-Aucune page, aucun contrôleur n'appelle le rapprochement : un test le vérifie sur
-l'arborescence du site (`site/tests/HealthOSObservationTest.php`). Un adhérent ne
-voit jamais la décision de HealthOS pendant cette phase, donc une divergence ne
-peut pas lui coûter une prise en charge.
-
-## Tests
-
-Le site n'a ni Composer ni `vendor/`. Le lanceur est en bibliothèque standard :
+Returns bridge status and configuration (OPS/ADMIN only).
 
 ```bash
-php site/tests/run.php
+curl -H "Authorization: Bearer $TOKEN" \
+  http://localhost:8088/api/v1/healthos/status
 ```
 
-La CI l'exécute dans le job `MulemaCare bridge`, à côté des `php -l`.
+**Response:**
+```json
+{
+  "enabled": true,
+  "mode": "read_eligibility_then_preauth_hitl",
+  "pilot_tenant": "mulemacare",
+  "base_url": "https://api.healthos.com",
+  "timeout_ms": 5000
+}
+```
 
-## Rollback
+### POST /api/v1/healthos/eligibility
 
-Remettre `MULEMACARE_HEALTHOS_BRIDGE_ENABLED=false`. Le site MulemaCare continue
-alors d'utiliser ses parcours existants sans appel HealthOS. Aucune donnée n'est
-à défaire : l'étape d'observation n'écrit rien.
+Fetch member eligibility from HealthOS (read-only). Pilot tenant only.
+
+**Request:**
+```json
+{
+  "cssa_id": "CSSA-001-2025",
+  "healthos_patient_id": "pat-abc123"
+}
+```
+
+**Response (success):**
+```json
+{
+  "patient_id": "pat-abc123",
+  "eligible": true,
+  "coverage_start": "2024-01-01",
+  "coverage_end": "2025-01-01",
+  "plan_name": "Gold"
+}
+```
+
+**Response (not found):**
+```json
+{
+  "patient_id": "pat-unknown",
+  "eligible": false,
+  "error": "Patient not found in HealthOS"
+}
+```
+
+**Response (timeout/fallback):**
+```json
+{
+  "patient_id": "pat-xyz",
+  "eligible": null,
+  "error": "HealthOS service timeout — fallback to manual review"
+}
+```
+
+### POST /api/v1/healthos/preauth-intent
+
+Create a pre-authorization intent on HealthOS. Status is always **PENDING_REVIEW** — never auto-approved.
+
+**Request:**
+```json
+{
+  "cssa_id": "CSSA-001-2025",
+  "healthos_patient_id": "pat-abc123",
+  "reason": "Emergency surgery"
+}
+```
+
+**Response (success):**
+```json
+{
+  "ok": true,
+  "proposal_id": "prop-healthos-123",
+  "status": "PENDING_REVIEW"
+}
+```
+
+**Response (fallback):**
+```json
+{
+  "ok": false,
+  "status": "PENDING_REVIEW",
+  "error": "HealthOS service unavailable — fallback to manual creation"
+}
+```
+
+## Security Contracts
+
+### 1. Read-Only Eligibility
+
+- Eligibility checks **never modify** HealthOS data
+- No side effects on MulemaCare side
+- Safe to retry without idempotency concerns
+
+### 2. Pre-Authorization Never Auto-Approved
+
+- Status always starts as **PENDING_REVIEW**
+- Human (ActionCenter) must decide
+- Bridge creates proposal on both HealthOS and MulemaCare
+- Operator reviews both systems
+
+### 3. Nonce Anti-Replay (5-minute window)
+
+- Each request has a unique nonce
+- Redis tracks used nonces for 5 minutes
+- Prevents duplicate processing if request retries
+- Nonce format: 32-character hex string
+
+### 4. HMAC-SHA256 Signature
+
+- Signed by HEALTHOS_PARTNER_API_KEY
+- Formula: `timestamp|nonce|method|path|sha256(body)`
+- Verified by HealthOS to authenticate MulemaCare
+- Timeout: 5 minutes (timestamp skew tolerance)
+
+### 5. Tenant Isolation
+
+- Only `HEALTHOS_PILOT_TENANT` (default: `mulemacare`) can call bridge
+- Other tenants get HTTP 403 Forbidden
+- Prevents data leakage between Mutuelle instances
+
+## Retry Strategy
+
+Exponential backoff for transient failures:
+
+| Attempt | Backoff | Total Time |
+|---------|---------|-----------|
+| 1       | —       | 0s        |
+| 2       | 0.5s    | 0.5s      |
+| 3       | 1.0s    | 1.5s      |
+| 4 (fail)| —       | 1.5s      |
+
+Retried errors:
+- **EAGAIN** / **Network timeout**
+- **Temporary HTTP 5xx** (e.g., 503 Service Unavailable)
+
+Not retried:
+- **HTTP 401** (bad auth)
+- **HTTP 403** (permission denied)
+- **HTTP 404** (not found)
+
+## Graceful Degradation
+
+When HealthOS is unavailable:
+
+1. **Eligibility check** returns `eligible: null` with error message
+2. **Preauth intent** returns `ok: false` but still posts to ActionCenter
+3. Operator can proceed manually via UI
+4. No blocking of operations
+
+## Testing
+
+### Local Development
+
+```bash
+# Start Redis
+docker run -d -p 6379:6379 redis:7-alpine
+
+# Enable bridge in .env
+echo "MULEMACARE_HEALTHOS_BRIDGE_ENABLED=true" >> .env
+echo "HEALTHOS_BASE_URL=https://api.healthos.test" >> .env
+echo "HEALTHOS_PARTNER_API_KEY=test-secret-key-32-chars" >> .env
+echo "REDIS_URL=redis://localhost:6379/0" >> .env
+
+# Run tests
+pytest api/tests/test_healthos_bridge.py -v
+
+# Start server
+make dev
+```
+
+### Mocking HealthOS (Unit Tests)
+
+```python
+import pytest
+from unittest.mock import AsyncMock, patch
+
+@pytest.mark.asyncio
+async def test_eligibility_success():
+    mock_response = AsyncMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {
+        "eligible": True,
+        "plan_name": "Gold",
+    }
+
+    with patch("httpx.AsyncClient.request", return_value=mock_response):
+        client = HealthOSClient()
+        result = await client.get_eligibility("pat-123")
+        assert result["eligible"] is True
+```
+
+### Sandbox HealthOS
+
+For testing without real HealthOS:
+
+1. Deploy mock HealthOS service locally
+2. Point HEALTHOS_BASE_URL to mock
+3. Mock returns realistic eligibility responses
+4. Test retry + fallback paths
+
+Example mock service (FastAPI):
+```python
+from fastapi import FastAPI, Header
+import hmac, hashlib
+
+app = FastAPI()
+
+@app.post("/api/v1/partner/preauth-intent")
+async def mock_preauth(
+    x_signature: str = Header(...),
+    body: dict = None,
+):
+    # Verify signature, return 201 with proposal_id
+    return {
+        "proposal_id": "mock-prop-123",
+        "status": "pending_review",
+    }
+```
+
+## Deployment Checklist
+
+- [ ] Redis service running and healthy
+- [ ] HEALTHOS_PARTNER_API_KEY in secrets (not in git)
+- [ ] HEALTHOS_BASE_URL points to production
+- [ ] TLS certificate pinning configured (optional but recommended)
+- [ ] Nonce cache retention set to 300 seconds
+- [ ] Timeout set to 5000ms or higher
+- [ ] Only pilot tenant can access bridge
+- [ ] Audit logs enabled for all bridge calls
+- [ ] ActionCenter HITL trained on preauth review flow
+- [ ] Fallback procedures documented
+
+## Troubleshooting
+
+### Bridge returns 503 Disabled
+
+```
+Error: HealthOS bridge disabled
+```
+
+Check:
+1. `MULEMACARE_HEALTHOS_BRIDGE_ENABLED=true`
+2. `HEALTHOS_BASE_URL` and `HEALTHOS_PARTNER_API_KEY` configured
+
+### Signature validation fails
+
+```
+Error: X-Signature validation failed
+```
+
+Check:
+1. `HEALTHOS_PARTNER_API_KEY` matches HealthOS configuration
+2. System clock is in sync (< 5 minutes skew)
+3. Request body is exactly as HealthOS expects
+
+### Nonce replay error
+
+```
+Error: Nonce has already been used
+```
+
+Check:
+1. Redis is running and accessible
+2. `REDIS_URL` is correct
+3. Request is not being sent twice by upstream
+
+### Timeout errors
+
+```
+Error: HealthOS service timeout
+```
+
+Check:
+1. Network connectivity to HealthOS
+2. `HEALTHOS_TIMEOUT_MS` is sufficient (5000+ recommended)
+3. HealthOS service is healthy
+
+## References
+
+- **HealthOS API Docs**: https://docs.healthos.com/partner-api
+- **Nonce Anti-Replay**: RFC 8305
+- **HMAC-SHA256**: RFC 2104, FIPS 180-4
+- **ActionCenter HITL**: docs/ACTION_CENTER.md

@@ -232,42 +232,50 @@
 
       <!-- Formulaire Devis Express -->
       <div class="reveal" id="proForm" style="background:#fff;border:1.5px solid var(--line);border-radius:22px;padding:34px;box-shadow:var(--shadow-1)">
-        <h3 style="font-size:21px;font-weight:700;margin-bottom:8px">Demande de Convention &amp; Devis RH</h3>
-        <p style="font-size:13.5px;color:var(--ink-3);margin-bottom:22px">Recevez notre proposition personnalisée sous 24h ouvrées.</p>
+        <h3 style="font-size:21px;font-weight:700;margin-bottom:8px">Devis &amp; convention RH express</h3>
+        <p style="font-size:13.5px;color:var(--ink-3);margin-bottom:22px">Entreprise enregistrée immédiatement + devis officiel + WhatsApp desk. Zéro friction.</p>
         <form id="formB2B" style="display:flex;flex-direction:column;gap:14px">
           <div class="field">
-            <label for="b2bCompany">Raison Sociale de l'Entreprise *</label>
-            <input type="text" id="b2bCompany" required placeholder="Ex. Groupe Afriland, Société Générale, Startup SAS…">
+            <label for="b2bCompany">Raison Sociale *</label>
+            <input type="text" id="b2bCompany" required placeholder="Ex. Groupe Afriland…">
           </div>
           <div class="f-grid2">
             <div class="field">
-              <label for="b2bContact">Nom du DRH / Dirigeant *</label>
+              <label for="b2bContact">DRH / Dirigeant *</label>
               <input type="text" id="b2bContact" required placeholder="Ex. Paul Ndombe">
             </div>
             <div class="field">
-              <label for="b2bPhone">Téléphone Pro (WhatsApp) *</label>
+              <label for="b2bPhone">WhatsApp Pro *</label>
               <input type="tel" id="b2bPhone" required placeholder="+237 6XX XX XX XX">
             </div>
           </div>
           <div class="field">
-            <label for="b2bEmail">Adresse Email Professionnelle *</label>
-            <input type="email" id="b2bEmail" required placeholder="drh@entreprise.com">
+            <label for="b2bEmail">Email pro (optionnel)</label>
+            <input type="email" id="b2bEmail" placeholder="drh@entreprise.com">
           </div>
           <div class="field">
-            <label for="b2bCity">Ville du Siège / Hub Principal</label>
+            <label for="b2bCity">Ville du siège</label>
             <select id="b2bCity">
-              <option value="douala">Douala (Cameroun)</option>
-              <option value="yaounde">Yaoundé (Cameroun)</option>
-              <option value="kinshasa">Kinshasa (RDC)</option>
-              <option value="abidjan">Abidjan (Côte d'Ivoire)</option>
-              <option value="dakar">Dakar (Sénégal)</option>
-              <option value="libreville">Libreville (Gabon)</option>
+              <option value="douala">Douala</option>
+              <option value="yaounde">Yaoundé</option>
+              <option value="kinshasa">Kinshasa</option>
+              <option value="abidjan">Abidjan</option>
+              <option value="dakar">Dakar</option>
+              <option value="libreville">Libreville</option>
             </select>
           </div>
-          <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px">
-            <i data-lucide="send"></i>Envoyer ma demande de convention RH
+          <button type="submit" class="btn btn-primary btn-block" id="b2bSubmit" style="margin-top:8px">
+            <i data-lucide="zap"></i>Obtenir mon devis + enregistrer l'entreprise
           </button>
         </form>
+        <div id="b2bSuccess" style="display:none;margin-top:18px;padding:16px;border-radius:14px;background:#ECFDF5;border:1px solid #A7F3D0">
+          <b id="b2bOkTitle">Entreprise enregistrée</b>
+          <p id="b2bOkMsg" style="margin:8px 0;font-size:13.5px;color:#065F46"></p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <a id="b2bWa" class="btn btn-sm" style="background:#25D366;color:#fff;border:0" target="_blank" rel="noopener">WhatsApp desk</a>
+            <a id="b2bDevis" class="btn btn-sm btn-primary" href="#">Voir le devis</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -429,22 +437,62 @@ function calcB2B() {
 
 if(empSlider) {
   empSlider.addEventListener('input', calcB2B);
+  const urlEmp = new URLSearchParams(location.search).get('employees');
+  if (urlEmp) { empSlider.value = Math.max(5, Math.min(300, parseInt(urlEmp, 10) || 30)); }
   calcB2B();
 }
 
-/* Soumission formulaire B2B avec Toast */
+/* Soumission B2B → API express corporate (enregistre devis + contrat) */
 const formB2B = $('#formB2B');
 if(formB2B) {
-  formB2B.addEventListener('submit', (e) => {
+  formB2B.addEventListener('submit', async (e) => {
     e.preventDefault();
     const company = $('#b2bCompany').value.trim();
     const contact = $('#b2bContact').value.trim();
     const email = $('#b2bEmail').value.trim();
     const phone = $('#b2bPhone').value.trim();
-    const count = empSlider.value;
-
-    toast('Demande RH enregistrée', `Merci ${contact} ! Notre direction Grands Comptes a bien reçu votre demande pour ${company} (${count} salariés) et vous contactera sous 24h.`, 'success');
-    formB2B.reset();
+    const city = $('#b2bCity').value;
+    const count = empSlider ? empSlider.value : 30;
+    const plan = new URLSearchParams(location.search).get('plan') || 'silver';
+    const btn = $('#b2bSubmit');
+    if (btn) { btn.disabled = true; btn.textContent = 'Enregistrement…'; }
+    try {
+      const res = await fetch('/api/express', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          mode: 'corporate',
+          company_name: company,
+          name: contact,
+          phone: phone,
+          email: email,
+          city: city,
+          employee_count: parseInt(count, 10),
+          plan_tier: plan,
+          payment_method: 'whatsapp'
+        })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        toast('Erreur', data.error || 'Échec', 'error');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i data-lucide="zap"></i>Obtenir mon devis + enregistrer l\'entreprise'; icons(); }
+        return;
+      }
+      formB2B.style.display = 'none';
+      const ok = $('#b2bSuccess');
+      ok.style.display = 'block';
+      $('#b2bOkTitle').textContent = 'Entreprise enregistrée · ' + (data.contract_id || '');
+      $('#b2bOkMsg').textContent = (data.message || '') + ' Devis ' + (data.quote_number || '') + ' · ' + (data.quote?.annual_amount ? Number(data.quote.annual_amount).toLocaleString('fr-FR') + ' XAF / an' : '');
+      if (data.whatsapp_url) $('#b2bWa').href = data.whatsapp_url;
+      if (data.view_url) $('#b2bDevis').href = data.view_url;
+      toast('Devis RH prêt', 'Dossier ' + (data.contract_id || '') + ' créé', 'success');
+      if (data.open_whatsapp && data.whatsapp_url) {
+        setTimeout(() => window.open(data.whatsapp_url, '_blank'), 600);
+      }
+    } catch (err) {
+      toast('Hors ligne', 'Réessayez ou WhatsApp desk', 'error');
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i data-lucide="zap"></i>Obtenir mon devis + enregistrer l\'entreprise'; icons(); }
+    }
   });
 }
 </script>

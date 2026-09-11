@@ -70,6 +70,7 @@ $countryInfo = $countryInfo ?? [
       <p class="pays-hero-sub"><?= htmlspecialchars($countryInfo['sub']) ?></p>
       <div style="display:flex;gap:14px;flex-wrap:wrap">
         <button class="btn btn-white" data-open-sub><i data-lucide="badge-check"></i>Adhérer dès <?= htmlspecialchars($countryInfo['price_eur']) ?> / mois</button>
+        <a class="btn btn-outline-w" href="/mcare/about"><i data-lucide="sparkles"></i>Essayer MCare (chat famille)</a>
         <a class="btn btn-outline-w" href="/#simulateur"><i data-lucide="calculator"></i>Simuler ma cotisation</a>
       </div>
       <div style="display:flex;gap:20px;margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.15);flex-wrap:wrap;font-size:13px;color:rgba(255,255,255,.85)">

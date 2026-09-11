@@ -186,10 +186,16 @@ $isAnnual = ($quote['cycle'] ?? 'annual') === 'annual';
           <small>Soit l'équivalent de <b><?= number_format($calc['monthly_equivalent'] ?? ($quote['annual_amount']/12), 0, ',', ' ') ?> <?= htmlspecialchars($quote['currency']) ?> / mois</b> (10 % d'économie incluses).</small>
         </div>
         <div class="qpb-right">
-          <a href="/adhesion?quote=<?= urlencode($quote['quote_number']) ?>" class="btn btn-gold btn-lg" style="box-shadow:0 8px 20px rgba(0,0,0,.25);font-size:16px">
-            <i data-lucide="check-circle-2"></i>
-            <span>Souscrire Immédiatement</span>
+          <a href="<?= htmlspecialchars($quote['subscribe_url'] ?? ('/adhesion?express=1&quote=' . urlencode($quote['quote_number']))) ?>" class="btn btn-gold btn-lg" style="box-shadow:0 8px 20px rgba(0,0,0,.25);font-size:16px">
+            <i data-lucide="zap"></i>
+            <span><?= ($quote['type'] ?? '') === 'corporate' ? 'Finaliser convention RH' : 'Adhérer en 1 clic' ?></span>
           </a>
+          <?php if (!empty($quote['whatsapp_url'])): ?>
+          <a href="<?= htmlspecialchars($quote['whatsapp_url']) ?>" class="btn btn-lg" style="background:#25D366;color:#fff;border:0" target="_blank" rel="noopener">
+            <i data-lucide="message-circle"></i>
+            <span>WhatsApp</span>
+          </a>
+          <?php endif; ?>
         </div>
       </div>
 

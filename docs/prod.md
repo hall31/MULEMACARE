@@ -1,10 +1,5 @@
 Description
-mulemacare
-Nom d’hôte
-db750526830.db.1and1.com
-Port
-3306
-Nom d’utilisateur
-dbo750526830
+mulemacare — credentials DB (NE PAS committer de secrets)
 
-mdp: Eagle_1983*Icare_2050#Mom1956*Dad1947
+Utiliser les variables d'environnement DB_HOST / DB_NAME / DB_USER / DB_PASS.
+Ancien fichier contenait un mot de passe en clair : **à rotationner immédiatement** sur IONOS.

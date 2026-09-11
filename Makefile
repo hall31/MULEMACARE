@@ -6,8 +6,12 @@ qa-php:
 	php site/tests/test_auth_espaces.php
 	php site/tests/test_nss_identity.php
 	php site/tests/test_hub_api.php
+	php site/tests/test_whatsapp_payment_hitl.php
+	php site/tests/test_express_zero_friction.php
 	php -l site/app/Services/StripePaymentService.php
 	php -l site/app/Services/MembershipService.php
+	php -l site/app/Services/TariffCatalog.php
+	php -l site/app/Services/QuoteService.php
 	php -l site/app/Services/NssService.php
 	php -l site/app/Services/MutuelleOsClient.php
 	php -l site/app/Services/AuthService.php

@@ -9,9 +9,23 @@ if (!headers_sent()) {
     http_response_code(200);
 }
 
-// Autoloader PSR-4 natif sans dépendance externe, partagé avec les scripts
-// d'exploitation et la suite de tests.
-require __DIR__ . '/app/autoload.php';
+// Autoloader PSR-4 natif sans dépendance externe
+spl_autoload_register(function (string $class) {
+    $prefix = 'App\\';
+    $baseDir = __DIR__ . '/app/';
+
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        return;
+    }
+
+    $relativeClass = substr($class, $len);
+    $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+
+    if (file_exists($file)) {
+        require $file;
+    }
+});
 
 use App\Core\Router;
 use App\Controllers\HomeController;
@@ -36,8 +50,12 @@ $router->get('/souscription', [HomeController::class, 'adhesion']);
 $router->get('/borne-clinique', [HomeController::class, 'borneClinique']);
 $router->get('/verifier', [HomeController::class, 'borneClinique']);
 $router->get('/espace-adherent', [HomeController::class, 'adherent']);
+$router->get('/login/adherent', [HomeController::class, 'loginAdherent']);
+$router->get('/login/admin', [HomeController::class, 'loginAdmin']);
 $router->get('/admin', [HomeController::class, 'admin']);
 $router->get('/espace-admin', [HomeController::class, 'admin']);
+$router->get('/mcare', [HomeController::class, 'mcare']);
+$router->get('/mcare/about', [HomeController::class, 'mcareAbout']);
 $router->get('/carte/{memberId}', [HomeController::class, 'carte']);
 
 // Routes SEO & AI Search
@@ -47,13 +65,40 @@ $router->get('/llms.txt', [HomeController::class, 'llmsTxt']);
 
 // Routes API & Tiers-Payant Fast Check
 $router->post('/api/quote', [ApiController::class, 'quote']);
+$router->post('/api/express', [ApiController::class, 'express']);
 $router->post('/api/subscribe', [ApiController::class, 'subscribe']);
+$router->post('/api/checkout', [ApiController::class, 'checkout']);
 $router->get('/api/verify-card/{code}', [ApiController::class, 'verifyCard']);
 $router->get('/api/adherent/lookup', [ApiController::class, 'lookupAdherent']);
 $router->post('/api/claim', [ApiController::class, 'createClaim']);
+$router->post('/api/admin/payments/confirm', [ApiController::class, 'confirmManualPayment']);
 $router->post('/api/admin/toggle-status', [ApiController::class, 'toggleMemberStatus']);
 $router->post('/api/webhook', [ApiController::class, 'webhook']);
+$router->post('/api/stripe/webhook', [ApiController::class, 'webhook']);
+$router->get('/api/os/proposals', [ApiController::class, 'osProposals']);
+$router->post('/api/os/proposals/{id}/decide', [ApiController::class, 'osDecideProposal']);
 
+// Auth
+use App\Controllers\AuthController;
+use App\Controllers\HubApiController;
+$router->post('/api/auth/adherent/request', [AuthController::class, 'requestAdherent']);
+$router->post('/api/auth/adherent/verify', [AuthController::class, 'verifyAdherent']);
+$router->post('/api/auth/admin/login', [AuthController::class, 'loginAdmin']);
+$router->post('/api/auth/admin/totp', [AuthController::class, 'verifyAdminTotp']);
+$router->post('/api/auth/logout', [AuthController::class, 'logout']);
+$router->get('/api/auth/csrf', [AuthController::class, 'csrf']);
+$router->get('/logout', [AuthController::class, 'logout']);
+
+// Hub APIs
+$router->get('/api/me', [HubApiController::class, 'me']);
+$router->get('/api/me/claims', [HubApiController::class, 'myClaims']);
+$router->post('/api/me/claims', [HubApiController::class, 'declareClaim']);
+$router->get('/api/me/coverage', [HubApiController::class, 'myCoverage']);
+$router->get('/api/me/network', [HubApiController::class, 'myNetwork']);
+$router->get('/api/admin/hub', [HubApiController::class, 'adminHub']);
+$router->post('/api/admin/claims/{ref}/decide', [HubApiController::class, 'decideClaim']);
+$router->post('/api/mcare/chat', [HubApiController::class, 'mcareChat']);
+$router->post('/api/mcare/transmit', [HubApiController::class, 'mcareTransmit']);
 // Dispatch
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $uri = $_SERVER['REQUEST_URI'] ?? '/';

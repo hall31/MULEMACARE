@@ -5,9 +5,20 @@ $quoteService = new QuoteService($this->config);
 $quoteRef = trim($_GET['quote'] ?? '');
 $initialQuote = $quoteRef ? $quoteService->getQuote($quoteRef) : null;
 
-$initialPlan = $initialQuote['calculation']['plan_id'] ?? ($_GET['plan'] ?? 'silver');
-$initialComp = $initialQuote['composition'] ?? ($_GET['comp'] ?? 'family');
-$initialCurr = $initialQuote['currency'] ?? ($_GET['curr'] ?? 'EUR');
+$initialPlan = $initialQuote['calculation']['plan_id'] ?? ($initialQuote['plan_id'] ?? ($_GET['plan'] ?? 'silver'));
+$rawComp = $initialQuote['composition'] ?? ($_GET['comp'] ?? 'family');
+$initialComp = $quoteService->normalizeComposition((string) $rawComp);
+$initialCurr = $initialQuote['currency'] ?? ($_GET['curr'] ?? (isset($_GET['wa']) ? 'XAF' : 'EUR'));
+$initialCity = $initialQuote['city'] ?? ($_GET['city'] ?? 'douala');
+$initialCycle = $initialQuote['cycle'] ?? ($_GET['cycle'] ?? 'annual');
+$waFirst = isset($_GET['wa']) || (($_GET['pay'] ?? '') === 'whatsapp');
+$express = isset($_GET['express']) || $initialQuote !== null || isset($_GET['plan']);
+$prefillName = $initialQuote['prospect_name'] ?? ($_GET['name'] ?? '');
+$prefillPhone = $initialQuote['prospect_phone'] ?? ($_GET['phone'] ?? '');
+$prefillEmail = $initialQuote['prospect_email'] ?? ($_GET['email'] ?? '');
+if ($prefillName === 'Prospect express' || $prefillName === 'Prospect Démo MulemaCare') {
+    $prefillName = '';
+}
 ?>
 
 <style>
@@ -52,7 +63,14 @@ $initialCurr = $initialQuote['currency'] ?? ($_GET['curr'] ?? 'EUR');
 
 .carence-reminder{background:#FEF3C7;border-left:4px solid #F59E0B;padding:14px 18px;border-radius:0 12px 12px 0;margin-bottom:24px;font-size:13.5px;color:#92400E}
 
-.pay-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.pay-methods{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:28px}
+.express-recap{background:linear-gradient(135deg,#064E3B,#047857);color:#fff;border-radius:18px;padding:22px 24px;margin-bottom:24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+.express-recap h3{font:800 22px var(--font-n);margin:0 0 4px}
+.express-recap p{margin:0;opacity:.9;font:500 14px var(--font-b)}
+.zf-hint{background:#ECFDF5;border:1px solid #A7F3D0;border-radius:12px;padding:12px 14px;font:500 13px var(--font-b);color:#065F46;margin-bottom:20px}
+.adh-page.express-mode .stepper,
+.adh-page.express-mode #classicAdh{display:none !important}
+.adh-page:not(.express-mode) #expressWrap{display:none !important}
 .pay-card{border:2px solid #E2E8F0;border-radius:16px;padding:20px;text-align:center;cursor:pointer;transition:all .2s}
 .pay-card:hover{border-color:var(--emerald)}
 .pay-card.selected{border-color:var(--emerald);background:#ECFDF5}
@@ -102,9 +120,54 @@ $initialCurr = $initialQuote['currency'] ?? ($_GET['curr'] ?? 'EUR');
   <div class="wrap"><a href="/">Accueil</a> <span>/</span> <b style="color:var(--emerald)">Adhésion &amp; Souscription en Ligne</b></div>
 </div>
 
-<main class="adh-page">
+<main class="adh-page<?= $express ? ' express-mode' : '' ?>">
   <div class="wrap adh-container">
-    
+
+    <div id="expressWrap">
+      <div class="adh-card" id="expressCard">
+        <div class="zf-hint">Parcours express — nom + WhatsApp + paiement. Dossier créé immédiatement (CSSA + NSS).</div>
+        <div class="express-recap">
+          <div>
+            <p>Votre couverture</p>
+            <h3><?= htmlspecialchars(ucfirst((string)$initialPlan)) ?> · <?= htmlspecialchars(ucfirst((string)$initialComp)) ?></h3>
+            <p><?= htmlspecialchars(ucfirst((string)$initialCity)) ?> · <?= htmlspecialchars((string)$initialCurr) ?></p>
+          </div>
+          <div style="text-align:right"><p>Montant</p><h3 id="exPrice">—</h3></div>
+        </div>
+        <div class="form-grid-2">
+          <div class="f-group"><label>Nom complet *</label><input type="text" id="exName" value="<?= htmlspecialchars($prefillName) ?>" required></div>
+          <div class="f-group"><label>WhatsApp *</label><input type="tel" id="exPhone" value="<?= htmlspecialchars($prefillPhone) ?>" required></div>
+          <div class="f-group"><label>Email (optionnel)</label><input type="email" id="exEmail" value="<?= htmlspecialchars($prefillEmail) ?>"></div>
+          <div class="f-group"><label>Pays</label>
+            <select id="exCountry">
+              <option value="France">France</option>
+              <option value="Cameroun">Cameroun</option>
+              <option value="Belgique">Belgique</option>
+              <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+              <option value="Sénégal">Sénégal</option>
+            </select>
+          </div>
+        </div>
+        <div class="pay-methods" id="exPayGrid">
+          <div class="pay-card<?= $waFirst ? '' : ' selected' ?>" data-method="stripe" data-currency="EUR"><b>Stripe</b><small>Carte</small></div>
+          <div class="pay-card" data-method="qonto" data-currency="EUR"><b>Qonto</b><small>Virement</small></div>
+          <div class="pay-card" data-method="orange_money" data-currency="XAF"><b>Orange Money</b><small>MoMo</small></div>
+          <div class="pay-card<?= $waFirst ? ' selected' : '' ?>" data-method="whatsapp" data-currency="XAF"><b>WhatsApp</b><small>Desk</small></div>
+        </div>
+        <button type="button" class="btn btn-gold btn-lg" id="btnExpressGo" style="width:100%">Enregistrer mon adhésion maintenant</button>
+        <p style="text-align:center;margin-top:12px"><a href="/adhesion" id="lnkFullPath" style="color:var(--emerald)">Parcours complet</a></p>
+      </div>
+      <div class="adh-card" id="expressDone" style="display:none;margin-top:18px;text-align:center">
+        <h2 id="exTitle">Dossier créé</h2>
+        <p id="exLead"></p>
+        <p><b id="exCssa"></b> · <span id="exNss"></span> · <span id="exAmt"></span> · <span id="exSt"></span></p>
+        <div id="exExtra" style="margin:12px 0;font-size:13.5px"></div>
+        <a id="exWa" class="btn" style="background:#25D366;color:#fff" target="_blank" rel="noopener">WhatsApp</a>
+        <a id="exPortal" href="/login/adherent" class="btn btn-primary">Espace adhérent</a>
+      </div>
+    </div>
+
+    <div id="classicAdh">
     <!-- STEPPER -->
     <div class="stepper">
       <div class="step-item active" id="st1">
@@ -304,22 +367,35 @@ $initialCurr = $initialQuote['currency'] ?? ($_GET['curr'] ?? 'EUR');
 
         <h4 style="font:700 15px var(--font-b);color:var(--ink);margin-bottom:14px">Choisissez votre moyen de règlement :</h4>
         <div class="pay-methods" id="payMethodGrid">
-          <div class="pay-card selected" data-method="card">
+          <div class="pay-card<?= $waFirst ? '' : ' selected' ?>" data-method="stripe" data-currency="EUR">
             <i data-lucide="credit-card"></i>
-            <b>Carte Bancaire / SEPA</b>
-            <small>Visa, Mastercard, Débit SEPA</small>
+            <b>Carte / Stripe (diaspora)</b>
+            <small>Visa, Mastercard — activation auto</small>
           </div>
-          <div class="pay-card" data-method="orange_money">
+          <div class="pay-card" data-method="qonto" data-currency="EUR">
+            <i data-lucide="building-2"></i>
+            <b>Virement Qonto</b>
+            <small>IBAN · libellé = N° CSSA</small>
+          </div>
+          <div class="pay-card" data-method="orange_money" data-currency="XAF">
             <i data-lucide="smartphone"></i>
-            <b>Orange Money Cameroun</b>
-            <small>+237 521 120 21 (#150*1*1*)</small>
+            <b>Orange Money</b>
+            <small>Enregistrement + WhatsApp + USSD</small>
           </div>
-          <div class="pay-card" data-method="mtn_momo">
+          <div class="pay-card" data-method="mtn_momo" data-currency="XAF">
             <i data-lucide="smartphone-nfc"></i>
             <b>MTN Mobile Money</b>
-            <small>+237 65 14 58 37 (*126*1*)</small>
+            <small>Enregistrement + WhatsApp + USSD</small>
+          </div>
+          <div class="pay-card<?= $waFirst ? ' selected' : '' ?>" data-method="whatsapp" data-currency="XAF">
+            <i data-lucide="message-circle"></i>
+            <b>WhatsApp (inscription)</b>
+            <small>Client créé dans le système puis desk</small>
           </div>
         </div>
+        <p id="payHint" style="margin-top:12px;font:500 13px var(--font-b);color:#64748B">
+          Le client est toujours enregistré (CSSA + NSS) avant paiement. La carte devient ACTIVE après Stripe ou confirmation desk.
+        </p>
 
         <div style="display:flex;justify-content:space-between;margin-top:28px">
           <button class="btn btn-secondary" id="btnBackStep2" type="button">
@@ -336,44 +412,62 @@ $initialCurr = $initialQuote['currency'] ?? ($_GET['curr'] ?? 'EUR');
       <!-- ÉTAPE 4 : CONFIRMATION & CARTE CSSA ÉMISE -->
       <div class="adh-step-pane" id="pane4">
         <div style="text-align:center;padding:20px 0">
-          <div class="success-badge-done">
+          <div class="success-badge-done" id="successBadge">
             <i data-lucide="check-circle-2"></i>
-            <span>Adhésion Confirmée &amp; Validée</span>
+            <span id="successBadgeText">Client enregistré</span>
           </div>
-          <h2 style="font:800 28px var(--font-n);color:var(--ink);margin-bottom:8px">Félicitations pour votre adhésion MulemaCare !</h2>
-          <p style="font:500 15px var(--font-b);color:var(--ink-2);max-width:600px;margin:0 auto 28px">
-            Votre contrat est actif et votre carte mutuelle digitale a été générée. Vos proches peuvent désormais se présenter dans les cliniques conventionnées sans avance de frais.
+          <h2 style="font:800 28px var(--font-n);color:var(--ink);margin-bottom:8px" id="successTitle">Votre dossier MulemaCare est créé</h2>
+          <p style="font:500 15px var(--font-b);color:var(--ink-2);max-width:600px;margin:0 auto 28px" id="successLead">
+            Vous êtes enregistré dans le système. Finalisez le paiement pour activer le tiers-payant.
           </p>
 
           <div style="background:#FAFBFD;border:1.5px solid #E2E8F0;border-radius:20px;padding:24px;max-width:540px;margin:0 auto 28px;text-align:left">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid #E2E8F0;padding-bottom:12px">
-              <span style="color:#64748B;font-size:13.5px">Numéro d'adhérent CSSA :</span>
-              <b id="resCssaId" style="color:var(--emerald-900);font-size:18px;letter-spacing:.05em">CSSA-4921-26</b>
+              <span style="color:#64748B;font-size:13.5px">Carte CSSA (scan clinique) :</span>
+              <b id="resCssaId" style="color:var(--emerald-900);font-size:18px;letter-spacing:.05em">CSSA-…</b>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid #E2E8F0;padding-bottom:12px">
-              <span style="color:#64748B;font-size:13.5px">Formule &amp; Tiers-Payant :</span>
-              <b id="resPlan">Mulema Silver (100% Tiers-Payant)</b>
+              <span style="color:#64748B;font-size:13.5px">NSS-MC (identité) :</span>
+              <b id="resNssId" style="font-size:13.5px;letter-spacing:.03em">NSS-…</b>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid #E2E8F0;padding-bottom:12px">
+              <span style="color:#64748B;font-size:13.5px">Formule :</span>
+              <b id="resPlan">—</b>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid #E2E8F0;padding-bottom:12px">
+              <span style="color:#64748B;font-size:13.5px">Montant dû :</span>
+              <b id="resAmount">—</b>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center">
-              <span style="color:#64748B;font-size:13.5px">Statut de la couverture :</span>
-              <span style="color:#047857;font-weight:700;background:#ECFDF5;padding:4px 10px;border-radius:6px;font-size:12.5px">100% ACTIF</span>
+              <span style="color:#64748B;font-size:13.5px">Statut :</span>
+              <span id="resStatus" style="color:#B45309;font-weight:700;background:#FFFBEB;padding:4px 10px;border-radius:6px;font-size:12.5px">PENDING_PAYMENT</span>
             </div>
           </div>
 
+          <div id="qontoBox" style="display:none;background:#F8FAFC;border:1.5px dashed #94A3B8;border-radius:16px;padding:18px;max-width:540px;margin:0 auto 20px;text-align:left;font:500 13.5px var(--font-b);color:var(--ink)">
+            <b>Virement Qonto</b>
+            <p id="qontoInstr" style="margin:8px 0 0"></p>
+          </div>
+          <div id="momoBox" style="display:none;background:#ECFDF5;border:1.5px solid #A7F3D0;border-radius:16px;padding:18px;max-width:540px;margin:0 auto 20px;text-align:left;font:500 13.5px var(--font-b);color:#065F46">
+            <b>USSD Mobile Money</b>
+            <p id="momoInstr" style="margin:8px 0 0"></p>
+          </div>
+
           <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
-            <a id="lnkViewCard" href="/espace-adherent" class="btn btn-primary btn-lg">
-              <i data-lucide="id-card"></i>
-              <span>Accéder à mon Espace Adhérent</span>
-            </a>
             <a id="lnkWaHelp" href="https://wa.me/23752112021" target="_blank" class="btn btn-secondary btn-lg" style="background:#25D366;color:#fff;border-color:#25D366">
               <i data-lucide="message-circle"></i>
-              <span>Contacter le Médecin Lisacare</span>
+              <span id="lnkWaLabel">Continuer sur WhatsApp</span>
+            </a>
+            <a id="lnkViewCard" href="/login/adherent" class="btn btn-primary btn-lg">
+              <i data-lucide="id-card"></i>
+              <span>Espace adhérent</span>
             </a>
           </div>
         </div>
       </div>
 
     </div>
+    </div><!-- /classicAdh -->
   </div>
 </main>
 
@@ -382,7 +476,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let curStep = 1;
   let selectedPlan = '<?= htmlspecialchars($initialPlan) ?>';
   let selectedComp = '<?= htmlspecialchars($initialComp) ?>';
-  let selectedMethod = 'card';
+  let selectedMethod = '<?= $waFirst ? 'whatsapp' : 'stripe' ?>';
+  let selectedCurrency = '<?= htmlspecialchars($initialCurr) ?>';
+  const initialCity = '<?= htmlspecialchars($initialCity) ?>';
+  const quoteNumber = '<?= htmlspecialchars($quoteRef) ?>';
+  const isExpress = <?= $express ? 'true' : 'false' ?>;
 
   const prices = {
     bronze: {solo: 168, couple: 228, family: 276, seniors: 336},
@@ -391,14 +489,104 @@ document.addEventListener('DOMContentLoaded', () => {
     platinium:{solo:828, couple:1140, family:1380, seniors:1656}
   };
 
+  const exPrice = document.getElementById('exPrice');
+  if (exPrice) {
+    const p = prices[selectedPlan]?.[selectedComp] || 504;
+    exPrice.textContent = selectedCurrency === 'XAF'
+      ? (Math.round(p * 655.957)).toLocaleString('fr-FR') + ' FCFA / an'
+      : p + ' € / an';
+  }
+
+  let exMethod = selectedMethod;
+  let exCurrency = selectedCurrency;
+  document.querySelectorAll('#exPayGrid .pay-card').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('#exPayGrid .pay-card').forEach(x => x.classList.remove('selected'));
+      c.classList.add('selected');
+      exMethod = c.dataset.method;
+      exCurrency = c.dataset.currency || 'EUR';
+    });
+  });
+
+  document.getElementById('btnExpressGo')?.addEventListener('click', async () => {
+    const btn = document.getElementById('btnExpressGo');
+    const name = document.getElementById('exName').value.trim();
+    const phone = document.getElementById('exPhone').value.trim();
+    if (!name || !phone) { alert('Nom et WhatsApp requis.'); return; }
+    btn.disabled = true;
+    btn.textContent = 'Enregistrement…';
+    try {
+      const res = await fetch('/api/express', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          mode: 'adhere',
+          save_quote: true,
+          quote_number: quoteNumber || undefined,
+          plan_id: selectedPlan,
+          composition: selectedComp,
+          city: initialCity,
+          cycle: 'annual',
+          currency: exCurrency,
+          payment_method: exMethod,
+          subscriber_name: name,
+          subscriber_phone: phone,
+          subscriber_email: document.getElementById('exEmail').value.trim(),
+          subscriber_country: document.getElementById('exCountry').value,
+          subscriber_origin: ['whatsapp','orange_money','mtn_momo'].includes(exMethod) ? 'Local' : 'Diaspora'
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.checkout_url) {
+        window.location.href = data.checkout_url;
+        return;
+      }
+      if (data.success) {
+        document.getElementById('expressCard').style.display = 'none';
+        const done = document.getElementById('expressDone');
+        done.style.display = 'block';
+        document.getElementById('exTitle').textContent = 'Client enregistré dans le système';
+        document.getElementById('exLead').textContent = data.message || '';
+        document.getElementById('exCssa').textContent = data.cssa_id || '';
+        document.getElementById('exNss').textContent = data.nss_display || data.nss_id || '';
+        document.getElementById('exAmt').textContent = data.amount_due_label || data.price_label || '';
+        document.getElementById('exSt').textContent = data.status || 'PENDING_PAYMENT';
+        if (data.whatsapp_url) document.getElementById('exWa').href = data.whatsapp_url;
+        if (data.portal_url) document.getElementById('exPortal').href = data.portal_url;
+        const extra = [];
+        if (data.qonto?.instructions) extra.push(data.qonto.instructions);
+        if (data.momo_ussd?.orange) extra.push('Orange: ' + data.momo_ussd.orange);
+        if (data.momo_ussd?.mtn) extra.push('MTN: ' + data.momo_ussd.mtn);
+        document.getElementById('exExtra').textContent = extra.join(' · ');
+        if (data.open_whatsapp && data.whatsapp_url) {
+          setTimeout(() => window.open(data.whatsapp_url, '_blank'), 500);
+        }
+      } else {
+        alert(data.error || 'Échec');
+        btn.disabled = false;
+        btn.textContent = 'Enregistrer mon adhésion maintenant';
+      }
+    } catch (e) {
+      alert('Connexion impossible');
+      btn.disabled = false;
+      btn.textContent = 'Enregistrer mon adhésion maintenant';
+    }
+  });
+
+  if (isExpress) {
+    // skip classic listeners that need missing nodes — guarded below
+  }
+
   function updatePricing() {
     const p = prices[selectedPlan]?.[selectedComp] || 504;
     const planNames = {bronze:'Bronze Essentiel', silver:'Silver Confort', gold:'Gold Sérénité', platinium:'Platinium Élite'};
     const compNames = {solo:'Solo', couple:'Couple', family:'Famille', seniors:'Seniors'};
-    const city = document.getElementById('selCity').value;
-
-    document.getElementById('dispTotal').innerHTML = `${p} € <small style="font-size:18px">/ an</small>`;
-    document.getElementById('dispSub').textContent = `Formule ${planNames[selectedPlan]} · ${compNames[selectedComp]} couverte à ${city.charAt(0).toUpperCase() + city.slice(1)}`;
+    const cityEl = document.getElementById('selCity');
+    const city = cityEl ? cityEl.value : initialCity;
+    const dispTotal = document.getElementById('dispTotal');
+    const dispSub = document.getElementById('dispSub');
+    if (dispTotal) dispTotal.innerHTML = `${p} € <small style="font-size:18px">/ an</small>`;
+    if (dispSub) dispSub.textContent = `Formule ${planNames[selectedPlan]} · ${compNames[selectedComp]} couverte à ${city.charAt(0).toUpperCase() + city.slice(1)}`;
   }
 
   // Plan boxes
@@ -411,12 +599,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  document.getElementById('selComp').addEventListener('change', e => {
+  document.getElementById('selComp')?.addEventListener('change', e => {
     selectedComp = e.target.value;
     updatePricing();
   });
 
-  document.getElementById('selCity').addEventListener('change', updatePricing);
+  document.getElementById('selCity')?.addEventListener('change', updatePricing);
 
   // Pay methods
   document.querySelectorAll('#payMethodGrid .pay-card').forEach(c => {
@@ -424,6 +612,8 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('#payMethodGrid .pay-card').forEach(x => x.classList.remove('selected'));
       c.classList.add('selected');
       selectedMethod = c.dataset.method;
+      selectedCurrency = c.dataset.currency || 'EUR';
+      updatePricing();
     });
   });
 
@@ -442,11 +632,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.lucide) window.lucide.createIcons();
   }
 
-  document.getElementById('btnGoStep2').addEventListener('click', () => setStep(2));
-  document.getElementById('btnBackStep1').addEventListener('click', () => setStep(1));
-  document.getElementById('btnGoStep3').addEventListener('click', () => {
-    const name = document.getElementById('subName').value.trim();
-    const phone = document.getElementById('subPhone').value.trim();
+  document.getElementById('btnGoStep2')?.addEventListener('click', () => setStep(2));
+  document.getElementById('btnBackStep1')?.addEventListener('click', () => setStep(1));
+  document.getElementById('btnGoStep3')?.addEventListener('click', () => {
+    const name = document.getElementById('subName')?.value.trim();
+    const phone = document.getElementById('subPhone')?.value.trim();
     if (!name || !phone) {
       alert('Veuillez renseigner votre nom et votre numéro WhatsApp.');
       return;
@@ -454,10 +644,10 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePricing();
     setStep(3);
   });
-  document.getElementById('btnBackStep2').addEventListener('click', () => setStep(2));
+  document.getElementById('btnBackStep2')?.addEventListener('click', () => setStep(2));
 
   // Add beneficiary
-  document.getElementById('btnAddBen').addEventListener('click', () => {
+  document.getElementById('btnAddBen')?.addEventListener('click', () => {
     const list = document.getElementById('beneficiariesList');
     const div = document.createElement('div');
     div.className = 'beneficiary-row';
@@ -500,10 +690,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Final submit
-  document.getElementById('btnConfirmSubscribe').addEventListener('click', async () => {
+  document.getElementById('btnConfirmSubscribe')?.addEventListener('click', async () => {
     const btn = document.getElementById('btnConfirmSubscribe');
+    if (!btn) return;
     btn.disabled = true;
-    btn.innerHTML = '<i data-lucide="loader" class="spin"></i> Émission de votre carte CSSA...';
+    btn.innerHTML = '<i data-lucide="loader" class="spin"></i> Enregistrement du client…';
     if (window.lucide) window.lucide.createIcons();
 
     const beneficiaries = [];
@@ -519,6 +710,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    const isLocal = ['whatsapp', 'orange_money', 'mtn_momo'].includes(selectedMethod);
     const payload = {
       plan_id: selectedPlan,
       composition: selectedComp,
@@ -529,7 +721,9 @@ document.addEventListener('DOMContentLoaded', () => {
       subscriber_country: document.getElementById('subCountry').value,
       beneficiaries: beneficiaries,
       payment_method: selectedMethod,
-      cycle: 'annual'
+      currency: selectedCurrency || (isLocal ? 'XAF' : 'EUR'),
+      cycle: 'annual',
+      subscriber_origin: isLocal ? 'Local' : 'Diaspora'
     };
 
     try {
@@ -539,25 +733,86 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(payload)
       });
       const data = await res.json();
+      if (data.success && data.checkout_url) {
+        btn.innerHTML = '<i data-lucide="loader" class="spin"></i> Redirection Stripe…';
+        window.location.href = data.checkout_url;
+        return;
+      }
       if (data.success) {
         document.getElementById('resCssaId').textContent = data.cssa_id;
-        document.getElementById('resPlan').textContent = data.plan_name;
-        document.getElementById('lnkViewCard').href = data.portal_url || ('/espace-adherent?adh=' + data.cssa_id);
+        const nssEl = document.getElementById('resNssId');
+        if (nssEl) nssEl.textContent = data.nss_display || data.nss_id || '—';
+        document.getElementById('resPlan').textContent = data.plan_name || '—';
+        const amt = document.getElementById('resAmount');
+        if (amt) amt.textContent = data.amount_due_label || data.price_label || '—';
+        const st = document.getElementById('resStatus');
+        if (st) st.textContent = data.status || 'PENDING_PAYMENT';
+        document.getElementById('lnkViewCard').href = data.portal_url || '/login/adherent';
         if (data.whatsapp_url) {
           document.getElementById('lnkWaHelp').href = data.whatsapp_url;
         }
+        const qBox = document.getElementById('qontoBox');
+        const mBox = document.getElementById('momoBox');
+        if (data.qonto && qBox) {
+          qBox.style.display = 'block';
+          document.getElementById('qontoInstr').textContent = data.qonto.instructions || '';
+        }
+        if (data.momo_ussd && (data.momo_ussd.orange || data.momo_ussd.mtn) && mBox) {
+          mBox.style.display = 'block';
+          const lines = [];
+          if (data.momo_ussd.orange) lines.push('Orange : ' + data.momo_ussd.orange);
+          if (data.momo_ussd.mtn) lines.push('MTN : ' + data.momo_ussd.mtn);
+          document.getElementById('momoInstr').textContent = lines.join(' · ');
+        }
+        document.getElementById('successBadgeText').textContent = 'Client enregistré dans le système';
+        document.getElementById('successTitle').textContent = 'Dossier créé — paiement à finaliser';
+        document.getElementById('successLead').textContent = data.message || 'Finalisez via WhatsApp ou Qonto.';
         setStep(4);
+        if (data.open_whatsapp && data.whatsapp_url) {
+          window.setTimeout(() => { window.open(data.whatsapp_url, '_blank'); }, 600);
+        }
       } else {
         alert(data.error || 'Une erreur est survenue lors de l\'adhésion.');
         btn.disabled = false;
         btn.innerHTML = '<i data-lucide="lock"></i><span>Valider l\'Adhésion &amp; Émettre la Carte</span>';
       }
     } catch (err) {
-      // Fallback offline
-      document.getElementById('resCssaId').textContent = 'CSSA-' + Math.floor(1000 + Math.random()*9000) + '-26';
-      setStep(4);
+      alert('Connexion impossible. Réessayez ou contactez le desk WhatsApp.');
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="lock"></i><span>Valider l\'Adhésion &amp; Émettre la Carte</span>';
     }
   });
+
+  // Retour Stripe Checkout success / cancel
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('paid') === '1' && params.get('cssa')) {
+    const cssa = params.get('cssa');
+    document.getElementById('resCssaId').textContent = cssa;
+    const nssPaid = document.getElementById('resNssId');
+    if (nssPaid) nssPaid.textContent = 'Activation en cours…';
+    document.getElementById('resPlan').textContent = 'Paiement Stripe reçu — activation carte en cours';
+    document.getElementById('lnkViewCard').href = '/espace-adherent?adh=' + encodeURIComponent(cssa);
+    setStep(4);
+    // Poll léger : webhook peut arriver avec 1–2 s de latence
+    let tries = 0;
+    const poll = setInterval(async () => {
+      tries += 1;
+      try {
+        const r = await fetch('/api/adherent/lookup?q=' + encodeURIComponent(cssa));
+        const j = await r.json();
+        if (j.success && j.member && String(j.member.status).toUpperCase() === 'ACTIVE') {
+          document.getElementById('resPlan').textContent = j.member.plan_name || 'Carte CSSA active';
+          if (nssPaid && (j.member.nss_display || j.member.nss_id)) {
+            nssPaid.textContent = j.member.nss_display || j.member.nss_id;
+          }
+          clearInterval(poll);
+        }
+      } catch (_) {}
+      if (tries >= 10) clearInterval(poll);
+    }, 1500);
+  } else if (params.get('canceled') === '1') {
+    alert('Paiement annulé. Votre dossier reste en attente — vous pouvez relancer le paiement.');
+  }
 
   updatePricing();
 });

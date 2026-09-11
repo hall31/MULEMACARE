@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\SEO;
+use App\Services\AuthService;
+use App\Services\AuditService;
 use App\Services\MembershipService;
 
 /**
@@ -205,6 +207,12 @@ class HomeController {
         require __DIR__ . '/../../views/layout/footer.php';
     }
 
+    /** Gate auth sans chrome marketing. */
+    private function renderGate(string $viewPath, array $data = []): void {
+        extract($data);
+        require __DIR__ . '/../../views/pages/' . $viewPath . '.php';
+    }
+
     /**
      * Portail Central Hub (https://mulemacare.com)
      * GET /
@@ -300,21 +308,97 @@ class HomeController {
     }
 
     /**
-     * Espace Adhérent Family Hub
-     * GET /espace-adherent
+     * Gate login adhérent
+     * GET /login/adherent
      */
-    public function adherent(): void {
-        $seo = new SEO($this->config, '/espace-adherent', null, 'home');
-        $this->render('espace-adherent', [], $seo);
+    public function loginAdherent(): void {
+        $auth = new AuthService($this->config);
+        $auth->sendSecurityHeaders();
+        if ($auth->session()->isMember()) {
+            if (!headers_sent()) {
+                header('Location: /espace-adherent', true, 302);
+            }
+            return;
+        }
+        $this->renderGate('login-adherent', ['authDebug' => $auth->isDebug()]);
     }
 
     /**
-     * Espace Admin & Régulation Mutuelle
-     * GET /admin
+     * Gate login admin + TOTP
+     * GET /login/admin
+     */
+    public function loginAdmin(): void {
+        $auth = new AuthService($this->config);
+        $auth->sendSecurityHeaders();
+        if ($auth->session()->isOps()) {
+            if (!headers_sent()) {
+                header('Location: /espace-admin', true, 302);
+            }
+            return;
+        }
+        $this->renderGate('login-admin', [
+            'needsTotp' => $auth->session()->needsTotp(),
+            'authDebug' => $auth->isDebug(),
+        ]);
+    }
+
+    /**
+     * Espace Adhérent Family Hub — session MEMBER obligatoire
+     * GET /espace-adherent
+     */
+    public function adherent(): void {
+        $auth = new AuthService($this->config);
+        $auth->sendSecurityHeaders();
+        if (!$auth->requireMemberOrRedirect()) {
+            echo '';
+            return;
+        }
+        $this->renderGate('espace-adherent', [
+            'csrf' => $auth->session()->csrfToken(),
+        ]);
+    }
+
+    /**
+     * Espace Admin & Régulation — OPS/ADMIN + TOTP
+     * GET /admin | /espace-admin
      */
     public function admin(): void {
-        $seo = new SEO($this->config, '/admin', null, 'home');
-        $this->render('espace-admin', [], $seo);
+        $auth = new AuthService($this->config);
+        $auth->sendSecurityHeaders();
+        if (!$auth->requireOpsOrRedirect()) {
+            echo '';
+            return;
+        }
+        $this->renderGate('espace-admin', [
+            'csrf' => $auth->session()->csrfToken(),
+            'opsEmail' => $auth->session()->opsEmail(),
+            'isAdmin' => $auth->session()->isAdmin(),
+        ]);
+    }
+
+    /**
+     * MCare chat — MEMBER ACTIVE
+     * GET /mcare
+     */
+    public function mcare(): void {
+        $auth = new AuthService($this->config);
+        $auth->sendSecurityHeaders();
+        if (!$auth->requireMemberOrRedirect()) {
+            echo '';
+            return;
+        }
+        $this->renderGate('mcare', [
+            'csrf' => $auth->session()->csrfToken(),
+        ]);
+    }
+
+    /**
+     * Landing MCare SKU (public)
+     * GET /mcare/about
+     */
+    public function mcareAbout(): void {
+        $seo = new SEO($this->config, '/mcare/about', null, 'home');
+        $this->render('mcare-about', [], $seo);
     }
 
     /**
@@ -380,7 +464,11 @@ class HomeController {
         echo "User-agent: *\n";
         echo "Allow: /\n";
         echo "Disallow: /api/\n";
-        echo "Disallow: /data/\n\n";
+        echo "Disallow: /data/\n";
+        echo "Disallow: /admin\n";
+        echo "Disallow: /espace-admin\n";
+        echo "Disallow: /login/\n";
+        echo "Disallow: /espace-adherent\n\n";
         echo "Sitemap: {$baseUrl}/sitemap.xml\n";
     }
 

@@ -424,6 +424,7 @@ td[data-col="silver"].sel,th[data-col="silver"].sel{background:#E2F3EE}
       <p class="hero-sub">Adhérez en ligne depuis Paris, Bruxelles ou Montréal — ou directement depuis Douala. Tiers-payant intégral dans plus de 45 cliniques partenaires, médecin de garde 24/7 sur WhatsApp et infirmières à domicile pour vos parents, dès <b class="num" data-base-eur="23">23 €</b> par mois.</p>
       <div class="hero-cta">
         <a class="btn btn-primary" href="#simulateur"><i data-lucide="heart-pulse"></i>Simuler ma cotisation</a>
+        <a class="btn btn-secondary" href="/mcare/about"><i data-lucide="message-circle"></i>Découvrir MCare</a>
         <a class="btn btn-ghost" href="#garanties"><i data-lucide="shield"></i>Explorer les garanties</a>
       </div>
       <div class="cur-mod">

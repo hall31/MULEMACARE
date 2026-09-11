@@ -252,8 +252,24 @@ if($('#cycleSeg')){
 }
 if($('#pmeMinus')) $('#pmeMinus').onclick=()=>{if(sim.pme>3){sim.pme--;$('#pmeCount').textContent=sim.pme;updateSim();}};
 if($('#simAdhere')) $('#simAdhere').onclick=()=>{
-  location.href='/adhesion?plan='+encodeURIComponent(sim.plan)+'&comp='+encodeURIComponent(sim.profile)+'&city='+encodeURIComponent(sim.city);
+  const map={solo:'solo',couple:'couple',famille:'family',seniors:'seniors',pme:'pme'};
+  const comp=map[sim.profile]||'family';
+  if(comp==='pme'){
+    location.href='/entreprises?employees='+encodeURIComponent(sim.pme)+'&plan='+encodeURIComponent(sim.plan)+'#proForm';
+    return;
+  }
+  const curr=(typeof cur!=='undefined'?cur:'EUR');
+  location.href='/adhesion?express=1&plan='+encodeURIComponent(sim.plan)
+    +'&comp='+encodeURIComponent(comp)
+    +'&city='+encodeURIComponent(sim.city)
+    +'&cycle='+encodeURIComponent(sim.cycle)
+    +'&curr='+encodeURIComponent(curr);
 };
+function openSub(plan){
+  if(plan&&PLANS[plan]){sim.plan=plan;updateSim();}
+  if($('#simAdhere')){ $('#simAdhere').click(); return; }
+  location.href='/adhesion?express=1&plan='+encodeURIComponent(sim.plan||'silver');
+}
 
 /* ══════════════════ CARTE MUTUELLE DIGITALE ══════════════════ */
 function qrSVG(text,px){
@@ -443,15 +459,6 @@ if($('#waReplay')) {
 let sub={step:1,pay:'card',done:false,member:null};
 const subModal=$('#subModal');
 
-function openSub(plan){
-  if(plan&&PLANS[plan]){sim.plan=plan;updateSim();}
-  if(sub.done)resetSub();
-  if(subModal){
-    subModal.classList.add('open');
-    document.body.style.overflow='hidden';
-    renderSubRecap();
-  }
-}
 function closeSub(){if(subModal){subModal.classList.remove('open');document.body.style.overflow='';}}
 function resetSub(){
   sub={step:1,pay:'card',done:false,member:null};
@@ -632,18 +639,20 @@ if($('#subNext')){
 }
 async function processPayment(){
   const btn=$('#subNext'), old=btn.innerHTML;
-  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Traitement sécurisé en cours…';
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Ouverture Stripe Checkout…';
   
-  // Appel API Backend
   const payload = {
+    plan_id: sim.plan,
     plan: sim.plan,
     city: sim.city,
-    currency: cur,
-    period: sim.cycle,
-    sponsor_name: ($('#fPrenom').value.trim()+' '+$('#fNom').value.trim()).trim(),
-    sponsor_email: $('#fEmail').value.trim(),
-    sponsor_phone: ($('#phoneCode').value + ' ' + $('#fPhone').value.trim()),
-    payment_method: sub.pay
+    currency: (typeof cur !== 'undefined' && cur) ? cur : 'EUR',
+    cycle: sim.cycle === 'month' || sim.cycle === 'monthly' ? 'monthly' : 'annual',
+    composition: 'family',
+    subscriber_name: ($('#fPrenom').value.trim()+' '+$('#fNom').value.trim()).trim(),
+    subscriber_email: $('#fEmail').value.trim(),
+    subscriber_phone: ($('#phoneCode').value + ' ' + $('#fPhone').value.trim()),
+    payment_method: (sub.pay === 'card' || sub.pay === 'apple') ? 'card' : sub.pay,
+    subscriber_origin: 'Diaspora'
   };
 
   try {
@@ -653,25 +662,30 @@ async function processPayment(){
       body: JSON.stringify(payload)
     });
     const json = await res.json();
-    if(json.status === 'ok') {
-      sub.member = {
-        name: json.data.member_name.toUpperCase(),
-        no: json.data.card_number,
-        plan: json.data.plan,
-        validThru: json.data.valid_until,
-        cssa: json.data.cssa_number,
-        adh: json.data.membership_id
-      };
-    } else {
-      buildMember();
+    if (json.success && json.checkout_url) {
+      window.location.href = json.checkout_url;
+      return;
     }
+    if (json.success && json.cssa_id) {
+      sub.member = {
+        name: (json.membership?.subscriber_name || payload.subscriber_name || '').toUpperCase(),
+        no: json.cssa_id,
+        plan: json.plan_name || sim.plan,
+        validThru: json.membership?.valid_until_label || '',
+        cssa: json.cssa_id,
+        adh: json.membership?.membership_id || ''
+      };
+      btn.disabled=false; btn.innerHTML=old;
+      showSuccess();
+      toast('Dossier créé', json.message || 'Finalisez le paiement pour activer la carte.','info');
+      return;
+    }
+    toast('Paiement', json.error || 'Stripe indisponible — contactez le desk.','error');
   } catch(e) {
-    buildMember();
+    toast('Erreur réseau','Réessayez dans un instant.','error');
   }
 
   btn.disabled=false; btn.innerHTML=old;
-  showSuccess();
-  toast('Paiement confirmé','Bienvenue chez MulemaCare — votre carte digitale est active.','success');
 }
 
 function buildMember(){

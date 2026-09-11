@@ -14,14 +14,41 @@ return [
         'default_cur' => 'XAF', // XAF, EUR, USD
     ],
 
-    // Base de données Relationnelle MySQL (1&1 IONOS)
+    // Base de données Relationnelle MySQL (1&1 IONOS) — secrets UNIQUEMENT via env
     'db' => [
         'host'     => getenv('DB_HOST') ?: 'db5015599908.hosting-data.io',
         'port'     => getenv('DB_PORT') ?: 3306,
         'database' => getenv('DB_NAME') ?: 'dbs12741132',
         'username' => getenv('DB_USER') ?: 'dbu1391065',
-        'password' => getenv('DB_PASS') ?: 'Eagle_1983*Icare_2050#Mom1956*Dad1947',
+        'password' => (string) (getenv('DB_PASS') ?: ''),
         'charset'  => 'utf8mb4',
+    ],
+
+    // Stripe — encaissement rapide abonnements diaspora (EUR / USD)
+    // Activer avec STRIPE_ENABLED=true + clés live/test hors repo.
+    'stripe' => [
+        'enabled'               => filter_var(getenv('STRIPE_ENABLED') ?: false, FILTER_VALIDATE_BOOL),
+        'secret_key'            => (string) (getenv('STRIPE_SECRET_KEY') ?: ''),
+        'publishable_key'       => (string) (getenv('STRIPE_PUBLISHABLE_KEY') ?: ''),
+        'webhook_secret'        => (string) (getenv('STRIPE_WEBHOOK_SECRET') ?: ''),
+        'webhook_tolerance_sec' => max(60, (int) (getenv('STRIPE_WEBHOOK_TOLERANCE_SEC') ?: 300)),
+        'api_version'           => (string) (getenv('STRIPE_API_VERSION') ?: '2024-11-20.acacia'),
+        // Devises éligibles Checkout (carte diaspora)
+        'diaspora_currencies'   => ['EUR', 'USD'],
+    ],
+
+    // Catalogue tarifaire versionné (JSON sous data/tariffs/)
+    'tariffs' => [
+        'active_version'       => (string) (getenv('TARIFF_ACTIVE_VERSION') ?: '2026-08-30'),
+        'annual_discount_pct'  => (float) (getenv('TARIFF_ANNUAL_DISCOUNT_PCT') ?: 10),
+    ],
+
+    // Virement diaspora Qonto (secrets via env)
+    'qonto' => [
+        'iban'         => (string) (getenv('QONTO_IBAN') ?: ''),
+        'bic'          => (string) (getenv('QONTO_BIC') ?: ''),
+        'account_name' => (string) (getenv('QONTO_ACCOUNT_NAME') ?: 'MulemaCare Health Group'),
+        'bank_label'   => (string) (getenv('QONTO_BANK_LABEL') ?: 'Qonto'),
     ],
 
     // Entités Juridiques & Régulation
@@ -37,9 +64,9 @@ return [
             'company_name' => 'MULEMACARE MUTUELLE SANTÉ CAMEROUN',
             'agreement'    => 'Agrément CSSA n° 045/CSSA/2024',
             'address'      => '85 Avenue de l\'Indépendance / Rue Njo-Njo, Bonapriso, Douala, Cameroun',
-            'phone'        => '+237 521 120 21',
-            'phone_raw'    => '23752112021',
-            'phone_mtn'    => '+237 65 14 58 37',
+            'phone'        => '+237 656 14 58 37',
+            'phone_raw'    => '237656145837',
+            'phone_mtn'    => '+237 652 11 20 21',
         ],
     ],
 
@@ -48,12 +75,12 @@ return [
         'email_support'   => 'contact@mulemacare.com',
         'email_rh'        => 'entreprises@mulemacare.com',
         'phone_fr'        => '+33 6 59 51 34 58',
-        'phone_cm'        => '+237 521 120 21',
-        'phone_mtn'       => '+237 65 14 58 37',
+        'phone_cm'        => '+237 656 14 58 37',
+        'phone_mtn'       => '+237 652 11 20 21',
         'whatsapp_fr'     => '33659513458',
-        'whatsapp_cm'     => '23752112021',
+        'whatsapp_cm'     => '237656145837',
         'whatsapp_desk'   => '33659513458',
-        'phone_display'   => '+33 6 59 51 34 58 (FR) / +237 521 120 21 (CM)',
+        'phone_display'   => '+33 6 59 51 34 58 (FR) / +237 656 14 58 37 (CM)',
         'address_fr'      => '208 Avenue Aristide Briand, 92220 Bagneux, France',
         'address_cm'      => '85 Avenue de l\'Indépendance, Douala, Cameroun',
         'facebook'        => 'https://www.facebook.com/Mulemacare-2117419645247839',
@@ -67,17 +94,17 @@ return [
         'orange_money' => [
             'id'            => 'orange_money',
             'name'          => 'Orange Money Cameroun',
-            'phone_display' => '+237 521 120 21',
-            'phone_raw'     => '23752112021',
-            'ussd_syntax'   => '#150*1*1*52112021*MONTANT#',
+            'phone_display' => '+237 656 14 58 37',
+            'phone_raw'     => '237656145837',
+            'ussd_syntax'   => '#150*1*1*656145837*MONTANT#',
             'merchant_name' => 'MULEMACARE HEALTH',
         ],
         'mtn_momo' => [
             'id'            => 'mtn_momo',
             'name'          => 'MTN Mobile Money',
-            'phone_display' => '+237 65 14 58 37',
-            'phone_raw'     => '23765145837',
-            'ussd_syntax'   => '*126*1*65145837*MONTANT#',
+            'phone_display' => '+237 652 11 20 21',
+            'phone_raw'     => '237652112021',
+            'ussd_syntax'   => '*126*1*652112021*MONTANT#',
             'merchant_name' => 'MULEMACARE HEALTH',
         ],
     ],
@@ -363,32 +390,40 @@ return [
         'base_url'   => rtrim((string) (getenv('HEALTHOS_BASE_URL') ?: ''), '/'),
         'api_key'    => (string) (getenv('HEALTHOS_PARTNER_API_KEY') ?: ''),
         'timeout_ms' => max(250, (int) (getenv('HEALTHOS_TIMEOUT_MS') ?: 2500)),
-
-        // Étape du déploiement du bridge. `observe` est la seule valeur qui
-        // fasse quelque chose aujourd'hui : le rapprochement compare les
-        // décisions des deux systèmes hors ligne, aucune page ne consulte
-        // HealthOS et aucun adhérent n'est affecté par un écart. Les étapes
-        // suivantes (lecture des droits affichée, puis préautorisations)
-        // s'ouvriront quand le rapport de rapprochement sera expliqué —
-        // et les portées de la clé partenaire, côté HealthOS, devront être
-        // élargies en même temps. Voir `docs/HEALTHOS_BRIDGE.md`.
-        'mode'       => strtolower((string) (getenv('MULEMACARE_HEALTHOS_BRIDGE_MODE') ?: 'observe')),
-
-        // Tenant pilote attendu. La table de correspondance déclare le sien ;
-        // s'ils diffèrent, elle est refusée plutôt qu'appliquée au mauvais
-        // périmètre.
-        'pilot_tenant' => (string) (getenv('HEALTHOS_PILOT_TENANT') ?: ''),
-
-        // Table de correspondance CSSA -> patient_id HealthOS. Produite par la
-        // migration de données et relue par un humain ; jamais devinée.
-        'identity_map_path' => (string) (getenv('HEALTHOS_IDENTITY_MAP_PATH') ?: ''),
-
-        // HealthOS compte en unités mineures, le site en francs CFA. Le franc
-        // CFA n'a pas de subdivision en usage : 1. Une valeur fausse ferait
-        // diverger tous les plafonds d'un facteur constant.
-        'minor_units_per_unit' => max(1, (int) (getenv('HEALTHOS_MINOR_UNITS_PER_UNIT') ?: 1)),
-
-        // Écart de plafond toléré avant d'être signalé, dans l'unité du site.
-        'cap_tolerance' => max(0.0, (float) (getenv('HEALTHOS_CAP_TOLERANCE') ?: 0.0)),
     ],
+
+    // Mutuelle OS FastAPI — OFF par défaut (site PHP solo)
+    'mutuelle_os' => [
+        'enabled'       => filter_var(getenv('MULEMACARE_OS_ENABLED') ?: false, FILTER_VALIDATE_BOOL),
+        'base_url'      => rtrim((string) (getenv('MULEMACARE_OS_URL') ?: 'http://127.0.0.1:8088'), '/'),
+        'service_token' => (string) (getenv('MULEMACARE_OS_SERVICE_TOKEN') ?: ''),
+        'timeout_ms'    => max(250, (int) (getenv('MULEMACARE_OS_TIMEOUT_MS') ?: 2500)),
+    ],
+
+    // MCare SKU (chat diaspora) — quotas mensuels transmissions médecin
+    'mcare' => [
+        'enabled' => filter_var(getenv('MCARE_ENABLED') ?: false, FILTER_VALIDATE_BOOL),
+        'skus' => [
+            'essential' => ['label' => 'MCare Essential', 'plans' => ['bronze'], 'quota' => 5, 'addon_eur' => 5],
+            'family'    => ['label' => 'MCare Family', 'plans' => ['silver', 'gold'], 'quota' => 15, 'addon_eur' => 0],
+            'concierge' => ['label' => 'MCare Concierge', 'plans' => ['platinium'], 'quota' => 999, 'addon_eur' => 0],
+        ],
+    ],
+
+    // Auth sessions (adhérent OTP + admin Argon2id/TOTP)
+    'auth' => [
+        'member_required'   => filter_var(
+            getenv('MEMBER_AUTH_REQUIRED') === false ? 'true' : (string) getenv('MEMBER_AUTH_REQUIRED'),
+            FILTER_VALIDATE_BOOL
+        ),
+        'debug'             => filter_var(getenv('MULEMACARE_AUTH_DEBUG') ?: false, FILTER_VALIDATE_BOOL),
+        'session_name'      => 'mulemacare_sess',
+        'idle_timeout'      => max(300, (int) (getenv('AUTH_IDLE_TIMEOUT') ?: 1800)),
+        'absolute_timeout'  => max(3600, (int) (getenv('AUTH_ABSOLUTE_TIMEOUT') ?: 28800)),
+        'otp_ttl'           => max(60, (int) (getenv('AUTH_OTP_TTL') ?: 600)),
+        'otp_max_per_hour'  => max(1, (int) (getenv('AUTH_OTP_MAX_PER_HOUR') ?: 5)),
+    ],
+
+    // Répertoire data JSON (tests / override hébergement)
+    'data_dir' => getenv('MULEMACARE_DATA_DIR') ?: null,
 ];

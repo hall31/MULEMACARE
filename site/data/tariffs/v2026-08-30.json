@@ -1,0 +1,282 @@
+{
+    "version": "2026-08-30",
+    "effective_from": "2026-08-30",
+    "annual_discount_pct": 10,
+    "currency_default": "EUR",
+    "plans": {
+        "bronze": {
+            "id": "bronze",
+            "name": "Mulema Bronze",
+            "headline": "Urgences Vitales & SAMU",
+            "badge": "Formule Essentielle",
+            "ceiling_xaf": "500 000 FCFA \/ an \/ personne (760 €)",
+            "features": [
+                "Hospitalisation d'urgence prise en charge à 100% (Plafond 500 000 FCFA \/ an)",
+                "Frais de réanimation et chirurgie d'urgence inclus (Carence 0 jour)",
+                "Télétriage & Régulation médicale Lisacare 24\/7 (Carence 0 jour)",
+                "Transport sanitaire d'urgence (SAMU \/ Ambulance)",
+                "Carte d'assuré digitale CSSA avec QR Code"
+            ],
+            "tiers_payant": "Hospitalisation d'urgence uniquement",
+            "prices": {
+                "solo": {
+                    "XAF": {
+                        "amount": 15000,
+                        "label": "15 000 FCFA",
+                        "sub": "\/mois"
+                    },
+                    "EUR": {
+                        "amount": 25,
+                        "label": "25 €",
+                        "sub": "\/mois"
+                    },
+                    "USD": {
+                        "amount": 28,
+                        "label": "28 $",
+                        "sub": "\/mois"
+                    }
+                },
+                "couple": {
+                    "XAF": {
+                        "amount": 28000,
+                        "label": "28 000 FCFA",
+                        "sub": "\/mois"
+                    },
+                    "EUR": {
+                        "amount": 45,
+                        "label": "45 €",
+                        "sub": "\/mois"
+                    },
+                    "USD": {
+                        "amount": 50,
+                        "label": "50 $",
+                        "sub": "\/mois"
+                    }
+                },
+                "family": {
+                    "XAF": {
+                        "amount": 45000,
+                        "label": "45 000 FCFA",
+                        "sub": "\/mois"
+                    },
+                    "EUR": {
+                        "amount": 75,
+                        "label": "75 €",
+                        "sub": "\/mois"
+                    },
+                    "USD": {
+                        "amount": 82,
+                        "label": "82 $",
+                        "sub": "\/mois"
+                    }
+                }
+            }
+        },
+        "silver": {
+            "id": "silver",
+            "name": "Mulema Silver",
+            "headline": "Soins Courants & Famille",
+            "badge": "Le Choix Préféré des Familles",
+            "ceiling_xaf": "1 500 000 FCFA \/ an \/ personne (2 290 €)",
+            "features": [
+                "Hospitalisation médicale & chirurgicale 100% (Plafond 1 500 000 FCFA \/ an, carence 90j)",
+                "Consultations spécialistes & généralistes à 80% (Carence 30j)",
+                "Pharmacie certifiée prise en charge à 80% (Carence 30j)",
+                "Examens de biologie médicale, radiologie et échographie (Carence 30j)",
+                "Maternité : Forfait accouchement & soins nouveau-né (Carence 300j)",
+                "Téléconsultation vidéo Lisacare illimitée 24\/7 (Carence 0j)"
+            ],
+            "tiers_payant": "Hospitalisations + Consultations spécialistes + Labo",
+            "prices": {
+                "solo": {
+                    "XAF": {
+                        "amount": 30000,
+                        "label": "30 000 FCFA",
+                        "sub": "\/mois"
+                    },
+                    "EUR": {
+                        "amount": 49,
+                        "label": "49 €",
+                        "sub": "\/mois"
+                    },
+                    "USD": {
+                        "amount": 55,
+                        "label": "55 $",
+                        "sub": "\/mois"
+                    }
+                },
+                "couple": {
+                    "XAF": {
+                        "amount": 55000,
+                        "label": "55 000 FCFA",
+                        "sub": "\/mois"
+                    },
+                    "EUR": {
+                        "amount": 89,
+                        "label": "89 €",
+                        "sub": "\/mois"
+                    },
+                    "USD": {
+                        "amount": 98,
+                        "label": "98 $",
+                        "sub": "\/mois"
+                    }
+                },
+                "family": {
+                    "XAF": {
+                        "amount": 85000,
+                        "label": "85 000 FCFA",
+                        "sub": "\/mois"
+                    },
+                    "EUR": {
+                        "amount": 139,
+                        "label": "139 €",
+                        "sub": "\/mois"
+                    },
+                    "USD": {
+                        "amount": 150,
+                        "label": "150 $",
+                        "sub": "\/mois"
+                    }
+                }
+            }
+        },
+        "gold": {
+            "id": "gold",
+            "name": "Mulema Gold",
+            "headline": "Confort Total & Tiers-Payant 100%",
+            "badge": "Zéro Avance de Frais",
+            "ceiling_xaf": "3 500 000 FCFA \/ an \/ personne (5 335 €)",
+            "features": [
+                "Tiers-payant 100% intégral en clinique et pharmacie (Plafond 3 500 000 FCFA \/ an)",
+                "Chambre individuelle confort lors des hospitalisations (Carence 90j)",
+                "Forfait Optique (Lunettes & Verres) & Soins Dentaires (Carence 180j)",
+                "Bilan de santé annuel complet avec bilan sanguin & ECG (Carence 180j)",
+                "1 visite soignante à domicile par mois incluse (Ongwa)",
+                "Assistance téléphonique prioritaire VIP"
+            ],
+            "tiers_payant": "Intégral 100% (Cliniques, Labos, Pharmacies, Dentaire, Optique)",
+            "prices": {
+                "solo": {
+                    "XAF": {
+                        "amount": 65000,
+                        "label": "65 000 FCFA",
+                        "sub": "\/mois"
+                    },
+                    "EUR": {
+                        "amount": 99,
+                        "label": "99 €",
+                        "sub": "\/mois"
+                    },
+                    "USD": {
+                        "amount": 110,
+                        "label": "110 $",
+                        "sub": "\/mois"
+                    }
+                },
+                "couple": {
+                    "XAF": {
+                        "amount": 120000,
+                        "label": "120 000 FCFA",
+                        "sub": "\/mois"
+                    },
+                    "EUR": {
+                        "amount": 189,
+                        "label": "189 €",
+                        "sub": "\/mois"
+                    },
+                    "USD": {
+                        "amount": 210,
+                        "label": "210 $",
+                        "sub": "\/mois"
+                    }
+                },
+                "family": {
+                    "XAF": {
+                        "amount": 180000,
+                        "label": "180 000 FCFA",
+                        "sub": "\/mois"
+                    },
+                    "EUR": {
+                        "amount": 280,
+                        "label": "280 €",
+                        "sub": "\/mois"
+                    },
+                    "USD": {
+                        "amount": 310,
+                        "label": "310 $",
+                        "sub": "\/mois"
+                    }
+                }
+            }
+        },
+        "platinium": {
+            "id": "platinium",
+            "name": "Mulema Platinium",
+            "headline": "Excellence, Diaspora & Évacuation",
+            "badge": "Couverture Internationale",
+            "ceiling_xaf": "8 000 000 FCFA \/ an \/ personne (12 200 €)",
+            "features": [
+                "Plafond annuel maîtrisé de 8 000 000 FCFA (12 200 €) par an et par bénéficiaire",
+                "Évacuation sanitaire internationale vers centres d'excellence (Plafond 8M FCFA, Carence 180j)",
+                "Suite VIP d'hospitalisation avec lit accompagnant (Carence 90j)",
+                "Option Ongwa Senior Care complète incluse pour les parents",
+                "Conciergerie médicale dédiée 24\/7 avec médecin référent personnel"
+            ],
+            "tiers_payant": "Intégral Monde & Évacuation Sanitaire",
+            "prices": {
+                "solo": {
+                    "XAF": {
+                        "amount": 130000,
+                        "label": "130 000 FCFA",
+                        "sub": "\/mois"
+                    },
+                    "EUR": {
+                        "amount": 199,
+                        "label": "199 €",
+                        "sub": "\/mois"
+                    },
+                    "USD": {
+                        "amount": 220,
+                        "label": "220 $",
+                        "sub": "\/mois"
+                    }
+                },
+                "couple": {
+                    "XAF": {
+                        "amount": 240000,
+                        "label": "240 000 FCFA",
+                        "sub": "\/mois"
+                    },
+                    "EUR": {
+                        "amount": 370,
+                        "label": "370 €",
+                        "sub": "\/mois"
+                    },
+                    "USD": {
+                        "amount": 410,
+                        "label": "410 $",
+                        "sub": "\/mois"
+                    }
+                },
+                "family": {
+                    "XAF": {
+                        "amount": 350000,
+                        "label": "350 000 FCFA",
+                        "sub": "\/mois"
+                    },
+                    "EUR": {
+                        "amount": 540,
+                        "label": "540 €",
+                        "sub": "\/mois"
+                    },
+                    "USD": {
+                        "amount": 590,
+                        "label": "590 $",
+                        "sub": "\/mois"
+                    }
+                }
+            }
+        }
+    }
+}

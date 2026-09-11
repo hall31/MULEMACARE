@@ -8,6 +8,7 @@ MulemaCare Health Group réunit :
 2. **MulemaCare Pro (Entreprises & PME)** : Couverture santé collective des salariés en Afrique, 100% déductible fiscalement avec remises de 10% à 25% dès 10 collaborateurs.
 3. **Lisacare Telehealth** (https://lisacare.mulemacare.com) : Télétriage & consultation médicale vidéo 24/7 sur WhatsApp avec médecins régulateurs.
 4. **Ongwa Senior Care** (https://ongwa.mulemacare.com) : Soins, nursing et maintien à domicile des personnes âgées en Afrique financés par la diaspora.
+5. **MCare** : chat famille diaspora (couverture, réseau, carte CSSA, triage pré-clinique). Tags IA obligatoires ; transmission médecin via file humaine (HITL). SKU Essential / Family / Concierge — voir `/adhesion` et pages diaspora.
 
 ## Entités Juridiques & Agréments
 - **France & Diaspora :** SOCIETE E-SANTE MULEMACARE FRANCE — SIRET n° 8807 7661 2000 17 — 208 Avenue Aristide Briand, 92220 Bagneux, France.

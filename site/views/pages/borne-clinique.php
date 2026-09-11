@@ -204,11 +204,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('verifyForm');
   const input = document.getElementById('cssaInput');
   const resCard = document.getElementById('resultCard');
+  let statusEl = document.getElementById('borneStatus');
+  if (!statusEl) {
+    statusEl = document.createElement('p');
+    statusEl.id = 'borneStatus';
+    statusEl.style.cssText = 'margin:12px 0;font:600 13.5px var(--font-b);color:#B91C1C;min-height:1.2em';
+    form.appendChild(statusEl);
+  }
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const code = input.value.trim().toUpperCase();
     if (!code) return;
+    statusEl.textContent = '';
 
     try {
       const res = await fetch('/api/verify-card/' + encodeURIComponent(code));
@@ -223,11 +231,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('resValid').textContent = c.valid_until;
         resCard.style.display = 'block';
       } else {
-        alert(data.error || 'Numéro CSSA introuvable.');
+        statusEl.textContent = data.error || 'Numéro CSSA introuvable.';
         resCard.style.display = 'none';
       }
     } catch(err) {
-      alert('Erreur de connexion au serveur.');
+      statusEl.textContent = 'Erreur de connexion au serveur.';
     }
   });
 
@@ -251,16 +259,19 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const data = await res.json();
       if (data.success) {
-        alert('✅ Prise en charge validée !\nRéférence : ' + data.claim.claim_ref + '\nMontant couvert : ' + data.claim.amount_covered.toLocaleString('fr-FR') + ' FCFA (0 F pour le patient).');
+        statusEl.style.color = '#047857';
+        statusEl.textContent = 'Bon émis ' + data.claim.claim_ref + ' — ' + data.claim.amount_covered.toLocaleString('fr-FR') + ' FCFA couverts (0 F patient).';
         btn.disabled = false;
         btn.innerHTML = '<i data-lucide="check-circle-2"></i><span>Valider le Bon de Prise en Charge</span>';
       } else {
-        alert(data.error || 'Erreur lors de l\'émission du bon.');
+        statusEl.style.color = '#B91C1C';
+        statusEl.textContent = data.error || 'Erreur lors de l\'émission du bon.';
         btn.disabled = false;
         btn.innerHTML = '<i data-lucide="check-circle-2"></i><span>Valider le Bon de Prise en Charge</span>';
       }
     } catch(err) {
-      alert('✅ Bon de prise en charge émis (Mode autonome).');
+      statusEl.style.color = '#B91C1C';
+      statusEl.textContent = 'Erreur réseau — réessayez.';
       btn.disabled = false;
       btn.innerHTML = '<i data-lucide="check-circle-2"></i><span>Valider le Bon de Prise en Charge</span>';
     }
