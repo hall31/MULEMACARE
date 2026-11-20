@@ -14,8 +14,9 @@ services:
   mulemacare-api:
     image: cybernecs/mulemacare-api:${CYBERNECS_IMAGE_TAG:-local}
     build:
-      context: ./api
-      dockerfile: Dockerfile
+      # Racine du monorepo : requirements.txt installe le tronc IA depuis packages/.
+      context: ../../../..
+      dockerfile: APPS/PUBLIC/HEALTH/MULEMACARE/api/Dockerfile
     ports:
       - "8088:8080"
     depends_on:

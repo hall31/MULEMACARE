@@ -1,4 +1,4 @@
-"""MCare AI Integration Routes — Claude API-backed medical orientation chat.
+"""MCare AI Integration Routes — medical orientation chat via the platform AI trunk.
 
 Routes:
 - POST /api/v1/mcare/chat — send message, get agent response with safety checks
@@ -7,6 +7,8 @@ Routes:
 - GET /api/v1/mcare/health-check — LLM latency + availability check
 
 All responses tagged with "IA" + "Hypothèses non validées" disclaimer.
+No model is named here: the AI trunk routes the tier, and ``llm_model`` reports
+the model it actually used.
 """
 
 from __future__ import annotations
@@ -14,12 +16,10 @@ from __future__ import annotations
 import json
 import logging
 import os
-import time
 import uuid
 from datetime import datetime, timezone
 from typing import Annotated, Any
 
-import anthropic
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import select
@@ -34,8 +34,10 @@ from app.domain.mcare_models import (
 )
 from app.domain.models import AgentProposal, McareConversation, McareMessage, Member
 from app.services.mcare_agents import (
+    MCARE_TASK_TYPE,
     MCareAgentError,
     SpecialistAgent,
+    get_mcare_gateway,
     route_to_specialist,
 )
 from app.services.plan_catalog import PLAN_CATALOG
@@ -203,7 +205,7 @@ async def chat(
     )
     history = hist_result.scalars().all()
 
-    # Build conversation for Claude
+    # Build conversation for the specialist agent
     conversation_history = []
     for msg in history[-10:]:  # Last 10 messages for context window
         conversation_history.append(
@@ -217,7 +219,7 @@ async def chat(
     specialist_type = route_to_specialist(body.message, language=body.language)
 
     try:
-        # Call Claude specialist agent
+        # Call specialist agent (AI trunk)
         agent = SpecialistAgent(
             specialist_type=specialist_type,
             language=body.language,
@@ -481,7 +483,11 @@ async def check_quota(
 
 @router.get("/health-check", response_model=HealthCheckResponse)
 async def health_check() -> HealthCheckResponse:
-    """Check MCare AI health (LLM availability, latency)."""
+    """Check MCare AI health (LLM availability, latency) through the AI trunk.
+
+    ``llm_model`` is the model the trunk actually routed, never a constant:
+    ``"none"`` when no call was made.
+    """
     if not mcare_enabled():
         return HealthCheckResponse(
             status="unavailable",
@@ -495,37 +501,43 @@ async def health_check() -> HealthCheckResponse:
         return HealthCheckResponse(
             status="unavailable",
             llm_available=False,
-            llm_model="claude-3-5-sonnet-20241022",
+            llm_model="none",
             mcare_enabled=True,
             error="Claude API not configured",
         )
 
     try:
-        # Quick LLM health check
-        client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-        start = time.time()
-
-        msg = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+        # Quick LLM health check, same tier as the chat
+        result = await get_mcare_gateway().run(
+            [{"role": "user", "content": "Health check"}],
+            task_type=MCARE_TASK_TYPE,
             max_tokens=10,
-            messages=[{"role": "user", "content": "Health check"}],
-        )
-
-        latency_ms = int((time.time() - start) * 1000)
-
-        return HealthCheckResponse(
-            status="healthy",
-            llm_available=True,
-            llm_model="claude-3-5-sonnet-20241022",
-            llm_latency_ms=latency_ms,
-            mcare_enabled=True,
         )
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         return HealthCheckResponse(
             status="degraded",
             llm_available=False,
-            llm_model="claude-3-5-sonnet-20241022",
+            llm_model="none",
             mcare_enabled=True,
             error=str(e),
         )
+
+    # The trunk never raises on provider errors: it reports them here.
+    if result.error_message is not None:
+        logger.error(f"Health check failed: {result.error_message}")
+        return HealthCheckResponse(
+            status="degraded",
+            llm_available=False,
+            llm_model=result.model_used,
+            mcare_enabled=True,
+            error=result.error_message,
+        )
+
+    return HealthCheckResponse(
+        status="healthy",
+        llm_available=True,
+        llm_model=result.model_used,
+        llm_latency_ms=result.latency_ms,
+        mcare_enabled=True,
+    )

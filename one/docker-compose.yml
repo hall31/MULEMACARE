@@ -1,0 +1,84 @@
+# MulemaCare One — environnement de DÉVELOPPEMENT (make up / make down / make dev).
+# Secrets : .env.dev, généré sur le poste par `python -m api.core.devtools env` (non versionné).
+# Ports publiés sur 127.0.0.1 seulement. Données fictives (specs/seeds/demo.sql).
+# Production : docs/DEPLOYMENT.md (pas ce fichier).
+name: mulemacare-one
+
+x-api-image: &api-image
+  image: mulemacare-one-api:dev
+  build:
+    context: .
+    dockerfile: infra/docker/api.Dockerfile
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: insurance
+      POSTGRES_USER: mulema_owner
+      POSTGRES_PASSWORD: ${MULEMA_DEV_OWNER_PASSWORD:?lancer make dev ou make up (génère .env.dev)}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mulema_owner -d insurance"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # Migrations en PROPRIÉTAIRE, rôle de connexion `mulema_api` membre de `mulema_app`,
+  # lecture de alembic_version (CR-L10-02), jeu de démonstration fictif. Puis s'arrête.
+  migrate:
+    <<: *api-image
+    command: ["python", "-m", "api.core.devtools", "provision"]
+    environment:
+      MULEMA_MIGRATION_DATABASE_URL: postgresql+psycopg://mulema_owner:${MULEMA_DEV_OWNER_PASSWORD}@postgres:5432/insurance
+      MULEMA_DEV_LOGIN_PASSWORD: ${MULEMA_DEV_LOGIN_PASSWORD:?.env.dev incomplet}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    <<: *api-image
+    env_file: .env.dev
+    environment:
+      # L'API se connecte avec le rôle de CONNEXION (jamais le propriétaire) : sinon refus au
+      # démarrage (Database.verify_isolation_enforced, strict).
+      MULEMA_INSURANCE_DATABASE_URL: postgresql+psycopg://mulema_api:${MULEMA_DEV_LOGIN_PASSWORD}@postgres:5432/insurance
+      MULEMA_OIDC_JWKS_FILE: /run/oidc/jwks.json
+    volumes:
+      - ./.dev/oidc/jwks.json:/run/oidc/jwks.json:ro
+    ports:
+      - "127.0.0.1:8000:8000"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    stop_grace_period: 30s
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  # Applications web (console 3416, comptoir 3100, adhérent 3200, partenaires 3420), sur leurs
+  # mocks du contrat (NEXT_PUBLIC_API_MOCKING) tant qu'elles ne sont pas branchées à l'API.
+  web:
+    profiles: [web]
+    image: node:22-alpine
+    working_dir: /workspace
+    command: ["sh", "-c", "corepack enable && pnpm install --frozen-lockfile && pnpm -r --parallel --filter './apps/web/*' run dev -- --hostname 0.0.0.0"]
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+    volumes:
+      - ./:/workspace
+      - web_node_modules:/workspace/node_modules
+    ports:
+      - "127.0.0.1:3416:3416"
+      - "127.0.0.1:3100:3100"
+      - "127.0.0.1:3200:3200"
+      - "127.0.0.1:3420:3420"
+
+volumes:
+  pgdata:
+  web_node_modules:

@@ -98,7 +98,7 @@ async def create_proposal(
         old_status=None,
         new_status="pending",
         reason="Proposal created by agent or user",
-        metadata={
+        context_data={
             "agent_name": body.agent_name,
             "action_type": body.action_type,
         },

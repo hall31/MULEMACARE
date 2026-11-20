@@ -1,7 +1,7 @@
-"""MCare AI Agents — Claude API-backed specialist routing and response generation.
+"""MCare AI Agents — specialist routing and response generation via the AI trunk.
 
 Implements:
-- SpecialistAgent: wraps Claude API for structured medical orientation
+- SpecialistAgent: structured medical orientation through the platform AI trunk
 - route_to_specialist: symptom keyword matching → agent persona selection
 - evaluate_response: safety validation (no diagnosis, red flags detected)
 - transmit_to_lisacare: delegate to human doctor via Lisacare API
@@ -11,25 +11,78 @@ All agents follow guardrails:
 - ALWAYS identify critical red flags
 - Provide hypothesis + next steps, never final medical advice
 - All responses tagged with "IA - Hypothèses non validées"
+
+Accès modèle : ``cybernecs_ai_gateway.build_gateway()`` est le seul point du
+monorepo autorisé à atteindre un fournisseur (plafond de coût, souveraineté,
+prompt caching, circuit breaker). Ce module ne nomme **aucun** modèle : il
+demande un tier (``MCARE_TASK_TYPE``), la table de routage de
+``cybernecs-agent-core`` choisit le modèle. Le modèle réellement utilisé est
+rapporté par la Gateway (``GatewayResult.model_used``).
 """
 
 from __future__ import annotations
 
-import asyncio
 import json
 import logging
 import os
-from enum import Enum
 from typing import Any
 
-import anthropic
-from anthropic import APIError
+from cybernecs_agent_core import Gateway, TaskType
+from cybernecs_agent_core.gateway import Transport
+from cybernecs_ai_gateway import GatewaySettings, build_gateway
 
 from app.core.config import get_settings
 from app.core.mcare_safety import DiagnosisDetector, RedFlagDetector, SafetyEvaluator
 from app.domain.mcare_models import ClinCard, SpecialistType
 
 logger = logging.getLogger(__name__)
+
+#: Tier du tronc IA pour l'orientation MCare. Raisonnement : l'orientation
+#: clinique était servie par un modèle de cette classe avant la migration.
+MCARE_TASK_TYPE = TaskType.REASONING
+
+_MAX_TOKENS = 1024
+
+
+def mcare_api_key() -> str:
+    """Clé fournisseur de MCare : environnement d'abord, puis Settings (.env)."""
+    return (os.getenv("ANTHROPIC_API_KEY") or get_settings().anthropic_api_key or "").strip()
+
+
+def llm_configured() -> bool:
+    """Réévalué à chaque appel par la Gateway : une clé retirée coupe l'appel."""
+    return bool(mcare_api_key())
+
+
+def build_mcare_gateway(*, transport: Transport | None = None) -> Gateway:
+    """Gateway du tronc IA, câblée sur la clé de MCare.
+
+    La clé part par ``api_keys`` : les Settings la lisent depuis ``.env``, qui ne
+    peuple pas ``os.environ``. Les stubs sont vides — un contenu vide devient une
+    ``MCareAgentError`` (503), jamais une réponse simulée montrée à un membre.
+    ``transport`` n'est injecté que par les tests.
+    """
+    online = llm_configured()
+    return build_gateway(
+        settings=GatewaySettings(off=not online, keys_enabled=online),
+        api_keys={"ANTHROPIC_API_KEY": mcare_api_key()},
+        key_available=llm_configured,
+        offline_stub="",
+        error_stub="",
+        blocked_stub="",
+        transport=transport,
+    )
+
+
+_gateway: Gateway | None = None
+
+
+def get_mcare_gateway() -> Gateway:
+    """Singleton de process — la Gateway porte des circuit breakers à conserver."""
+    global _gateway
+    if _gateway is None:
+        _gateway = build_mcare_gateway()
+    return _gateway
 
 
 class MCareAgentError(Exception):
@@ -39,7 +92,7 @@ class MCareAgentError(Exception):
 
 
 class SpecialistAgent:
-    """Wraps Claude API for medical orientation chat.
+    """Medical orientation chat through the platform AI trunk.
 
     Each agent persona handles a specific concern:
     - Triage: acute symptoms, red flags, emergency signals
@@ -54,25 +107,22 @@ class SpecialistAgent:
         self,
         specialist_type: SpecialistType,
         language: str = "fr",
-        model: str = "claude-3-5-sonnet-20241022",
+        gateway: Gateway | None = None,
     ):
         """Initialize specialist agent.
 
         Args:
             specialist_type: Agent persona (triage|coverage|network|general)
             language: Response language (fr|en)
-            model: Claude model ID to use
+            gateway: AI trunk gateway (process singleton by default)
         """
         self.specialist_type = specialist_type
         self.language = language
-        self.model = model
         self.settings = get_settings()
 
-        # Initialize Claude client
-        api_key = os.getenv("ANTHROPIC_API_KEY") or self.settings.anthropic_api_key
-        if not api_key:
+        if not llm_configured():
             raise MCareAgentError("ANTHROPIC_API_KEY not configured")
-        self.client = anthropic.Anthropic(api_key=api_key)
+        self._gateway = gateway or get_mcare_gateway()
 
         # Safety evaluators
         self.diagnosis_detector = DiagnosisDetector(language=language)
@@ -138,7 +188,7 @@ class SpecialistAgent:
         user_message: str,
         conversation_history: list[dict[str, str]] | None = None,
     ) -> dict[str, Any]:
-        """Send user message to Claude specialist and get orientation response.
+        """Send user message to the specialist and get orientation response.
 
         Args:
             user_message: User's question/symptom description
@@ -150,68 +200,71 @@ class SpecialistAgent:
                 "response": str (orientation text, no diagnosis),
                 "clin_card": ClinCard (structured output if symptoms),
                 "safety_check": {"passed": bool, "issues": [str]},
-                "model": str,
+                "model": str (model actually routed by the AI trunk),
                 "usage": {"input_tokens": int, "output_tokens": int},
             }
 
         Raises:
-            MCareAgentError: Claude API error or safety validation failure
+            MCareAgentError: no model answered (provider errors, offline, blocked)
         """
+        messages: list[dict[str, Any]] = [
+            {"role": "system", "content": self._system_prompt()},
+            *(conversation_history or []),
+            {"role": "user", "content": user_message},
+        ]
+
+        # Les erreurs fournisseur sont absorbées par la Gateway (fallback, circuit
+        # breaker) et rendues comme un contenu vide + error_message ; une exception
+        # ici est un défaut du tronc lui-même. Dans les deux cas : 503 côté route.
         try:
-            # Build conversation messages
-            messages = (
-                (conversation_history or [])
-                + [{"role": "user", "content": user_message}]
+            result = await self._gateway.run(
+                messages,
+                task_type=MCARE_TASK_TYPE,
+                max_tokens=_MAX_TOKENS,
             )
+        except Exception as e:  # noqa: BLE001 — un agent clinique dégrade en 503
+            logger.error(f"AI trunk error: {e}")
+            raise MCareAgentError(f"AI trunk error: {e}") from e
 
-            # Call Claude API
-            response = self.client.messages.create(
-                model=self.model,
-                max_tokens=1024,
-                system=self._system_prompt(),
-                messages=messages,
+        if not result.content:
+            reason = result.error_message or "empty_response"
+            logger.error(f"LLM unavailable: {reason}")
+            raise MCareAgentError(f"LLM unavailable: {reason}")
+
+        response_text = result.content
+        usage = {
+            "input_tokens": result.prompt_tokens,
+            "output_tokens": result.completion_tokens,
+        }
+
+        # Safety evaluation
+        safety_result = self.safety_evaluator.evaluate(response_text)
+        if not safety_result["passed"]:
+            logger.warning(
+                f"Safety check failed for specialist {self.specialist_type.value}: "
+                f"{safety_result['issues']}"
             )
-
-            # Extract response text
-            response_text = response.content[0].text
-
-            # Safety evaluation
-            safety_result = self.safety_evaluator.evaluate(response_text)
-            if not safety_result["passed"]:
-                logger.warning(
-                    f"Safety check failed for specialist {self.specialist_type.value}: "
-                    f"{safety_result['issues']}"
-                )
-                # Mark as failed but don't raise — let caller decide
-                return {
-                    "response": response_text,
-                    "clin_card": None,
-                    "safety_check": safety_result,
-                    "model": self.model,
-                    "usage": {
-                        "input_tokens": response.usage.input_tokens,
-                        "output_tokens": response.usage.output_tokens,
-                    },
-                }
-
-            # Extract clinical card if symptoms mentioned
-            clin_card = None
-            if self.specialist_type == SpecialistType.TRIAGE:
-                clin_card = self._extract_clin_card(response_text)
-
+            # Mark as failed but don't raise — let caller decide
             return {
                 "response": response_text,
-                "clin_card": clin_card,
+                "clin_card": None,
                 "safety_check": safety_result,
-                "model": self.model,
-                "usage": {
-                    "input_tokens": response.usage.input_tokens,
-                    "output_tokens": response.usage.output_tokens,
-                },
+                "model": result.model_used,
+                "usage": usage,
             }
-        except APIError as e:
-            logger.error(f"Claude API error: {e}")
-            raise MCareAgentError(f"Claude API error: {e}") from e
+
+        # Extract clinical card if symptoms mentioned
+        clin_card = None
+        if self.specialist_type == SpecialistType.TRIAGE:
+            clin_card = self._extract_clin_card(response_text)
+
+        return {
+            "response": response_text,
+            "clin_card": clin_card,
+            "safety_check": safety_result,
+            "model": result.model_used,
+            "usage": usage,
+        }
 
     def _extract_clin_card(self, response_text: str) -> ClinCard | None:
         """Parse response text to extract structured clinical card.

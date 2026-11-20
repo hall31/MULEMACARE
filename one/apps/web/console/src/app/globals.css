@@ -1,0 +1,203 @@
+/*
+ * Console MulemaCare One — styles globaux.
+ * Les couleurs, polices et rayons viennent UNIQUEMENT de specs/design/mulemacare-tokens.css
+ * (contrat L0, importé tel quel). Ce fichier ne fait que les exposer à Tailwind.
+ */
+@import "tailwindcss";
+@import "../../../../../specs/design/mulemacare-tokens.css";
+
+/* Polices auto-hébergées (aucun CDN, liste blanche réseau R9, QUESTIONS.md Q-L0-16). */
+@import "@fontsource/geist/400.css";
+@import "@fontsource/geist/500.css";
+@import "@fontsource/geist/600.css";
+@import "@fontsource/geist-mono/400.css";
+@import "@fontsource/geist-mono/500.css";
+@import "@fontsource/schibsted-grotesk/500.css";
+@import "@fontsource/schibsted-grotesk/600.css";
+@import "@fontsource/schibsted-grotesk/700.css";
+
+@theme inline {
+  /* Surfaces et texte */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-sunk: var(--sunk);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+
+  /* Accent de marque (navigation, action principale) — jamais pour un statut. */
+  --color-brand: var(--accent);
+  --color-brand-soft: var(--accent-2);
+  --color-brand-fg: var(--accent-fg);
+  /* Émeraude profond : monogramme de JOE (marque, jamais un statut). */
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-on-deep: var(--brand-on-deep);
+
+  /* Sémantique des statuts */
+  --color-ok: var(--ok);
+  --color-ok-bg: var(--ok-bg);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-crit: var(--crit);
+  --color-crit-bg: var(--crit-bg);
+  /* En cours, en attente (P3 : domaine en attente de preuve). */
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+
+  /* Noms attendus par les composants shadcn/ui, reliés aux mêmes jetons. */
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--fg);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--fg);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-fg);
+  --color-secondary: var(--sunk);
+  --color-secondary-foreground: var(--fg);
+  --color-muted: var(--sunk);
+  --color-muted-foreground: var(--fg-2);
+  --color-accent: var(--sunk);
+  --color-accent-foreground: var(--fg);
+  --color-destructive: var(--crit);
+  --color-border: var(--line);
+  --color-input: var(--line-2);
+  --color-ring: var(--accent);
+
+  /* Échelle de texte du contrat (POLISH_CONTRACT §4) : six tailles, pas une de plus. */
+  --text-caption: var(--fs-caption);
+  --text-caption--line-height: var(--lh-caption);
+  --text-dense: var(--fs-dense);
+  --text-dense--line-height: var(--lh-dense);
+  --text-body: var(--fs-body);
+  --text-body--line-height: var(--lh-body);
+  --text-title: var(--fs-title);
+  --text-title--line-height: var(--lh-title);
+  --text-headline: var(--fs-headline);
+  --text-headline--line-height: var(--lh-headline);
+  --text-display: var(--fs-display);
+  --text-display--line-height: var(--lh-display);
+
+  --font-display: var(--f-display);
+  --font-sans: var(--f-body);
+  --font-mono: var(--f-mono);
+
+  --radius-lg: var(--r-lg);
+  --radius-md: var(--r-md);
+  --radius-sm: var(--r-sm);
+  --radius-btn: var(--r-btn);
+
+  --shadow-overlay: var(--shadow);
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--line);
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--f-body);
+    /* Densité console : 14 px (AGENTS.md, Design). */
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--f-display);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  /* Focus visible sur chaque contrôle (AGENTS.md, Design). */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  [data-slot="table-row"][tabindex]:focus-visible {
+    outline-offset: -2px;
+  }
+}
+
+@utility tabular {
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@utility eyebrow {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--fg-2);
+}
+
+/* Voile des fenêtres : dérivé du texte principal, aucune couleur en dur. */
+@utility scrim {
+  background: color-mix(in oklab, var(--fg) 35%, transparent);
+}
+
+/* Mouvement : uniquement si l'utilisateur ne demande pas de réduction. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-slot="sheet-content"][data-state="open"] {
+    animation: mc-slide-in 180ms ease-out;
+  }
+  [data-slot="dialog-content"][data-state="open"] {
+    animation: mc-fade-in 140ms ease-out;
+  }
+  [data-slot="skeleton"] {
+    animation: mc-pulse 1.4s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes mc-slide-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0.6;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes mc-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mc-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}

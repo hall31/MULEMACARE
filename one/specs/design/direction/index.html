@@ -1,0 +1,1079 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>MulemaCare One — Direction artistique « Registre émeraude »</title>
+<!-- Source unique des jetons : le contrat. Aucune couleur n'est redéfinie dans cette planche. -->
+<link rel="stylesheet" href="../mulemacare-tokens.css">
+<link rel="preload" href="fonts/plus-jakarta-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Polices auto-hébergées (OFL-1.1, fonts/OFL-*.txt) : aucun CDN. */
+@font-face{font-family:"Outfit";src:url("fonts/outfit-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Plus Jakarta Sans";src:url("fonts/plus-jakarta-sans-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-style:normal;font-display:swap}
+@font-face{font-family:"Inter";src:url("fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+
+/* ---------- Base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg);color:var(--fg);font-family:var(--f-body);-webkit-text-size-adjust:100%}
+body{margin:0;font-size:var(--fs-body);line-height:var(--lh-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+h1,h2,h3{margin:0;font-family:var(--f-display);font-weight:var(--fw-semibold);letter-spacing:var(--tr-display);text-wrap:balance}
+p,dl,dd,ol,ul,figure{margin:0}
+ol,ul{padding:0;list-style:none}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:var(--focus-w) solid var(--focus);outline-offset:var(--focus-offset);border-radius:4px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.ic-sm{width:16px;height:16px;stroke-width:2}
+.amount{font-family:var(--f-num);font-feature-settings:var(--num-features);font-variant-numeric:tabular-nums lining-nums;letter-spacing:-0.01em;white-space:nowrap}
+.id{font-family:var(--f-num);font-feature-settings:var(--id-features);letter-spacing:0.01em;white-space:nowrap}
+.bm{width:32px;height:32px;flex:none}
+.bm-bg{fill:var(--brand-deep)}
+.bm-x{fill:var(--brand-on-deep)}
+.bm-p{fill:none;stroke:var(--brand-gold-on-deep);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Composants ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);min-height:36px;padding:0 var(--sp-4);border-radius:var(--r-md);border:1px solid transparent;font-size:var(--fs-dense);font-weight:var(--fw-semibold);line-height:1.2;white-space:nowrap;text-align:center;transition:background-color var(--dur-hover) var(--ease-standard),border-color var(--dur-hover) var(--ease-standard),transform var(--dur-press) var(--ease-standard)}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);color:var(--accent-fg)}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-secondary{background:var(--surface);color:var(--fg);border-color:var(--line-2)}
+.btn-secondary:hover{background:var(--sunk)}
+.btn-danger{background:var(--surface);color:var(--crit);border-color:var(--line-2)}
+.btn-danger:hover{background:var(--crit-bg);border-color:var(--crit)}
+.btn-ghost{background:transparent;color:var(--fg)}
+.btn-ghost:hover{background:var(--sunk)}
+.btn-block{width:100%}
+[data-surface="counter"] .btn{white-space:normal;padding-block:var(--sp-2);min-height:var(--tap-min);padding:0 var(--sp-5);border-radius:var(--r-btn);font-size:var(--fs-body)}
+[data-surface="counter"] .btn-xl{min-height:var(--tap-primary);font-weight:var(--fw-bold)}
+[data-sun] .btn-secondary,[data-sun] .btn-danger{border-width:2px;border-color:var(--fg)}
+
+.pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px 0 8px;border-radius:var(--r-pill);font-size:var(--fs-caption);font-weight:var(--fw-semibold);line-height:1;white-space:nowrap}
+.pill .ic{width:14px;height:14px;stroke-width:2.25}
+.pill-ok{background:var(--ok-bg);color:var(--ok)}
+.pill-warn{background:var(--warn-bg);color:var(--warn)}
+.pill-crit{background:var(--crit-bg);color:var(--crit)}
+.pill-info{background:var(--info-bg);color:var(--info)}
+.pill-neutral{background:var(--sunk);color:var(--fg-2)}
+[data-surface="counter"] .pill{height:32px;padding:0 12px 0 10px;font-size:var(--fs-body)}
+[data-surface="counter"] .pill .ic{width:16px;height:16px}
+[data-sun] .pill{box-shadow:inset 0 0 0 2px currentColor}
+
+.eyebrow{display:flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-caption);line-height:var(--lh-caption);font-weight:var(--fw-semibold);letter-spacing:var(--tr-eyebrow);text-transform:uppercase;color:var(--fg-2)}
+.eyebrow::before{content:"";width:16px;height:2px;border-radius:2px;background:var(--brand-gold);flex:none}
+[data-surface="counter"] .eyebrow{font-size:var(--fs-body);line-height:var(--lh-body);letter-spacing:0;text-transform:none;color:var(--fg)}
+[data-sun] .eyebrow::before{background:var(--fg)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg)}
+.panel-h{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-4) var(--sp-5);border-bottom:1px solid var(--line)}
+.panel-t{flex:1;font-family:var(--f-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:var(--fw-semibold);letter-spacing:0}
+.pad{padding:var(--sp-5)}
+[data-sun] .panel{border-width:2px}
+.av{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--accent-2);color:var(--accent);font:var(--fw-semibold) var(--fs-caption)/1 var(--f-body);flex:none}
+kbd{font-family:var(--f-num);font-size:var(--fs-caption);line-height:1;padding:3px 6px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--sunk);color:var(--fg-2)}
+
+.seg{display:inline-flex;align-self:flex-start;flex-wrap:wrap;gap:2px;padding:3px;border-radius:var(--r-md);background:var(--sunk);border:1px solid var(--line)}
+.seg button{border:0;background:transparent;min-height:32px;padding:0 var(--sp-3);border-radius:8px;font-size:var(--fs-dense);font-weight:var(--fw-semibold);color:var(--fg-2);display:inline-flex;align-items:center;gap:6px;transition:background-color var(--dur-hover) var(--ease-standard),color var(--dur-hover) var(--ease-standard)}
+.seg button:hover{color:var(--fg)}
+.seg button[aria-pressed="true"],.seg button[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:var(--shadow-1)}
+.seg .n{font-family:var(--f-num);font-feature-settings:var(--num-features);font-weight:var(--fw-medium)}
+[data-sun] .seg button[aria-pressed="true"],[data-sun] .seg button[aria-selected="true"]{box-shadow:inset 0 0 0 2px var(--fg)}
+
+.meter{height:8px;border-radius:4px;background:var(--sunk);overflow:hidden;box-shadow:inset 0 0 0 1px var(--line)}
+.meter i{display:block;height:100%;border-radius:4px;background:var(--accent);transition:width var(--dur-reveal) var(--ease-enter)}
+.t-ok{background:var(--ok)!important}.t-warn{background:var(--warn)!important}.t-crit{background:var(--crit)!important}
+
+/* Cachet de décision : la seule animation « signature » (400 ms, une fois, jamais en boucle). */
+.seal{width:48px;height:48px;flex:none;fill:none;stroke:currentColor;stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round}
+@media (prefers-reduced-motion: no-preference){
+  .stamp{animation:mc-stamp var(--dur-reveal) var(--ease-enter) both}
+  .sk{background:linear-gradient(90deg,var(--sunk) 0%,var(--line) 50%,var(--sunk) 100%);background-size:200% 100%;animation:mc-shimmer 1.4s linear infinite}
+  .ring .fgc{animation:mc-countdown 30s linear infinite}
+}
+@keyframes mc-stamp{from{opacity:0;transform:scale(1.14) rotate(-10deg)}to{opacity:1;transform:none}}
+@keyframes mc-shimmer{from{background-position:100% 0}to{background-position:-100% 0}}
+@keyframes mc-countdown{from{stroke-dashoffset:0}to{stroke-dashoffset:62.83}}
+
+/* ---------- Planche ---------- */
+.board{max-width:1360px;margin:0 auto;padding:var(--sp-7) var(--sp-5) var(--sp-8);display:flex;flex-direction:column;gap:var(--sp-8)}
+.dots{background-image:radial-gradient(color-mix(in oklab,var(--accent) 16%,transparent) 1px,transparent 1.4px);background-size:24px 24px}
+.board-head{display:grid;gap:var(--sp-6);align-items:end;padding:var(--sp-6);border-radius:var(--r-xl);border:1px solid var(--line)}
+@media (min-width:1024px){.board-head{grid-template-columns:1.5fr 1fr}}
+.bh-brand{display:flex;align-items:center;gap:var(--sp-3);font-weight:var(--fw-semibold)}
+.bh-brand span{color:var(--fg-2);font-weight:var(--fw-regular)}
+.bh-title{font-size:clamp(2.75rem,7vw,5rem);line-height:1;letter-spacing:-0.035em;margin-top:var(--sp-5)}
+.bh-concept{font-size:var(--fs-title);line-height:var(--lh-title);margin-top:var(--sp-4);max-width:34ch}
+.bh-lead{color:var(--fg-2);margin-top:var(--sp-3);max-width:58ch}
+.bh-tools{display:flex;flex-direction:column;gap:var(--sp-4);align-items:flex-start}
+.bh-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2) var(--sp-5);font-size:var(--fs-dense);line-height:var(--lh-dense)}
+.bh-facts dt{color:var(--fg-2)}
+.bh-facts dd{font-weight:var(--fw-semibold)}
+.sec-head{display:flex;gap:var(--sp-5);align-items:flex-start;margin-bottom:var(--sp-5)}
+.sec-idx{font:var(--fw-bold) 3rem/0.9 var(--f-display);color:var(--line-2);letter-spacing:-0.04em}
+.sec-head h2{font-size:var(--fs-headline);line-height:var(--lh-headline);margin-top:var(--sp-2)}
+.sec-head p.lead{color:var(--fg-2);margin-top:var(--sp-2);max-width:62ch}
+.sys{display:grid;gap:var(--sp-5);grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.sys .panel{padding:var(--sp-5);display:flex;flex-direction:column;gap:var(--sp-4)}
+.sys h3{font-family:var(--f-body);font-size:var(--fs-body);letter-spacing:0}
+.sw-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2)}
+.sw{display:flex;align-items:center;gap:var(--sp-3);min-width:0}
+.sw i{width:36px;height:36px;border-radius:10px;flex:none;box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--fg) 12%,transparent)}
+.sw b{display:block;font-size:var(--fs-dense);line-height:var(--lh-dense)}
+.sw span{display:block;font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--fg-2)}
+.ct{width:100%;border-collapse:collapse;font-size:var(--fs-dense)}
+.ct td{padding:6px 0;border-top:1px solid var(--line)}
+.ct td:last-child{text-align:right}
+.ct .r{font-family:var(--f-num);font-feature-settings:var(--num-features);font-weight:var(--fw-semibold)}
+.spec{display:flex;flex-direction:column;gap:var(--sp-3)}
+.spec-row{display:grid;grid-template-columns:1fr;gap:var(--sp-1);align-items:baseline;border-top:1px solid var(--line);padding-top:var(--sp-3)}
+.spec-row span{font-size:var(--fs-caption);color:var(--fg-2)}
+.motion li{display:grid;grid-template-columns:72px 1fr;gap:var(--sp-3);padding:var(--sp-2) 0;border-top:1px solid var(--line);font-size:var(--fs-dense);line-height:var(--lh-dense)}
+.motion b{font-family:var(--f-num);font-feature-settings:var(--num-features)}
+.motion span{color:var(--fg-2)}
+.sig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3)}
+.sig figure{display:flex;flex-direction:column;gap:var(--sp-2);padding:var(--sp-3);border-radius:var(--r-md);background:var(--sunk);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--fg-2)}
+.sig figure b{color:var(--fg);font-size:var(--fs-dense)}
+.sig svg{height:40px;width:100%}
+.phones{display:flex;flex-wrap:wrap;gap:var(--sp-6);justify-content:center;align-items:flex-start}
+.shot{display:flex;flex-direction:column;gap:var(--sp-3);min-width:0}
+.phones .shot{width:390px;max-width:100%}
+.shot-label{display:flex;align-items:baseline;gap:var(--sp-3);font-weight:var(--fw-semibold)}
+.shot-label .n{font:var(--fw-bold) var(--fs-title)/1 var(--f-display);color:var(--accent)}
+.shot-label small{font-weight:var(--fw-regular);color:var(--fg-2);font-size:var(--fs-dense)}
+.frame{background:var(--bg);border:1px solid var(--line);overflow:hidden;box-shadow:var(--shadow-2)}
+.frame.phone{width:390px;max-width:100%;border-radius:32px}
+.frame.desk{width:100%;border-radius:var(--r-xl)}
+.app{container-type:inline-size;background:var(--bg);color:var(--fg);position:relative}
+.st-grid{display:grid;gap:var(--sp-4);grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.st{padding:var(--sp-5);display:flex;flex-direction:column;gap:var(--sp-3);font-size:var(--fs-dense);line-height:var(--lh-dense)}
+.st-k{font-size:var(--fs-caption);font-weight:var(--fw-semibold);letter-spacing:var(--tr-eyebrow);text-transform:uppercase;color:var(--fg-2)}
+.st b{font-size:var(--fs-body)}
+.sk{height:12px;border-radius:6px;background:var(--sunk)}
+.alert{display:grid;grid-template-columns:auto 1fr;gap:var(--sp-3);align-items:start;padding:var(--sp-3) var(--sp-4);border-radius:var(--r-md)}
+.alert-crit{background:var(--crit-bg);color:var(--fg);box-shadow:inset 3px 0 0 var(--crit)}
+.alert-crit .ic{color:var(--crit)}
+.alert-warn{background:var(--warn-bg);color:var(--fg);box-shadow:inset 3px 0 0 var(--warn)}
+.alert-warn .ic{color:var(--warn)}
+.empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--sp-2);padding:var(--sp-4);border:1px dashed var(--line-2);border-radius:var(--r-md)}
+.empty .seal{color:var(--fg-2)}
+
+/* Mode écran (captures) : un seul écran, plein cadre. */
+body[data-mode="screen"] .board{max-width:none;padding:0;gap:0}
+body[data-mode="screen"] .board>:not(.phones):not(.shot){display:none}
+body[data-mode="screen"] .phones{display:block}
+body[data-mode="screen"] .shot{display:none}
+body[data-mode="screen"] .shot.is-target{display:block}
+body[data-mode="screen"] .phones .shot{width:auto;max-width:none}
+body[data-mode="screen"] .shot-label{display:none}
+body[data-mode="screen"] .frame{width:auto;border:0;border-radius:0;box-shadow:none;overflow:visible}
+body[data-mode="screen"] .app{min-height:100vh;min-height:100dvh}
+
+/* ---------- 01 · Comptoir — décision ---------- */
+.counter{display:flex;flex-direction:column}
+.c-bar{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-2) var(--sp-4);min-height:64px;background:var(--surface);border-bottom:1px solid var(--line)}
+.c-who{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.25}
+.c-who b{font-weight:var(--fw-semibold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-prog{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:var(--sp-3) var(--sp-4) 0}
+.c-prog i{height:6px;border-radius:3px;background:var(--accent)}
+.c-body{flex:1;display:grid;gap:var(--sp-5);padding:var(--sp-4) var(--sp-4) var(--sp-6);align-content:start;width:100%}
+.c-main,.c-side{display:flex;flex-direction:column;gap:var(--sp-4);min-width:0}
+.c-step{display:flex;align-items:baseline;gap:var(--sp-2)}
+.c-step-n{font:var(--fw-bold) var(--fs-headline)/1 var(--f-display);color:var(--accent)}
+.c-h1{font-size:var(--fs-headline);line-height:var(--lh-headline);margin-top:calc(-1 * var(--sp-2))}
+.verdict{display:grid;grid-template-columns:auto 1fr;gap:var(--sp-4);padding:var(--sp-5) var(--sp-4);border-radius:var(--r-lg);background:var(--ok-bg);box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--ok) 30%,transparent);align-items:start}
+.verdict .seal{color:var(--ok)}
+.verdict h2{font-size:var(--fs-title);line-height:var(--lh-title);color:var(--ok);font-weight:var(--fw-bold)}
+.verdict p{margin-top:var(--sp-1)}
+.rule{display:inline-flex;align-items:center;gap:6px;margin-top:var(--sp-3);padding:2px 10px;border-radius:var(--r-sm);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+[data-sun] .verdict{box-shadow:inset 0 0 0 2px var(--fg)}
+[data-sun] .pay-hero,[data-sun] .c-member{border-width:2px}
+.pay-hero{padding:var(--sp-5) var(--sp-4);border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line)}
+.pay-hero>span{display:block;font-weight:var(--fw-semibold)}
+.pay-hero>b{display:block;font-size:var(--fs-display);line-height:var(--lh-display);font-weight:var(--fw-bold);letter-spacing:-0.025em;margin-top:var(--sp-1)}
+.pay-hero>b small{font-size:var(--fs-title);font-weight:var(--fw-semibold);letter-spacing:0}
+.pay-mc{display:flex;justify-content:space-between;align-items:baseline;gap:var(--sp-3);margin-top:var(--sp-3);padding-top:var(--sp-3);border-top:1px solid var(--line)}
+.pay-mc b{font-weight:var(--fw-semibold)}
+.c-member{display:flex;align-items:flex-start;gap:var(--sp-3);padding:var(--sp-3) var(--sp-4);border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line)}
+.c-member .av{width:48px;height:48px;font-size:var(--fs-body)}
+.c-member>div{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.c-member b{font-weight:var(--fw-semibold)}
+.acts li{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3);min-height:var(--tap-min);padding:var(--sp-2) var(--sp-4);border-top:1px solid var(--line)}
+.acts li:first-child{border-top:0}
+.acts li.total{font-weight:var(--fw-bold)}
+.checks-d summary{display:flex;align-items:center;gap:var(--sp-3);min-height:var(--tap-min);padding:var(--sp-2) var(--sp-4);font-weight:var(--fw-semibold);cursor:pointer;list-style:none}
+.checks-d summary::-webkit-details-marker{display:none}
+.checks-d summary .ic:first-child{color:var(--ok)}
+.checks-d summary .chev{margin-left:auto;transition:transform var(--dur-hover) var(--ease-standard)}
+.checks-d[open] summary .chev{transform:rotate(180deg)}
+.checks li{display:grid;grid-template-columns:auto 1fr auto;gap:var(--sp-3);align-items:center;padding:var(--sp-3) var(--sp-4);border-top:1px solid var(--line)}
+.checks li .ic{color:var(--ok)}
+.checks-open{display:none}
+.c-foot{display:flex;flex-direction:column;gap:var(--sp-2);padding:var(--sp-3) var(--sp-4) calc(var(--sp-3) + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line);z-index:2}
+body[data-mode="screen"] .c-foot{position:sticky;bottom:0}
+body[data-static] .c-foot,body[data-static] .m-tabbar{position:static!important}
+@container (min-width:600px){
+  .c-body{max-width:640px;margin:0 auto;padding:var(--sp-5) var(--sp-5) var(--sp-6)}
+  .c-prog{max-width:640px;margin:0 auto;width:100%;padding-inline:var(--sp-5)}
+  .c-foot{flex-direction:row-reverse;justify-content:center}
+  .c-foot .btn{min-width:220px}
+  .c-foot .btn-xl{min-width:320px}
+}
+@container (min-width:1024px){
+  .c-body,.c-prog{max-width:1120px}
+  .c-body{grid-template-columns:minmax(0,1fr) 420px;column-gap:var(--sp-6);padding-top:var(--sp-6)}
+  .c-side .checks-d{display:none}
+  .c-side .checks-open{display:block}
+  .c-foot{justify-content:flex-start;padding-inline:max(var(--sp-5),calc((100% - 1120px) / 2 + var(--sp-5)))}
+}
+
+/* ---------- 02 & 05 · Console ---------- */
+.console{font-size:var(--fs-dense);line-height:var(--lh-dense)}
+.k-shell{display:grid;grid-template-columns:minmax(0,1fr);min-height:inherit}
+.k-side{display:none;flex-direction:column;gap:2px;padding:var(--sp-4) var(--sp-3);background:var(--surface);border-right:1px solid var(--line)}
+.k-brand{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-1) var(--sp-2) var(--sp-3)}
+.k-brand b{display:block;font-family:var(--f-display);font-size:var(--fs-body);line-height:1.2;font-weight:var(--fw-semibold)}
+.k-brand span{display:block;font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--fg-2)}
+.k-group{font-size:var(--fs-caption);line-height:var(--lh-caption);font-weight:var(--fw-semibold);letter-spacing:var(--tr-eyebrow);text-transform:uppercase;color:var(--fg-2);padding:var(--sp-4) var(--sp-3) var(--sp-2)}
+.k-nav{display:flex;align-items:center;gap:var(--sp-3);min-height:36px;padding:0 var(--sp-3);border-radius:var(--r-md);color:var(--fg-2);font-weight:var(--fw-medium);position:relative;transition:background-color var(--dur-hover) var(--ease-standard),color var(--dur-hover) var(--ease-standard)}
+.k-nav:hover{background:var(--sunk);color:var(--fg)}
+.k-nav[aria-current="page"]{background:var(--accent-2);color:var(--accent);font-weight:var(--fw-semibold)}
+.k-nav[aria-current="page"]::before{content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
+.k-count{margin-left:auto;font-family:var(--f-num);font-feature-settings:var(--num-features);font-size:var(--fs-caption);font-weight:var(--fw-semibold);min-width:22px;height:20px;padding:0 6px;border-radius:var(--r-pill);display:grid;place-items:center;background:var(--warn-bg);color:var(--warn)}
+.k-user{margin-top:auto;display:flex;gap:var(--sp-3);align-items:center;padding:var(--sp-4) var(--sp-2) 0;border-top:1px solid var(--line)}
+.k-user div b{display:block;font-weight:var(--fw-semibold)}
+.k-user div span{display:block;font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--fg-2)}
+.k-main{display:flex;flex-direction:column;min-width:0}
+.k-top{display:flex;align-items:center;gap:var(--sp-3);min-height:56px;padding:0 var(--sp-4);border-bottom:1px solid var(--line);background:var(--surface)}
+.k-menu{padding:0;width:36px}
+.k-top>.bm{width:28px;height:28px}
+.k-crumb{color:var(--fg-2);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-crumb b{color:var(--fg);font-weight:var(--fw-semibold)}
+.k-search{display:none;align-items:center;gap:var(--sp-2);width:340px;min-height:36px;padding:0 var(--sp-2) 0 var(--sp-3);border-radius:var(--r-md);border:1px solid var(--line-2);background:var(--bg);color:var(--fg-2)}
+.k-search input{border:0;background:transparent;outline:0;flex:1;min-width:0;font-size:var(--fs-dense);color:var(--fg)}
+.k-search input::placeholder{color:var(--fg-2)}
+.k-search:focus-within{outline:var(--focus-w) solid var(--focus);outline-offset:1px}
+.k-content{padding:var(--sp-5) var(--sp-4) var(--sp-7);display:flex;flex-direction:column;gap:var(--sp-5)}
+.k-head{display:flex;flex-wrap:wrap;gap:var(--sp-4);align-items:flex-end;justify-content:space-between}
+.k-head h1{font-size:var(--fs-headline);line-height:var(--lh-headline);margin-top:var(--sp-2)}
+.k-sub{color:var(--fg-2);margin-top:var(--sp-1)}
+.k-sub b{color:var(--fg);font-weight:var(--fw-semibold)}
+.k-actions{display:flex;gap:var(--sp-2);flex-wrap:wrap}
+.k-split{display:grid;gap:var(--sp-5);align-items:start}
+.k-table{width:100%;border-collapse:collapse}
+.k-table th{font-size:var(--fs-caption);line-height:var(--lh-caption);font-weight:var(--fw-semibold);letter-spacing:var(--tr-eyebrow);text-transform:uppercase;color:var(--fg-2);text-align:left;padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--line);white-space:nowrap}
+.k-table td{padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--line);vertical-align:middle}
+.k-table tbody tr:last-child td{border-bottom:0}
+.k-table .r{text-align:right}
+.k-table tbody tr{cursor:pointer;transition:background-color var(--dur-hover) var(--ease-standard)}
+.k-table tbody tr:hover{background:var(--sunk)}
+.k-table tbody tr[aria-selected="true"]{background:var(--accent-2)}
+.k-table tbody tr[aria-selected="true"] td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.k-table td.c-due .pill{vertical-align:middle}
+.k-table tbody tr:focus-visible{outline-offset:-2px}
+.sub{display:block;color:var(--fg-2);font-size:var(--fs-caption);line-height:var(--lh-caption);margin-top:2px}
+.who{display:flex;align-items:center;gap:var(--sp-2);min-width:0}
+.who-n{display:block;font-weight:var(--fw-semibold);white-space:nowrap}
+.c-doc .sub{white-space:nowrap}
+.risk{display:flex;align-items:center;gap:var(--sp-2)}
+.risk .meter{width:48px;height:6px}
+.k-detail{display:flex;flex-direction:column;overflow:hidden}
+.d-head{padding:var(--sp-5);border-bottom:1px solid var(--line);display:flex;flex-direction:column;align-items:flex-start;gap:var(--sp-2)}
+.d-head .id{color:var(--fg-2);font-size:var(--fs-caption)}
+.d-amt{font-size:var(--fs-headline);line-height:var(--lh-headline);font-weight:var(--fw-bold);letter-spacing:-0.02em}
+.d-body{padding:var(--sp-5);display:flex;flex-direction:column;gap:var(--sp-5)}
+.props{display:grid;grid-template-columns:minmax(96px,auto) 1fr;gap:var(--sp-2) var(--sp-4)}
+.props dt{color:var(--fg-2)}
+.props dd{font-weight:var(--fw-medium);min-width:0}
+.secret{display:grid;grid-template-columns:auto 1fr;gap:var(--sp-2) var(--sp-3);padding:var(--sp-4);border-radius:var(--r-md);background:var(--sunk);border:1px dashed var(--line-2)}
+.secret>.ic{color:var(--fg-2);margin-top:2px}
+.secret p{color:var(--fg-2)}
+.secret .btn{grid-column:2;justify-self:start;margin-top:var(--sp-2)}
+.joe{padding:var(--sp-4);border-radius:var(--r-md);border:1px solid var(--line);display:flex;flex-direction:column;gap:var(--sp-2)}
+.joe-h{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2)}
+.joe-h b{white-space:nowrap}
+.joe-mark{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:var(--brand-deep);color:var(--brand-on-deep);font:var(--fw-bold) var(--fs-caption)/1 var(--f-display);flex:none}
+.joe-note{margin-left:auto;font-size:var(--fs-caption);color:var(--fg-2)}
+.joe-src{font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--fg-2)}
+.hist li{display:grid;grid-template-columns:auto 1fr auto;gap:var(--sp-3);align-items:baseline;padding:var(--sp-2) 0;border-top:1px solid var(--line)}
+.hist .when{color:var(--fg-2);font-size:var(--fs-caption)}
+.d-actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2);padding:var(--sp-4) var(--sp-5);border-top:1px solid var(--line)}
+.d-actions .btn-primary{grid-column:1 / -1;min-height:40px}
+.d-keys{grid-column:1 / -1;font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--fg-2)}
+.h-label{font-size:var(--fs-caption);line-height:var(--lh-caption);font-weight:var(--fw-semibold);letter-spacing:var(--tr-eyebrow);text-transform:uppercase;color:var(--fg-2);margin-bottom:var(--sp-2)}
+/* grand livre */
+.bal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.bal>div{padding:var(--sp-4) var(--sp-5);border-left:1px solid var(--line);min-width:0}
+.bal>div:first-child{border-left:0}
+.bal>div>span{display:block;font-size:var(--fs-caption);line-height:var(--lh-caption);font-weight:var(--fw-semibold);letter-spacing:var(--tr-eyebrow);text-transform:uppercase;color:var(--fg-2)}
+.bal b{display:flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-title);line-height:var(--lh-title);font-weight:var(--fw-semibold);margin-top:var(--sp-1)}
+.banner{display:flex;gap:var(--sp-3);align-items:flex-start;padding:var(--sp-3) var(--sp-4);border-radius:var(--r-md);background:var(--sunk);border:1px solid var(--line)}
+.banner .ic{color:var(--fg-2);margin-top:1px}
+.l-table{width:100%;border-collapse:collapse}
+.l-table th{font-size:var(--fs-caption);line-height:var(--lh-caption);font-weight:var(--fw-semibold);letter-spacing:var(--tr-eyebrow);text-transform:uppercase;color:var(--fg-2);text-align:left;padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--line);white-space:nowrap}
+.l-table td{padding:var(--sp-2) var(--sp-4);vertical-align:top}
+.l-table tbody.entry tr:first-child td{padding-top:var(--sp-3)}
+.l-table tbody.entry tr:last-child td{padding-bottom:var(--sp-3)}
+.l-table tbody.entry+tbody.entry tr:first-child td{border-top:1px solid var(--line)}
+.l-table .r{text-align:right}
+.l-table td.dc{font-family:var(--f-num);font-feature-settings:var(--num-features);text-align:right;white-space:nowrap}
+.l-table tfoot td{border-top:1px solid var(--line-2);padding:var(--sp-3) var(--sp-4);font-weight:var(--fw-semibold)}
+.l-table tfoot .amount{font-weight:var(--fw-bold)}
+.acct{display:flex;gap:var(--sp-2);align-items:baseline;min-width:0}
+.acct-code{font-family:var(--f-num);font-feature-settings:var(--id-features);font-weight:var(--fw-semibold);font-size:var(--fs-caption);padding:1px 6px;border-radius:var(--r-sm);background:var(--sunk);box-shadow:inset 0 0 0 1px var(--line)}
+.e-lib b{font-weight:var(--fw-semibold)}
+.rev{display:inline-flex;align-items:center;gap:4px;margin-top:var(--sp-1);color:var(--accent);font-weight:var(--fw-semibold);font-size:var(--fs-caption);text-decoration:underline;text-underline-offset:3px}
+.tw{overflow:hidden}
+@container (min-width:768px){
+  .k-search{display:flex}
+  .k-content{padding:var(--sp-6) var(--sp-6) var(--sp-7)}
+}
+@container (min-width:1024px){
+  .k-shell{grid-template-columns:232px minmax(0,1fr)}
+  .k-side{display:flex}
+  .k-menu{display:none}
+  .k-top>.bm{display:none}
+  .k-split{grid-template-columns:minmax(0,1fr) 380px}
+}
+@container (max-width:599px){
+  .k-table thead,.l-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  .k-table,.k-table tbody{display:block}
+  .k-table tbody tr{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"doc amt" "risk due";gap:var(--sp-2) var(--sp-3);padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--line)}
+  .k-table tbody tr:last-child{border-bottom:0}
+  .k-table td{display:block;padding:0;border:0!important;box-shadow:none!important}
+  .k-table tbody tr[aria-selected="true"]{box-shadow:inset 3px 0 0 var(--accent)}
+  .seg{flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:none}
+  .seg button{white-space:nowrap}
+  .k-table .c-amt{grid-area:amt;text-align:right}.k-table .c-doc{grid-area:doc}.k-table .c-due{grid-area:due;text-align:right}.k-table .c-risk{grid-area:risk}
+  .k-table .c-amt{font-weight:var(--fw-semibold)}
+  .bal{grid-template-columns:minmax(0,1fr)}
+  .bal>div{border-left:0;border-top:1px solid var(--line)}
+  .bal>div:first-child{border-top:0}
+  .l-table,.l-table tbody,.l-table tfoot{display:block}
+  .l-table tbody.entry{padding:var(--sp-3) var(--sp-4)}
+  .l-table tbody.entry+tbody.entry{border-top:1px solid var(--line)}
+  .l-table tbody.entry+tbody.entry tr:first-child td{border-top:0}
+  .l-table tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--sp-1) var(--sp-3);align-items:baseline}
+  .l-table td{display:block;padding:var(--sp-1) 0!important}
+  .l-table td.e-id,.l-table td.e-lib{grid-column:1 / -1}
+  .l-table td:empty{display:none}
+  .l-table td.dc::before{content:attr(data-label) "\00a0";color:var(--fg-2);font-family:var(--f-body);font-size:var(--fs-caption)}
+  .l-table tfoot tr{padding:var(--sp-3) var(--sp-4);border-top:1px solid var(--line-2);grid-template-columns:1fr 1fr}
+  .l-table tfoot td[colspan]{grid-column:1 / -1}
+  .l-table tfoot td.dc{text-align:left}
+  .l-table colgroup{display:none}
+  .l-table tfoot td{border:0}
+}
+
+/* ---------- 03 · Espace adhérent ---------- */
+.member{display:flex;flex-direction:column}
+.m-top{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-2) var(--sp-4);min-height:64px;background:var(--surface);border-bottom:1px solid var(--line)}
+.m-brand{font-family:var(--f-display);font-weight:var(--fw-semibold);font-size:var(--fs-title);flex:1}
+.m-nav{display:none;gap:var(--sp-1)}
+.m-nav a{min-height:var(--tap-min);display:flex;align-items:center;padding:0 var(--sp-4);border-radius:var(--r-md);font-weight:var(--fw-semibold)}
+.m-nav a:hover{background:var(--sunk)}
+.m-nav a[aria-current="page"]{background:var(--accent-2);color:var(--accent)}
+.icobtn{width:48px;height:48px;border-radius:var(--r-btn);display:grid;place-items:center;border:1px solid var(--line-2);background:var(--surface);position:relative}
+.dotbadge{position:absolute;top:10px;right:10px;width:10px;height:10px;border-radius:50%;background:var(--crit);box-shadow:0 0 0 2px var(--surface)}
+.m-body{flex:1;display:grid;gap:var(--sp-5);padding:var(--sp-5) var(--sp-4) var(--sp-6);align-content:start;width:100%}
+.m-col{display:flex;flex-direction:column;gap:var(--sp-4);min-width:0}
+.member h1{font-size:var(--fs-headline);line-height:var(--lh-headline)}
+.mcard{position:relative;overflow:hidden;isolation:isolate;border-radius:var(--r-xl);background:var(--brand-deep);color:var(--brand-on-deep);padding:var(--sp-5);display:flex;flex-direction:column;gap:var(--sp-4);box-shadow:var(--shadow-2)}
+.guil{position:absolute;right:-90px;bottom:-110px;width:340px;height:340px;color:var(--brand-on-deep);opacity:.1;z-index:-1;pointer-events:none}
+.mc-top{display:flex;align-items:center;gap:var(--sp-3)}
+.mc-top>b{font-family:var(--f-display);font-weight:var(--fw-semibold);font-size:var(--fs-title);flex:1;line-height:1.1}
+.mc-top>b small{display:block;font-family:var(--f-body);font-size:var(--fs-body);font-weight:var(--fw-medium);color:var(--brand-on-deep-2);margin-top:2px}
+.mc-status{display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 8px;border-radius:var(--r-pill);background:color-mix(in oklab,var(--brand-on-deep) 16%,transparent);font-weight:var(--fw-semibold);white-space:nowrap}
+.mc-mid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--sp-4);align-items:center}
+.qr-tile{background:var(--brand-on-deep);border-radius:var(--r-md);padding:6px;width:128px;height:128px}
+.qr-tile svg{width:100%;height:100%;display:block}
+.qm{fill:var(--brand-deep)}
+.mc-name{font-family:var(--f-display);font-size:var(--fs-title);line-height:var(--lh-title);font-weight:var(--fw-semibold);letter-spacing:0.01em}
+.mc-meta{color:var(--brand-on-deep-2);display:block}
+.mc-bot{display:flex;align-items:center;gap:var(--sp-3);padding-top:var(--sp-3);border-top:1px solid color-mix(in oklab,var(--brand-on-deep) 20%,transparent);color:var(--brand-on-deep-2)}
+.mc-bot .pulse{width:72px;height:16px;flex:none;fill:none;stroke:var(--brand-gold-on-deep);stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.mc-bot span{flex:1}
+.ring{width:24px;height:24px;transform:rotate(-90deg);flex:none}
+.ring circle{fill:none;stroke-width:3}
+.ring .bgc{stroke:color-mix(in oklab,var(--brand-on-deep) 22%,transparent)}
+.ring .fgc{stroke:var(--brand-gold-on-deep);stroke-dasharray:62.83;stroke-dashoffset:25;stroke-linecap:round}
+[data-sun] .mcard{box-shadow:none}
+.m-hint{line-height:1.45}
+.big{font-size:var(--fs-headline);line-height:var(--lh-headline);font-weight:var(--fw-bold);letter-spacing:-0.02em}
+.big small{font-family:var(--f-body);font-size:var(--fs-body);font-weight:var(--fw-medium);letter-spacing:0}
+.rb-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 var(--sp-3);align-items:baseline;margin-bottom:var(--sp-4)}
+.rb-meta{grid-column:1 / -1}
+.rb-head b{display:block;font-weight:var(--fw-semibold)}
+.rb-head .amount{font-size:var(--fs-title);line-height:var(--lh-title);font-weight:var(--fw-bold)}
+.tl li{display:grid;grid-template-columns:24px 1fr;gap:var(--sp-3);position:relative;padding-bottom:var(--sp-4);line-height:1.4}
+.tl li:last-child{padding-bottom:0}
+.tl li:not(:last-child)::before{content:"";position:absolute;left:11px;top:28px;bottom:4px;width:2px;border-radius:1px;background:var(--line-2)}
+.tl li.done:not(:last-child)::before{background:var(--ok)}
+.tl-dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--line-2);background:var(--surface);display:grid;place-items:center}
+.tl li.done .tl-dot{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.tl li.done .tl-dot .ic{width:14px;height:14px;stroke-width:2.75}
+.tl li.cur .tl-dot{border-color:var(--info);box-shadow:0 0 0 4px var(--info-bg)}
+.tl li.cur .tl-dot::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--info)}
+.tl b{display:block;font-weight:var(--fw-semibold)}
+.cot{display:flex;flex-direction:column;gap:var(--sp-3)}
+.m-tabbar{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-1);background:var(--surface);border-top:1px solid var(--line);padding:var(--sp-1) var(--sp-2) calc(var(--sp-1) + env(safe-area-inset-bottom));z-index:2}
+body[data-mode="screen"] .m-tabbar{position:sticky;bottom:0}
+.m-tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:60px;border-radius:var(--r-md);font-weight:var(--fw-semibold);line-height:20px}
+.m-tabbar a .ib{display:grid;place-items:center;width:56px;height:28px;border-radius:var(--r-pill);transition:background-color var(--dur-hover) var(--ease-standard)}
+.m-tabbar a[aria-current="page"]{color:var(--accent)}
+.m-tabbar a[aria-current="page"] .ib{background:var(--accent-2)}
+@container (min-width:600px){.m-body{max-width:600px;margin:0 auto}}
+@container (min-width:768px){.m-nav{display:flex}.m-tabbar{display:none}.m-brand{flex:none;margin-right:var(--sp-5)}.m-top .sp{flex:1}}
+@container (min-width:1024px){.m-body{grid-template-columns:420px minmax(0,1fr);max-width:1120px;column-gap:var(--sp-7);padding-top:var(--sp-6)}}
+
+/* ---------- 04 · Lien de paiement diaspora ---------- */
+.pay{display:flex;flex-direction:column}
+.p-top{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-2) var(--sp-4);min-height:64px;border-bottom:1px solid var(--line);background:var(--surface)}
+.p-top>b{font-family:var(--f-display);font-size:var(--fs-title);font-weight:var(--fw-semibold);flex:1}
+.p-secure{display:inline-flex;gap:6px;align-items:center;font-weight:var(--fw-semibold)}
+.p-secure .ic{color:var(--ok)}
+.p-body{flex:1;display:grid;gap:var(--sp-6);padding:var(--sp-5) var(--sp-4) var(--sp-7);align-content:start;width:100%}
+.p-intro h1{font-size:var(--fs-headline);line-height:var(--lh-headline);margin-top:var(--sp-3)}
+.p-lead{margin-top:var(--sp-3);max-width:46ch}
+.p-steps{display:grid;gap:var(--sp-4);margin-top:var(--sp-5);counter-reset:s}
+.p-steps li{display:grid;grid-template-columns:32px 1fr;gap:var(--sp-3);align-items:start;line-height:1.4}
+.p-steps li::before{counter-increment:s;content:counter(s);width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--accent-2);color:var(--accent);font:var(--fw-bold) var(--fs-body)/1 var(--f-display)}
+.p-steps b{display:block;font-weight:var(--fw-semibold)}
+.p-card{padding:var(--sp-5) var(--sp-4);border-radius:var(--r-xl);display:flex;flex-direction:column;gap:var(--sp-4);position:relative;overflow:hidden;isolation:isolate;box-shadow:var(--shadow-2)}
+.p-card .guil{color:var(--accent);opacity:.08;right:-150px;top:-170px;bottom:auto}
+.p-label{font-weight:var(--fw-semibold)}
+.p-amt{font-size:var(--fs-display);line-height:var(--lh-display);font-weight:var(--fw-bold);letter-spacing:-0.025em;margin-top:calc(-1 * var(--sp-3))}
+.p-conv{margin-top:calc(-1 * var(--sp-3))}
+.p-rows{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--sp-2) var(--sp-4);padding:var(--sp-4) 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.p-rows dd{text-align:right;font-weight:var(--fw-semibold)}
+.p-methods{border:0;padding:0;margin:0;display:grid;gap:var(--sp-2);min-width:0}
+.p-methods legend{font-weight:var(--fw-semibold);padding:0;margin-bottom:var(--sp-2)}
+.method{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:var(--sp-3);align-items:center;min-height:64px;padding:var(--sp-2) var(--sp-4);border:1px solid var(--line-2);border-radius:var(--r-md);cursor:pointer;background:var(--surface);transition:border-color var(--dur-hover) var(--ease-standard),background-color var(--dur-hover) var(--ease-standard)}
+.method:hover{background:var(--sunk)}
+.method:has(input:checked){border-color:var(--accent);background:var(--accent-2);box-shadow:inset 0 0 0 1px var(--accent)}
+.method input{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line-2);display:grid;place-items:center;margin:0;background:var(--surface)}
+.method input:checked{border-color:var(--accent)}
+.method input:checked::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.method input:focus-visible{outline:var(--focus-w) solid var(--focus);outline-offset:2px}
+.method b{display:block;font-weight:var(--fw-semibold);line-height:1.3}
+.method span span{display:block;line-height:1.3}
+[data-sun] .method{border-width:2px;border-color:var(--fg)}
+.p-trust{display:flex;gap:var(--sp-2);align-items:flex-start;line-height:1.4}
+.p-trust .ic{color:var(--ok);margin-top:2px}
+@container (min-width:600px){.p-body{max-width:560px;margin:0 auto;padding-inline:var(--sp-5)}.p-card{padding:var(--sp-6)}}
+@container (min-width:1024px){
+  .p-body{grid-template-columns:minmax(0,1fr) 460px;max-width:1120px;column-gap:var(--sp-8);padding-top:var(--sp-8);align-items:start}
+  .p-intro{padding-top:var(--sp-5)}
+  .p-intro h1{font-size:var(--fs-display);line-height:var(--lh-display)}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4z"/><path d="M12 10v4.2M12 17v.2"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8v.2"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h4"/></symbol>
+  <symbol id="i-qr" viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><rect x="8" y="8" width="3" height="3"/><rect x="13" y="8" width="3" height="3"/><rect x="8" y="13" width="3" height="3"/><path d="M13 13h3v3"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7v8.5a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 13.5 6.5 5h11l2.5 8.5V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M4 13.5h4.5L10 16h4l1.5-2.5H20"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 14 2 2 4-4"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.9-4-5.7"/></symbol>
+  <symbol id="i-ledger" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6M9 17h3"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3 3 7.5l9 4.5 9-4.5z"/><path d="m3 12 9 4.5 9-4.5M3 16.5 12 21l9-4.5"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="4" y="8" width="16" height="11" rx="2.5"/><path d="M15.5 13.5h1"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 17.5h2"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2-4.5 4 9 2-4.5h6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 6 4.5 10.5 9 15"/><path d="M4.5 10.5H15a4.5 4.5 0 0 1 0 9h-3"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2H4.5z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><path d="M5 18.5V6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5v7a2.5 2.5 0 0 1-2.5 2.5H9z"/><path d="M10 8.8a2 2 0 1 1 2.6 1.9c-.4.2-.6.5-.6.9v.4M12 13.6v.1"/></symbol>
+  <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M8.5 16a5 5 0 0 1 7 0M5 12.5a10 10 0 0 1 4-2.4M19 12.5a10 10 0 0 0-3.2-2.2M2 9a15 15 0 0 1 5-2.9M22 9a15 15 0 0 0-9.5-3.4M12 19.5v.1"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.6 3.5 5.4 3.5 8.5s-1.1 5.9-3.5 8.5c-2.4-2.6-3.5-5.4-3.5-8.5s1.1-5.9 3.5-8.5z"/></symbol>
+  <symbol id="i-seal" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21"/><circle cx="24" cy="24" r="15.5" stroke-dasharray="2 3.2"/><path d="m16.5 24.5 5 5 10-10.5"/></symbol>
+  <symbol id="i-seal-x" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21"/><circle cx="24" cy="24" r="15.5" stroke-dasharray="2 3.2"/><path d="m18.5 18.5 11 11M29.5 18.5l-11 11"/></symbol>
+  <symbol id="bm" viewBox="0 0 32 32"><rect class="bm-bg" width="32" height="32" rx="9"/><rect class="bm-x" x="13" y="6" width="6" height="20" rx="3"/><rect class="bm-x" x="6" y="13" width="20" height="6" rx="3"/><path class="bm-p" d="M6.5 16h5l2-3.5 3 7 2-3.5h7"/></symbol>
+</svg>
+
+<main class="board">
+  <!-- ===================== En-tête de planche ===================== -->
+  <header class="board-head dots">
+    <div>
+      <p class="bh-brand"><svg class="bm" aria-hidden="true"><use href="#bm"/></svg>MulemaCare One <span>· Direction artistique · Phase 0 · 01/10/2026</span></p>
+      <h1 class="bh-title">Registre émeraude</h1>
+      <p class="bh-concept">La confiance d'un document officiel, la vitesse d'une application de paiement.</p>
+      <p class="bh-lead">Le Bio-Clinical Emerald du site, poussé&nbsp;: une seule couleur de marque qui agit, des statuts qui ne lui ressemblent jamais, des montants lisibles d'un coup d'œil, et trois motifs repris du site (le filet or, la guilloche de la carte, le pouls du logo).</p>
+    </div>
+    <div class="bh-tools">
+      <div class="seg" role="group" aria-label="Thème de la planche">
+        <button type="button" data-set-theme="light" aria-pressed="true">Clair</button>
+        <button type="button" data-set-theme="dark" aria-pressed="false">Sombre</button>
+        <button type="button" data-set-theme="sun" aria-pressed="false">Plein soleil</button>
+      </div>
+      <dl class="bh-facts">
+        <dt>Grille</dt><dd>8 px (4 px en demi-pas)</dd>
+        <dt>Points de rupture</dt><dd>375 · 768 · 1280</dd>
+        <dt>Contraste</dt><dd>AA partout, 7:1 en plein soleil</dd>
+        <dt>Cible tactile</dt><dd>48 px, action principale 56 px</dd>
+        <dt>Polices</dt><dd>Outfit · Plus Jakarta Sans · Inter</dd>
+        <dt>Budget</dt><dd>LCP &lt; 2,5 s sur 3G rapide</dd>
+      </dl>
+    </div>
+  </header>
+
+  <!-- ===================== Système ===================== -->
+  <section aria-labelledby="sys-t">
+    <div class="sec-head"><span class="sec-idx" aria-hidden="true">00</span><div><p class="eyebrow">Système</p><h2 id="sys-t">Jetons, typographie, mouvement</h2><p class="lead">Les valeurs ci-dessous sont lues en direct dans <code>mulemacare-tokens.css</code>, et les contrastes calculés pour le thème affiché.</p></div></div>
+    <div class="sys">
+      <div class="panel">
+        <h3>Couleur</h3>
+        <div class="sw-grid">
+          <div class="sw"><i style="background:var(--accent)"></i><div><b>Émeraude · accent</b><span data-hex="--accent"></span></div></div>
+          <div class="sw"><i style="background:var(--brand-deep)"></i><div><b>Émeraude profond</b><span data-hex="--brand-deep"></span></div></div>
+          <div class="sw"><i style="background:var(--brand-gold)"></i><div><b>Or · décor seul</b><span data-hex="--brand-gold"></span></div></div>
+          <div class="sw"><i style="background:var(--info)"></i><div><b>Royal · en cours</b><span data-hex="--info"></span></div></div>
+          <div class="sw"><i style="background:var(--ok)"></i><div><b>Ok</b><span data-hex="--ok"></span></div></div>
+          <div class="sw"><i style="background:var(--warn)"></i><div><b>Attention</b><span data-hex="--warn"></span></div></div>
+          <div class="sw"><i style="background:var(--crit)"></i><div><b>Critique</b><span data-hex="--crit"></span></div></div>
+          <div class="sw"><i style="background:var(--fg)"></i><div><b>Encre</b><span data-hex="--fg"></span></div></div>
+        </div>
+        <table class="ct" aria-label="Contrastes calculés pour le thème affiché"><tbody id="contrast-rows"></tbody></table>
+      </div>
+      <div class="panel">
+        <h3>Typographie</h3>
+        <div class="spec">
+          <div class="spec-row"><span>Outfit 600 · titres</span><p style="font:var(--fw-semibold) var(--fs-headline)/var(--lh-headline) var(--f-display);letter-spacing:var(--tr-display)">Prise en charge</p></div>
+          <div class="spec-row"><span>Inter 700 · montants</span><p class="amount" style="font-size:var(--fs-display);line-height:var(--lh-display);font-weight:var(--fw-bold);letter-spacing:-0.025em">38&#8239;400 <small style="font-size:var(--fs-title);font-weight:var(--fw-semibold)">FCFA</small></p></div>
+          <div class="spec-row"><span>Plus Jakarta Sans · texte 16 et 14</span><p>Toutes les conditions de la règle sont remplies.</p></div>
+          <div class="spec-row"><span>Inter · identifiants, tiret serré</span><p class="id" style="font-weight:var(--fw-semibold)">MC-00928194 · R-12 v3</p></div>
+        </div>
+        <p style="font-size:var(--fs-dense);line-height:var(--lh-dense);color:var(--fg-2)">Six tailles en tout&nbsp;: 12 · 14 · 16 · 20 · 28 · 40. Le comptoir et l'espace adhérent commencent à 16.</p>
+      </div>
+      <div class="panel">
+        <h3>Mouvement</h3>
+        <ul class="motion">
+          <li><b>90 ms</b><span>Pression d'un bouton · standard</span></li>
+          <li><b>140 ms</b><span>Survol, focus, couleur · standard</span></li>
+          <li><b>200 ms</b><span>Entrée d'un toast, d'un menu · décélération</span></li>
+          <li><b>280 ms</b><span>Panneau latéral, feuille · décélération (sortie 70&nbsp;%)</span></li>
+          <li><b>400 ms</b><span>Cachet de décision, une seule fois · décélération</span></li>
+        </ul>
+        <p style="font-size:var(--fs-dense);line-height:var(--lh-dense);color:var(--fg-2)">Mouvement réduit&nbsp;: aucun déplacement, fondus de 120 ms, rien qui boucle.</p>
+        <button type="button" class="btn btn-secondary" data-replay style="align-self:flex-start"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-refresh"/></svg>Rejouer le cachet</button>
+      </div>
+      <div class="panel">
+        <h3>Signatures reprises du site</h3>
+        <div class="sig">
+          <figure><svg viewBox="0 0 120 40" aria-hidden="true"><rect x="0" y="19" width="24" height="3" rx="1.5" style="fill:var(--brand-gold)"/><rect x="32" y="16" width="80" height="9" rx="2" style="fill:var(--line)"/></svg><b>Filet or</b>Devant chaque surtitre. Seul usage de l'or en interface claire.</figure>
+          <figure><svg viewBox="-100 -40 200 80" aria-hidden="true" data-guil style="color:var(--accent)"></svg><b>Guilloche</b>Carte adhérent et lien de paiement : la sécurité d'un titre.</figure>
+          <figure><svg viewBox="0 0 120 40" aria-hidden="true"><path d="M0 20h44l6-10 10 20 7-14 4 4h49" style="fill:none;stroke:var(--brand-gold);stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round"/></svg><b>Pouls</b>Le tracé du logo signale le temps réel, une fois par écran.</figure>
+          <figure><svg viewBox="0 0 120 40" aria-hidden="true"><use href="#i-seal" x="40" y="0" width="40" height="40" style="fill:none;stroke:var(--ok);stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round"/></svg><b>Cachet</b>Toute décision s'affiche comme un tampon : accordé, refusé.</figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Écrans mobiles ===================== -->
+  <section class="phones" aria-label="Écrans du comptoir, de l'adhérent et du payeur">
+
+    <!-- 01 · Comptoir — décision -->
+    <figure class="shot" id="comptoir">
+      <figcaption class="shot-label"><span class="n">01</span>Comptoir · décision <small>clinique, téléphone d'entrée de gamme</small></figcaption>
+      <div class="frame phone"><div class="app counter" data-surface="counter">
+        <header class="c-bar">
+          <svg class="bm" aria-hidden="true"><use href="#bm"/></svg>
+          <div class="c-who"><b>Clinique Les Palmiers</b><span>Comptoir 2 · Aya</span></div>
+          <span class="pill pill-ok" role="status"><svg class="ic" aria-hidden="true"><use href="#i-pulse"/></svg>En ligne</span>
+        </header>
+        <div class="c-prog" role="progressbar" aria-label="Parcours du comptoir" aria-valuemin="1" aria-valuemax="5" aria-valuenow="5" aria-valuetext="Étape 5 sur 5 : décision"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="c-body">
+          <div class="c-main">
+            <p class="c-step"><span class="c-step-n" aria-hidden="true">5</span><span>sur 5 · Décision</span></p>
+            <h1 class="c-h1">Prise en charge</h1>
+            <section class="verdict" aria-labelledby="v-t">
+              <svg class="seal stamp" aria-hidden="true"><use href="#i-seal"/></svg>
+              <div>
+                <h2 id="v-t">Accord immédiat</h2>
+                <p>Droits ouverts, prestataire conventionné, montant sous le seuil automatique.</p>
+                <span class="rule"><span class="id">R-12 · v3</span></span>
+              </div>
+            </section>
+            <div class="pay-hero">
+              <span>À encaisser auprès du patient</span>
+              <b class="amount">9&#8239;600 <small>FCFA</small></b>
+              <div class="pay-mc"><span>MulemaCare paie 80&nbsp;%</span><b class="amount">38&#8239;400&nbsp;FCFA</b></div>
+            </div>
+            <div class="c-member">
+              <span class="av" aria-hidden="true">AK</span>
+              <div><b>Awa Koné</b><span class="id">MC-00928194</span><span class="pill pill-ok" style="align-self:flex-start;margin-top:var(--sp-2)"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Droits ouverts</span></div>
+            </div>
+          </div>
+          <div class="c-side">
+            <section class="panel" aria-labelledby="acts-t">
+              <div class="panel-h"><h2 class="panel-t" id="acts-t">Actes au barème</h2><span>3 actes</span></div>
+              <ul class="acts">
+                <li><span>Consultation généraliste</span><span class="amount">25&#8239;000</span></li>
+                <li><span>NFS (numération)</span><span class="amount">8&#8239;000</span></li>
+                <li><span>ECG</span><span class="amount">15&#8239;000</span></li>
+                <li class="total"><span>Total</span><span class="amount">48&#8239;000&nbsp;FCFA</span></li>
+              </ul>
+            </section>
+            <details class="panel checks-d">
+              <summary><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg>5 règles vérifiées<svg class="ic chev" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+              <ul class="checks">
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Droits ouverts</span><span class="id">R-01 v1</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Prestataire conventionné</span><span class="id">R-04 v2</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Carence écoulée</span><span class="id">R-07 v1</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Plafond restant 2&#8239;580&#8239;000&nbsp;FCFA</span><span class="id">R-09 v1</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Sous 50&#8239;000&nbsp;FCFA, risque 0,06</span><span class="id">R-12 v3</span></li>
+              </ul>
+            </details>
+            <section class="panel checks-open" aria-labelledby="chk-t">
+              <div class="panel-h"><h2 class="panel-t" id="chk-t">Règles vérifiées</h2><span class="pill pill-ok"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>5 sur 5</span></div>
+              <ul class="checks">
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Droits ouverts</span><span class="id">R-01 v1</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Prestataire conventionné</span><span class="id">R-04 v2</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Carence écoulée</span><span class="id">R-07 v1</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Plafond restant 2&#8239;580&#8239;000&nbsp;FCFA</span><span class="id">R-09 v1</span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Sous 50&#8239;000&nbsp;FCFA, risque 0,06</span><span class="id">R-12 v3</span></li>
+              </ul>
+            </section>
+          </div>
+        </div>
+        <footer class="c-foot">
+          <button type="button" class="btn btn-primary btn-xl">Émettre l'accord<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          <button type="button" class="btn btn-secondary">Modifier les actes</button>
+        </footer>
+      </div></div>
+    </figure>
+
+    <!-- 03 · Espace adhérent — ma carte + remboursement -->
+    <figure class="shot" id="adherent">
+      <figcaption class="shot-label"><span class="n">03</span>Espace adhérent <small>ma carte et mon remboursement</small></figcaption>
+      <div class="frame phone"><div class="app member" data-surface="counter">
+        <header class="m-top">
+          <svg class="bm" aria-hidden="true"><use href="#bm"/></svg>
+          <b class="m-brand">MulemaCare</b>
+          <nav class="m-nav" aria-label="Espace adhérent"><a href="#adherent" aria-current="page">Ma carte</a><a href="#adherent">Soins</a><a href="#adherent">Paiements</a><a href="#adherent">Aide</a></nav>
+          <span class="sp"></span>
+          <button type="button" class="icobtn" aria-label="Notifications, 1 nouvelle"><svg class="ic" aria-hidden="true"><use href="#i-bell"/></svg><span class="dotbadge"></span></button>
+        </header>
+        <div class="m-body">
+          <div class="m-col">
+            <p class="eyebrow">Bonjour Awa</p>
+            <h1>Ma carte</h1>
+            <article class="mcard" aria-label="Carte MulemaCare d'Awa Koné">
+              <svg class="guil" viewBox="-100 -100 200 200" aria-hidden="true" data-guil></svg>
+              <div class="mc-top">
+                <svg class="bm" aria-hidden="true"><use href="#bm"/></svg>
+                <b>MulemaCare<small>Santé Famille Or · 80&nbsp;%</small></b>
+              </div>
+              <div class="mc-mid">
+                <div class="qr-tile"><svg data-qr="928194" role="img" aria-label="QR dynamique de la carte" shape-rendering="crispEdges"></svg></div>
+                <div>
+                  <span class="mc-status"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-check"/></svg>Droits ouverts</span>
+                  <p class="mc-name" style="margin-top:var(--sp-3)">Awa Koné</p>
+                  <span class="mc-meta id">MC-00928194</span>
+                  <span class="mc-meta">3 bénéficiaires</span>
+                </div>
+              </div>
+              <div class="mc-bot">
+                <svg class="pulse" viewBox="0 0 72 16" aria-hidden="true"><path d="M1 8h26l4-6 6 12 4-8 3 2h27"/></svg>
+                <span>Renouvelé il y a 12 s</span>
+                <svg class="ring" viewBox="0 0 24 24" aria-hidden="true"><circle class="bgc" cx="12" cy="12" r="10"/><circle class="fgc" cx="12" cy="12" r="10"/></svg>
+              </div>
+            </article>
+            <button type="button" class="btn btn-primary btn-xl btn-block"><svg class="ic" aria-hidden="true"><use href="#i-qr"/></svg>Présenter ma carte au comptoir</button>
+            <p class="m-hint">Le QR change toutes les 30 secondes&nbsp;: une capture d'écran ne fonctionne pas au comptoir.</p>
+          </div>
+          <div class="m-col">
+            <section class="panel" aria-labelledby="pl-t">
+              <div class="panel-h"><h2 class="panel-t" id="pl-t">Plafond familial 2026</h2><span class="amount">14&nbsp;%</span></div>
+              <div class="pad" style="display:flex;flex-direction:column;gap:var(--sp-3)">
+                <p class="big amount">2&#8239;580&#8239;000 <small>FCFA restants</small></p>
+                <div class="meter" role="img" aria-label="14&nbsp;% du plafond utilisé"><i style="width:14%"></i></div>
+                <p><span class="amount">420&#8239;000</span> utilisés sur <span class="amount">3&#8239;000&#8239;000&nbsp;FCFA</span></p>
+              </div>
+            </section>
+            <section class="panel" aria-labelledby="rb-t">
+              <div class="panel-h"><h2 class="panel-t" id="rb-t">Mon remboursement</h2><span class="pill pill-info"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>En cours</span></div>
+              <div class="pad">
+                <div class="rb-head"><b>Pharmacie Riviera 3</b><span class="amount">17&#8239;200&nbsp;FCFA</span><span class="rb-meta">Frais avancés le 28/09 · <span class="id">RB-26-00412</span></span></div>
+                <ol class="tl">
+                  <li class="done"><span class="tl-dot"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span><div><b>Demande reçue</b><span>28/09 · 14:51</span></div></li>
+                  <li class="done"><span class="tl-dot"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></span><div><b>Accordée par la mutuelle</b><span>29/09 · règle <span class="id">R-12 v3</span></span></div></li>
+                  <li class="cur"><span class="tl-dot"></span><div><b>Virement Wave en cours</b><span>Arrive d'ici le 02/10 sur le <span class="id">07&nbsp;••&nbsp;••&nbsp;21&nbsp;18</span></span></div></li>
+                  <li><span class="tl-dot"></span><div><b>Reçu sur votre compte</b><span>Vous recevrez un SMS</span></div></li>
+                </ol>
+              </div>
+            </section>
+            <section class="panel" aria-labelledby="co-t">
+              <div class="panel-h"><h2 class="panel-t" id="co-t">Cotisation d'octobre</h2><span class="pill pill-ok"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Payée</span></div>
+              <div class="pad cot">
+                <p>Payée le 30/09 depuis Paris par Kouadio K. · <span class="amount">27&#8239;500&nbsp;FCFA</span></p>
+                <button type="button" class="btn btn-secondary btn-block"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg>Inviter un proche à payer</button>
+              </div>
+            </section>
+          </div>
+        </div>
+        <nav class="m-tabbar" aria-label="Espace adhérent, navigation mobile">
+          <a href="#adherent" aria-current="page"><span class="ib"><svg class="ic" aria-hidden="true"><use href="#i-card"/></svg></span>Carte</a>
+          <a href="#adherent"><span class="ib"><svg class="ic" aria-hidden="true"><use href="#i-clip"/></svg></span>Soins</a>
+          <a href="#adherent"><span class="ib"><svg class="ic" aria-hidden="true"><use href="#i-wallet"/></svg></span>Paiements</a>
+          <a href="#adherent"><span class="ib"><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg></span>Aide</a>
+        </nav>
+      </div></div>
+    </figure>
+
+    <!-- 04 · Lien de paiement diaspora -->
+    <figure class="shot" id="paiement">
+      <figcaption class="shot-label"><span class="n">04</span>Lien de paiement diaspora <small>un proche paie depuis Paris</small></figcaption>
+      <div class="frame phone"><div class="app pay" data-surface="counter">
+        <header class="p-top">
+          <svg class="bm" aria-hidden="true"><use href="#bm"/></svg>
+          <b>MulemaCare</b>
+          <span class="p-secure"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Paiement sécurisé</span>
+        </header>
+        <div class="p-body">
+          <div class="p-intro">
+            <p class="eyebrow">Lien valable jusqu'au 08/10/2026</p>
+            <h1>Payez la cotisation d'octobre d'Awa&nbsp;K.</h1>
+            <p class="p-lead">Awa est adhérente de la mutuelle MulemaCare à Abidjan. Ses droits s'ouvrent moins d'une minute après votre paiement.</p>
+            <ol class="p-steps">
+              <li><div><b>Vous payez en euros</b>Carte bancaire, Wave ou Orange Money.</div></li>
+              <li><div><b>La mutuelle reçoit <span class="amount">27&#8239;500&nbsp;FCFA</span></b>Parité fixe, aucun frais de change caché.</div></li>
+              <li><div><b>Les droits d'Awa s'ouvrent</b>Elle reçoit un SMS, vous un reçu par e-mail.</div></li>
+            </ol>
+          </div>
+          <section class="panel p-card" aria-labelledby="p-amt-t">
+            <svg class="guil" viewBox="-100 -100 200 200" aria-hidden="true" data-guil></svg>
+            <p class="p-label" id="p-amt-t">Montant à payer</p>
+            <p class="p-amt amount">41,92&nbsp;€</p>
+            <p class="p-conv">soit <span class="amount">27&#8239;500&nbsp;FCFA</span> · 1&nbsp;€ = <span class="amount">655,957&nbsp;FCFA</span></p>
+            <dl class="p-rows">
+              <dt>Formule</dt><dd>Santé Famille Or</dd>
+              <dt>Période</dt><dd>du 1ᵉʳ au 31 octobre</dd>
+              <dt>Adhérente</dt><dd>Awa K. · <span class="id">MC-••••8194</span></dd>
+            </dl>
+            <fieldset class="p-methods">
+              <legend>Moyen de paiement</legend>
+              <label class="method"><input type="radio" name="pm" checked><span><b>Carte bancaire</b><span>Visa, Mastercard · 3-D Secure</span></span><svg class="ic" aria-hidden="true"><use href="#i-card"/></svg></label>
+              <label class="method"><input type="radio" name="pm"><span><b>Wave</b><span>Depuis votre application</span></span><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg></label>
+              <label class="method"><input type="radio" name="pm"><span><b>Orange Money</b><span>Depuis votre application</span></span><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg></label>
+            </fieldset>
+            <button type="button" class="btn btn-primary btn-xl btn-block"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Payer 41,92&nbsp;€</button>
+            <p class="p-trust"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg><span>Aucune donnée médicale n'est demandée. Le paiement est traité par votre banque&nbsp;; MulemaCare ne voit jamais votre numéro de carte.</span></p>
+          </section>
+        </div>
+      </div></div>
+    </figure>
+  </section>
+
+  <!-- ===================== 02 · Console — file de revue ===================== -->
+  <figure class="shot" id="revue">
+    <figcaption class="shot-label"><span class="n">02</span>Console · file de revue <small>médecin-conseil, densité 14 px</small></figcaption>
+    <div class="frame desk"><div class="app console" data-surface="console">
+      <div class="k-shell">
+        <nav class="k-side" aria-label="Navigation principale">
+          <div class="k-brand"><svg class="bm" aria-hidden="true"><use href="#bm"/></svg><div><b>MulemaCare One</b><span>Mutuelle · Côte d'Ivoire</span></div></div>
+          <p class="k-group">Pilotage</p>
+          <a class="k-nav" href="#revue"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg>Accueil</a>
+          <p class="k-group">Opérations</p>
+          <a class="k-nav" href="#revue" aria-current="page"><svg class="ic" aria-hidden="true"><use href="#i-inbox"/></svg>File de revue<span class="k-count" aria-label="3 à traiter">3</span></a>
+          <a class="k-nav" href="#revue"><svg class="ic" aria-hidden="true"><use href="#i-clip"/></svg>Prises en charge</a>
+          <a class="k-nav" href="#revue"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>Adhérents</a>
+          <div class="k-user"><span class="av" aria-hidden="true">SN</span><div><b>Dr Serge N'Guessan</b><span>Médecin-conseil</span></div></div>
+        </nav>
+        <div class="k-main">
+          <header class="k-top">
+            <button type="button" class="btn btn-ghost k-menu" aria-label="Ouvrir la navigation"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg></button>
+            <svg class="bm" aria-hidden="true"><use href="#bm"/></svg><p class="k-crumb">Médecin-conseil / <b>File de revue</b></p>
+            <label class="k-search"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-search"/></svg><span class="sr-only">Rechercher</span><input type="search" placeholder="Rechercher un dossier, un adhérent"><kbd>⌘K</kbd></label>
+          </header>
+          <div class="k-content">
+            <div class="k-head">
+              <div><p class="eyebrow">Revue médicale</p><h1>File de revue</h1><p class="k-sub"><b>3 dossiers</b> à décider · délai cible 2&nbsp;h · le plus urgent échoit dans <b>18&nbsp;min</b></p></div>
+            </div>
+            <div class="seg" role="tablist" aria-label="Filtrer la file">
+              <button type="button" role="tab" aria-selected="true">À revoir <span class="n">3</span></button>
+              <button type="button" role="tab" aria-selected="false">Alertes fraude <span class="n">1</span></button>
+              <button type="button" role="tab" aria-selected="false">Pièces demandées <span class="n">2</span></button>
+              <button type="button" role="tab" aria-selected="false">Traités aujourd'hui <span class="n">14</span></button>
+            </div>
+            <div class="k-split">
+              <div class="panel tw">
+                <table class="k-table" aria-label="Dossiers à revoir, triés par échéance">
+                  <thead><tr><th scope="col">Dossier</th><th scope="col" class="r">Montant</th><th scope="col">Risque</th><th scope="col" class="r">Échéance</th></tr></thead>
+                  <tbody>
+                    <tr tabindex="0" aria-selected="true">
+                      <td class="c-doc"><b class="who-n">Fatou Ndiaye</b><span class="sub"><span class="id">PEC-26-09813</span> · seuil 150&#8239;000</span></td>
+                      <td class="c-amt r amount">185&#8239;000</td>
+                      <td class="c-risk"><span class="risk"><span class="meter"><i class="t-warn" style="width:18%"></i></span><span class="amount">0,18</span></span></td>
+                      <td class="c-due r"><span class="pill pill-warn"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>18 min</span></td>
+                    </tr>
+                    <tr tabindex="0" aria-selected="false">
+                      <td class="c-doc"><b class="who-n">Mariama Diallo</b><span class="sub"><span class="id">PEC-26-09811</span> · accord préalable</span></td>
+                      <td class="c-amt r amount">62&#8239;000</td>
+                      <td class="c-risk"><span class="risk"><span class="meter"><i class="t-ok" style="width:11%"></i></span><span class="amount">0,11</span></span></td>
+                      <td class="c-due r"><span class="pill pill-neutral"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>1 h 05</span></td>
+                    </tr>
+                    <tr tabindex="0" aria-selected="false">
+                      <td class="c-doc"><b class="who-n">Fatou Ndiaye</b><span class="sub"><span class="id">PEC-26-09802</span> · fraude <span class="id">F-03</span></span></td>
+                      <td class="c-amt r amount">96&#8239;000</td>
+                      <td class="c-risk"><span class="risk"><span class="meter"><i class="t-crit" style="width:72%"></i></span><span class="amount">0,72</span></span></td>
+                      <td class="c-due r"><span class="pill pill-crit"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>Retard 12 min</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <aside class="panel k-detail" aria-label="Dossier PEC-26-09813">
+                <div class="d-head">
+                  <p class="id">PEC-26-09813 · 30/09/2026 23:28</p>
+                  <p class="d-amt amount">185&#8239;000&nbsp;FCFA</p>
+                  <span class="pill pill-warn"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>En revue · réponse avant 01:28</span>
+                </div>
+                <div class="d-body">
+                  <dl class="props">
+                    <dt>Adhérente</dt><dd>Fatou Ndiaye <span class="id" style="color:var(--fg-2)">MC-00455190</span></dd>
+                    <dt>Prestataire</dt><dd>Centre d'imagerie Deux-Plateaux</dd>
+                    <dt>Acte</dt><dd>IRM genou × 1</dd>
+                    <dt>Part mutuelle</dt><dd><span class="amount">148&#8239;000&nbsp;FCFA</span> · 80&nbsp;%</dd>
+                    <dt>Règle</dt><dd><span class="id">R-20 v2</span> · montant au-delà de 150&#8239;000&nbsp;FCFA</dd>
+                  </dl>
+                  <div class="secret">
+                    <svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>
+                    <div><b>Motif médical masqué</b><p>Lu à la demande chez HealthOS. Chaque lecture est journalisée.</p></div>
+                    <button type="button" class="btn btn-secondary"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-eye"/></svg>Lire le motif</button>
+                  </div>
+                  <div class="joe">
+                    <div class="joe-h"><span class="joe-mark" aria-hidden="true">J</span><b>JOE recommande</b><span class="joe-note">Avis, pas décision</span></div>
+                    <p>Tarif conforme au barème 2026 v2. Deuxième acte d'imagerie de l'adhérente en douze mois, fréquence habituelle chez ce prestataire.</p>
+                    <p class="joe-src">Sources&nbsp;: barème 2026 v2 · historique <span class="id">MC-00455190</span> · <span class="id">R-20 v2</span></p>
+                  </div>
+                  <div>
+                    <p class="h-label">Historique</p>
+                    <ol class="hist">
+                      <li><svg class="ic ic-sm" aria-hidden="true"><use href="#i-inbox"/></svg><span>Envoyé en revue par le moteur de règles</span><span class="when">23:28</span></li>
+                      <li><svg class="ic ic-sm" aria-hidden="true"><use href="#i-card"/></svg><span>Carte scannée, identité confirmée</span><span class="when">23:26</span></li>
+                    </ol>
+                  </div>
+                </div>
+                <div class="d-actions">
+                  <button type="button" class="btn btn-primary">Accorder</button>
+                  <button type="button" class="btn btn-secondary">Demander des pièces</button>
+                  <button type="button" class="btn btn-danger">Refuser</button>
+                  <p class="d-keys">Raccourcis&nbsp;: <kbd>A</kbd> accorder · <kbd>P</kbd> pièces · <kbd>R</kbd> refuser</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </figure>
+
+  <!-- ===================== 05 · Console — grand livre ===================== -->
+  <figure class="shot" id="grand-livre">
+    <figcaption class="shot-label"><span class="n">05</span>Console · grand livre <small>gestionnaire, partie double en ajout seul</small></figcaption>
+    <div class="frame desk"><div class="app console" data-surface="console">
+      <div class="k-shell">
+        <nav class="k-side" aria-label="Navigation principale">
+          <div class="k-brand"><svg class="bm" aria-hidden="true"><use href="#bm"/></svg><div><b>MulemaCare One</b><span>Mutuelle · Côte d'Ivoire</span></div></div>
+          <p class="k-group">Pilotage</p>
+          <a class="k-nav" href="#grand-livre"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg>Accueil</a>
+          <p class="k-group">Opérations</p>
+          <a class="k-nav" href="#grand-livre"><svg class="ic" aria-hidden="true"><use href="#i-clip"/></svg>Prises en charge<span class="k-count" aria-label="3 à traiter">3</span></a>
+          <a class="k-nav" href="#grand-livre"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>Adhérents</a>
+          <p class="k-group">Finance et produit</p>
+          <a class="k-nav" href="#grand-livre" aria-current="page"><svg class="ic" aria-hidden="true"><use href="#i-ledger"/></svg>Grand livre</a>
+          <a class="k-nav" href="#grand-livre"><svg class="ic" aria-hidden="true"><use href="#i-layers"/></svg>Produits et garanties</a>
+          <div class="k-user"><span class="av" aria-hidden="true">AT</span><div><b>Aminata Touré</b><span>Gestionnaire</span></div></div>
+        </nav>
+        <div class="k-main">
+          <header class="k-top">
+            <button type="button" class="btn btn-ghost k-menu" aria-label="Ouvrir la navigation"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg></button>
+            <svg class="bm" aria-hidden="true"><use href="#bm"/></svg><p class="k-crumb">Gestionnaire / <b>Grand livre</b></p>
+            <label class="k-search"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-search"/></svg><span class="sr-only">Rechercher</span><input type="search" placeholder="Rechercher une écriture, un compte"><kbd>⌘K</kbd></label>
+          </header>
+          <div class="k-content">
+            <div class="k-head">
+              <div><p class="eyebrow">Journal général · septembre 2026</p><h1>Grand livre</h1><p class="k-sub">6 écritures affichées sur 11&#8239;408 · période ouverte</p></div>
+              <div class="k-actions"><button type="button" class="btn btn-secondary">Septembre 2026<svg class="ic ic-sm" aria-hidden="true"><use href="#i-chev"/></svg></button><button type="button" class="btn btn-secondary"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-download"/></svg>Exporter CSV</button></div>
+            </div>
+            <div class="panel bal" role="group" aria-label="Équilibre de la période">
+              <div><span>Total des débits</span><b class="amount">14&#8239;229&#8239;400</b></div>
+              <div><span>Total des crédits</span><b class="amount">14&#8239;229&#8239;400</b></div>
+              <div><span>Écart</span><b><span class="amount">0</span><span class="pill pill-ok"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Équilibré</span></b></div>
+            </div>
+            <p class="banner"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span><b>Ajout seul.</b> Aucune écriture ne se modifie ni ne s'efface&nbsp;: une erreur se corrige par une contre-passation, qui garde la trace de l'original.</span></p>
+            <div class="panel tw">
+              <table class="l-table" aria-label="Écritures de septembre 2026, montants en FCFA">
+                <colgroup><col style="width:160px"><col><col style="width:300px"><col style="width:112px"><col style="width:112px"></colgroup>
+                <thead><tr><th scope="col">Écriture</th><th scope="col">Libellé</th><th scope="col">Compte</th><th scope="col" class="r">Débit</th><th scope="col" class="r">Crédit</th></tr></thead>
+                <tbody class="entry">
+                  <tr><td class="e-id"><span class="id">J-2026-0918402</span><span class="sub">30/09 · 18:42</span></td><td class="e-lib"><b>PEC-26-09814</b> · accord tiers payant</td><td><span class="acct"><span class="acct-code">6011</span>Prestations santé, soins</span></td><td class="dc" data-label="Débit">38&#8239;400</td><td class="dc" data-label="Crédit"></td></tr>
+                  <tr><td></td><td></td><td><span class="acct"><span class="acct-code">4011</span>Prestataires à payer · Les Palmiers</span></td><td class="dc" data-label="Débit"></td><td class="dc" data-label="Crédit">38&#8239;400</td></tr>
+                </tbody>
+                <tbody class="entry">
+                  <tr><td class="e-id"><span class="id">J-2026-0918399</span><span class="sub">30/09 · 18:05</span></td><td class="e-lib"><b>Cotisation octobre</b> · <span class="id">MC-00928194</span>, payée depuis Paris</td><td><span class="acct"><span class="acct-code">5124</span>Encaissements carte · diaspora</span></td><td class="dc" data-label="Débit">27&#8239;500</td><td class="dc" data-label="Crédit"></td></tr>
+                  <tr><td></td><td></td><td><span class="acct"><span class="acct-code">7061</span>Cotisations acquises</span></td><td class="dc" data-label="Débit"></td><td class="dc" data-label="Crédit">27&#8239;500</td></tr>
+                </tbody>
+                <tbody class="entry">
+                  <tr><td class="e-id"><span class="id">J-2026-0918391</span><span class="sub">30/09 · 15:10</span></td><td class="e-lib"><b>Règlement groupé</b> · lot 2026-39, 37 prestataires</td><td><span class="acct"><span class="acct-code">4011</span>Prestataires à payer</span></td><td class="dc" data-label="Débit">4&#8239;812&#8239;300</td><td class="dc" data-label="Crédit"></td></tr>
+                  <tr><td></td><td></td><td><span class="acct"><span class="acct-code">5122</span>Mobile money · Orange Money</span></td><td class="dc" data-label="Débit"></td><td class="dc" data-label="Crédit">4&#8239;812&#8239;300</td></tr>
+                </tbody>
+                <tbody class="entry">
+                  <tr><td class="e-id"><span class="id">J-2026-0918388</span><span class="sub">30/09 · 14:51</span></td><td class="e-lib"><b>PEC-26-09807</b> · accord tiers payant</td><td><span class="acct"><span class="acct-code">6011</span>Prestations santé, pharmacie</span></td><td class="dc" data-label="Débit">17&#8239;200</td><td class="dc" data-label="Crédit"></td></tr>
+                  <tr><td></td><td></td><td><span class="acct"><span class="acct-code">4011</span>Prestataires à payer · Riviera 3</span></td><td class="dc" data-label="Débit"></td><td class="dc" data-label="Crédit">17&#8239;200</td></tr>
+                </tbody>
+                <tbody class="entry">
+                  <tr><td class="e-id"><span class="id">J-2026-0918377</span><span class="sub">30/09 · 11:02</span></td><td class="e-lib"><span class="pill pill-neutral"><svg class="ic" aria-hidden="true"><use href="#i-undo"/></svg>Contre-passation</span><br>Erreur de barème<br><a class="rev" href="#grand-livre">Annule <span class="id">J-2026-0918201</span></a></td><td><span class="acct"><span class="acct-code">4011</span>Prestataires à payer · Plateau</span></td><td class="dc" data-label="Débit">6&#8239;000</td><td class="dc" data-label="Crédit"></td></tr>
+                  <tr><td></td><td></td><td><span class="acct"><span class="acct-code">6011</span>Prestations santé, soins</span></td><td class="dc" data-label="Débit"></td><td class="dc" data-label="Crédit">6&#8239;000</td></tr>
+                </tbody>
+                <tbody class="entry">
+                  <tr><td class="e-id"><span class="id">J-2026-0918350</span><span class="sub">30/09 · 08:00</span></td><td class="e-lib"><b>Prélèvement employeur</b> · Employeur démo A, 212 adhérents</td><td><span class="acct"><span class="acct-code">5110</span>Banque · virement employeur</span></td><td class="dc" data-label="Débit">9&#8239;328&#8239;000</td><td class="dc" data-label="Crédit"></td></tr>
+                  <tr><td></td><td></td><td><span class="acct"><span class="acct-code">7061</span>Cotisations acquises</span></td><td class="dc" data-label="Débit"></td><td class="dc" data-label="Crédit">9&#8239;328&#8239;000</td></tr>
+                </tbody>
+                <tfoot><tr><td colspan="3">Totaux affichés</td><td class="dc amount" data-label="Débit">14&#8239;229&#8239;400</td><td class="dc amount" data-label="Crédit">14&#8239;229&#8239;400</td></tr></tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </figure>
+
+  <!-- ===================== États ===================== -->
+  <section aria-labelledby="st-t">
+    <div class="sec-head"><span class="sec-idx" aria-hidden="true">06</span><div><p class="eyebrow">États</p><h2 id="st-t">Ce qui arrive hors du chemin heureux</h2><p class="lead">Chaque écran livre ses états vide, chargement, erreur et succès. Un message dit ce qui se passe et quoi faire, jamais seulement « erreur ».</p></div></div>
+    <div class="st-grid">
+      <article class="panel st" aria-label="État chargement">
+        <p class="st-k">Chargement</p>
+        <div class="sk" style="width:62%"></div><div class="sk"></div><div class="sk" style="width:84%"></div><div class="sk" style="width:48%"></div>
+        <p style="color:var(--fg-2)">Squelette à la forme du contenu, après 300 ms seulement. Jamais de toupie plein écran.</p>
+      </article>
+      <article class="panel st" aria-label="État vide">
+        <p class="st-k">Vide</p>
+        <div class="empty"><svg class="seal" aria-hidden="true"><use href="#i-seal"/></svg><b>File vide</b><p>Aucun dossier à revoir. Les nouveaux arrivent ici en temps réel.</p></div>
+      </article>
+      <article class="panel st" aria-label="État erreur">
+        <p class="st-k">Erreur</p>
+        <div class="alert alert-crit" role="alert"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg><div><b>Le dossier n'a pas pu être chargé</b><p>Vérifiez la connexion puis réessayez. Code <span class="id">E-NET-02</span>.</p></div></div>
+        <button type="button" class="btn btn-secondary" style="align-self:flex-start"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-refresh"/></svg>Réessayer</button>
+      </article>
+      <article class="panel st" aria-label="État hors ligne">
+        <p class="st-k">Hors ligne · comptoir</p>
+        <div class="alert alert-warn" role="status"><svg class="ic" aria-hidden="true"><use href="#i-wifi-off"/></svg><div><b>Hors ligne</b><p>Les accords sous 50&#8239;000&nbsp;FCFA restent possibles, signés sur l'appareil, valables 2&nbsp;h.</p></div></div>
+      </article>
+      <article class="panel st" aria-label="État refus">
+        <p class="st-k">Refus · comptoir</p>
+        <div class="alert alert-crit"><svg class="seal" style="width:32px;height:32px;color:var(--crit)" aria-hidden="true"><use href="#i-seal-x"/></svg><div><b>Droits suspendus · <span class="id">R-01</span></b><p>Cotisation impayée depuis 47 jours. Que faire&nbsp;: l'adhérent paie par Wave, ses droits rouvrent en moins d'une minute.</p></div></div>
+      </article>
+      <article class="panel st" aria-label="État succès">
+        <p class="st-k">Succès · paiement</p>
+        <div class="empty" style="border-style:solid;border-color:var(--line)"><svg class="seal stamp" style="color:var(--ok)" aria-hidden="true"><use href="#i-seal"/></svg><b>Droits ouverts</b><p>Awa a reçu un SMS, 14&nbsp;s après votre paiement. Reçu envoyé par e-mail.</p></div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const html = document.documentElement;
+  const q = new URLSearchParams(location.search);
+
+  function applyTheme(t) {
+    if (t === "sun") { html.dataset.theme = "light"; html.setAttribute("data-sun", ""); }
+    else { html.removeAttribute("data-sun"); if (t) html.dataset.theme = t; }
+    document.querySelectorAll("[data-set-theme]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.setTheme === (t || "light"))));
+    renderTokens();
+  }
+
+  /* Contraste WCAG calculé à partir des jetons effectifs. */
+  const tok = n => getComputedStyle(html).getPropertyValue(n).trim();
+  function lum(hex) {
+    const v = hex.replace("#", "");
+    const c = [0, 2, 4].map(i => parseInt(v.slice(i, i + 2), 16) / 255).map(x => x <= 0.04045 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4);
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  const ratio = (a, b) => { const [h, l] = [lum(a), lum(b)].sort((x, y) => y - x); return (h + 0.05) / (l + 0.05); };
+  const PAIRS = [
+    ["Encre / fond", "--fg", "--bg", "t"], ["Texte 2 / surface", "--fg-2", "--surface", "t"], ["Texte 3 / creux", "--fg-3", "--sunk", "t"],
+    ["Accent / surface", "--accent", "--surface", "t"], ["Blanc / accent", "--accent-fg", "--accent", "t"],
+    ["Ok / fond ok", "--ok", "--ok-bg", "t"], ["Attention / fond", "--warn", "--warn-bg", "t"], ["Critique / fond", "--crit", "--crit-bg", "t"],
+    ["Royal / fond", "--info", "--info-bg", "t"], ["Bord de champ", "--line-2", "--surface", "u"], ["Or / surface", "--brand-gold", "--surface", "d"],
+  ];
+  function renderTokens() {
+    document.querySelectorAll("[data-hex]").forEach(el => { el.textContent = tok(el.dataset.hex).toUpperCase(); });
+    const sun = html.hasAttribute("data-sun");
+    const rows = PAIRS.map(([label, a, b, kind]) => {
+      const r = ratio(tok(a), tok(b));
+      const need = kind === "u" ? 3 : kind === "d" ? 3 : sun ? 7 : 4.5;
+      const verdict = kind === "d" ? "décor" : r >= need ? (kind === "u" ? "≥ 3:1" : sun ? "≥ 7:1" : "AA") : "échec";
+      const cls = verdict === "échec" ? "pill-crit" : kind === "d" ? "pill-neutral" : "pill-ok";
+      return `<tr><td>${label}</td><td class="r">${r.toFixed(2).replace(".", ",")}:1</td><td><span class="pill ${cls}">${verdict}</span></td></tr>`;
+    });
+    const body = document.getElementById("contrast-rows");
+    if (body) body.innerHTML = rows.join("");
+  }
+
+  /* QR fictif déterministe (aucune donnée réelle). */
+  function drawQr(svg, seed) {
+    const n = 25; let s = seed >>> 0;
+    const rnd = () => (s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296;
+    const finder = (x, y) => (x < 8 && y < 8) || (x >= n - 8 && y < 8) || (x < 8 && y >= n - 8);
+    let d = "";
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      if (finder(x, y)) continue;
+      const on = (y === 6 || x === 6) ? (x + y) % 2 === 0 : rnd() < 0.47;
+      if (on) d += `M${x} ${y}h1v1h-1z`;
+    }
+    for (const [fx, fy] of [[0, 0], [n - 7, 0], [0, n - 7]]) d += `M${fx} ${fy}h7v7h-7zM${fx + 1} ${fy + 1}v5h5v-5zM${fx + 2} ${fy + 2}h3v3h-3z`;
+    svg.setAttribute("viewBox", `-1 -1 ${n + 2} ${n + 2}`);
+    svg.innerHTML = `<path class="qm" fill-rule="evenodd" d="${d}"/>`;
+  }
+
+  /* Guilloche : rosette d'ellipses, comme sur la carte du site. */
+  function drawGuil(svg) {
+    let g = '<g fill="none" stroke="currentColor" stroke-width="0.7">';
+    for (let i = 0; i < 12; i++) g += `<ellipse rx="92" ry="30" transform="rotate(${i * 15})"/>`;
+    g += '<circle r="96"/><circle r="64"/><circle r="34"/></g>';
+    svg.innerHTML = g;
+  }
+
+  document.querySelectorAll("svg[data-qr]").forEach(svg => drawQr(svg, Number(svg.dataset.qr)));
+  document.querySelectorAll("svg[data-guil]").forEach(drawGuil);
+
+  document.querySelectorAll("[data-set-theme]").forEach(b => b.addEventListener("click", () => applyTheme(b.dataset.setTheme)));
+  document.querySelectorAll(".k-table tbody tr").forEach(tr => {
+    const select = () => tr.parentElement.querySelectorAll("tr").forEach(o => o.setAttribute("aria-selected", String(o === tr)));
+    tr.addEventListener("click", select);
+    tr.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(); } });
+  });
+  document.querySelectorAll("[data-replay]").forEach(b => b.addEventListener("click", () => {
+    document.querySelectorAll(".stamp").forEach(el => { el.classList.remove("stamp"); void el.getBoundingClientRect(); el.classList.add("stamp"); });
+  }));
+
+  const screen = q.get("screen");
+  if (screen) {
+    const target = document.getElementById(screen);
+    if (target) { document.body.dataset.mode = "screen"; target.classList.add("is-target"); }
+    if (q.get("static") === "1") document.body.dataset.static = "";
+  }
+  applyTheme(q.get("sun") === "1" ? "sun" : q.get("theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,4097 @@
+openapi: 3.1.0
+info:
+  title: MulemaCare One API
+  version: 0.1.0
+  summary: Noyau de gestion de la mutuelle MulemaCare (contrat L0).
+  description: |
+    Contrat d'API des lots L1 à L8 (specs/LOTS.md). Brouillon v0.1 du 2026-09-30, à relire par
+    un humain. Toute modification passe par specs/CHANGE-REQUESTS.md.
+
+    Principes :
+    - L'organisation vient du jeton (JWT), jamais d'un paramètre ni d'un corps de requête.
+      Seule exception : le webhook de paiement, non authentifié par jeton, qui porte le
+      `organization_slug` dans son URL et est authentifié par signature.
+    - Montants : entiers en francs CFA (`*_xof`, int64), devise explicite `XOF`.
+    - Aucune donnée médicale dans les réponses, sauf `GET /v1/claims/{claim_id}/medical-reason`,
+      réservé au médecin-conseil, lu à la demande chez HealthOS et journalisé.
+    - Décisions de prise en charge : prises par le moteur de règles (code et version renvoyés)
+      ou par un humain. JOE recommande et prépare ; il n'a aucune opération qui décide ou paie.
+    - Erreurs : `application/problem+json`, `code` stable, `message` en français simple qui dit
+      quoi faire. Les codes de règle (R-01, R-04…) servent aussi de motifs de décision.
+    - `x-lot` indique le lot propriétaire de l'opération, `x-roles` les rôles autorisés.
+      `x-lot: P1` = Phase 1, espace adhérent et diaspora (CR-P1-01, ajout strictement additif
+      appliqué sur instruction de Dajan pour enchaîner la Phase 1 — à valider) : rôle `adherent`
+      rattaché à SON contrat ; il ne voit que ses propres données.
+      `x-lot: P2` = Phase 2, mesure produit (CR-P2-01, ajout strictement additif appliqué sur
+      instruction de Dajan pour enchaîner les phases — à valider) : événements d'usage en liste
+      blanche fermée, sans texte libre ni identifiant de personne, gardés dans la base de
+      l'instance (aucun traceur tiers) ; agrégats réservés au gestionnaire et à l'admin, masqués
+      sous 5 contributeurs (k-anonymat).
+      `x-lot: P3` = Phase 3, marque blanche et espaces assureur, employeur et plateforme
+      (CR-P3-01, ajout strictement additif appliqué sur instruction de Dajan pour enchaîner les
+      phases — à valider ; vente clé en main aux assureurs décidée le 01/10, PRD §2 amendé) :
+      marque par organisation (liste fermée de jetons, contraste WCAG AA vérifié par le
+      serveur, logo non exécutable), agrégats k-anonymes pour l'assureur et l'employeur, accueil
+      d'une organisation par copie de gabarit (aucune ligne partagée) par un administrateur de
+      plateforme.
+  contact:
+    name: MulemaCare One — équipe noyau
+    email: noyau@mulemacare.invalid
+  license:
+    name: Propriétaire
+    identifier: LicenseRef-Proprietary
+servers:
+  - url: http://localhost:8000
+    description: Développement local (make dev)
+security:
+  - bearerAuth: []
+tags:
+  - name: noyau
+    description: Organisation, utilisateurs, rôles et journal d'audit (L1).
+  - name: produits
+    description: Produits versionnés, garanties, réseau et barème (L2).
+  - name: regles
+    description: Règles de décision stockées en données et simulation (L2).
+  - name: grand-livre
+    description: Écritures en partie double, contre-passation et balance (L3).
+  - name: adherents
+    description: Adhérents, ayants droit, droits et cartes (L4).
+  - name: cotisations
+    description: Cotisations, liens de paiement et webhooks (L4).
+  - name: comptoir
+    description: Identification en trois facteurs et mode hors ligne (L5).
+  - name: prises-en-charge
+    description: Demandes, décisions et motif médical à la demande (L5).
+  - name: joe
+    description: Assistant JOE — lecture et préparation uniquement (L8).
+  - name: espace-adherent
+    description: Espace adhérent et diaspora — ma carte, mes soins, mes cotisations (P1).
+  - name: mesure
+    description: Mesure produit — événements d'usage et agrégats k-anonymes, sans traceur tiers (P2).
+  - name: marque-blanche
+    description: Marque blanche par organisation — liste fermée de jetons, contraste AA vérifié (P3).
+  - name: espace-assureur
+    description: Espace assureur — portefeuille agrégé k-anonyme, lecture seule (P3).
+  - name: espace-employeur
+    description: Espace employeur — consommation agrégée du groupe, échéances, sans nom de salarié (P3).
+  - name: plateforme
+    description: Accueil d'organisation par copie de gabarit, réservé à l'administrateur de plateforme (P3).
+
+paths:
+  # ---------------------------------------------------------------- L1 noyau
+  /v1/me:
+    get:
+      operationId: getCurrentUser
+      summary: Utilisateur connecté
+      description: Renvoie l'utilisateur du jeton, son organisation et ses rôles.
+      tags: [noyau]
+      x-lot: L1
+      x-roles: [gestionnaire, medecin_conseil, clinique, employeur, admin, adherent, assureur, admin_plateforme]
+      responses:
+        '200':
+          description: Utilisateur connecté.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CurrentUser'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+
+  /v1/organization:
+    get:
+      operationId: getCurrentOrganization
+      summary: Organisation de l'utilisateur
+      description: Organisation déduite du jeton.
+      tags: [noyau]
+      x-lot: L1
+      x-roles: [gestionnaire, medecin_conseil, clinique, employeur, admin, adherent, assureur, admin_plateforme]
+      responses:
+        '200':
+          description: Organisation.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Organization'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+
+  /v1/users:
+    get:
+      operationId: listUsers
+      summary: Lister les utilisateurs
+      description: Utilisateurs de l'organisation, avec leurs rôles.
+      tags: [noyau]
+      x-lot: L1
+      x-roles: [admin]
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Page d'utilisateurs.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      operationId: createUser
+      summary: Créer un utilisateur
+      description: Rattache un sujet du fournisseur d'identité à l'organisation.
+      tags: [noyau]
+      x-lot: L1
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateUserRequest'}
+      responses:
+        '201':
+          description: Utilisateur créé.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/User'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/users/{user_id}/roles:
+    put:
+      operationId: replaceUserRoles
+      summary: Remplacer les rôles d'un utilisateur
+      description: Remplace l'ensemble des rôles (et attributs de portée) ; journalisé dans l'audit.
+      tags: [noyau]
+      x-lot: L1
+      x-roles: [admin]
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReplaceUserRolesRequest'}
+      responses:
+        '200':
+          description: Utilisateur avec ses nouveaux rôles.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/User'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/audit-events:
+    get:
+      operationId: listAuditEvents
+      summary: Consulter le journal d'audit
+      description: Journal immuable, filtré par action et cible. Aucune donnée médicale.
+      tags: [noyau]
+      x-lot: L1
+      x-roles: [admin]
+      parameters:
+        - name: action
+          in: query
+          description: Action exacte, par exemple `claim.medical_reason.read`.
+          schema: {type: string}
+        - name: target_id
+          in: query
+          description: Identifiant de la cible.
+          schema: {type: string, format: uuid}
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Page d'événements d'audit.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AuditEventList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+
+  # ------------------------------------------------------------ L2 produits
+  /v1/plans:
+    get:
+      operationId: listPlans
+      summary: Lister les produits
+      description: Produits de l'organisation avec leur version en vigueur.
+      tags: [produits]
+      x-lot: L2
+      x-roles: [gestionnaire, admin]
+      responses:
+        '200':
+          description: Produits.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PlanList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      operationId: createPlan
+      summary: Créer un produit
+      description: Crée un produit sans version ; les paramètres vivent dans ses versions.
+      tags: [produits]
+      x-lot: L2
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreatePlanRequest'}
+      responses:
+        '201':
+          description: Produit créé.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Plan'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/plans/{plan_id}:
+    get:
+      operationId: getPlan
+      summary: Détail d'un produit
+      description: Produit et toutes ses versions (brouillon, soumise, en vigueur, clôturée).
+      tags: [produits]
+      x-lot: L2
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/PlanId'
+      responses:
+        '200':
+          description: Produit.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Plan'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/plans/{plan_id}/versions:
+    post:
+      operationId: createPlanVersion
+      summary: Créer une version de produit (brouillon)
+      description: Nouvelle version avec date d'effet. Elle ne s'applique qu'aux soins datés à partir de cette date.
+      tags: [produits]
+      x-lot: L2
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/PlanId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreatePlanVersionRequest'}
+      responses:
+        '201':
+          description: Version créée en brouillon.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PlanVersion'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/plan-versions/{plan_version_id}:
+    get:
+      operationId: getPlanVersion
+      summary: Détail d'une version de produit
+      description: Paramètres et garanties d'une version.
+      tags: [produits]
+      x-lot: L2
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/PlanVersionId'
+      responses:
+        '200':
+          description: Version de produit.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PlanVersion'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/plan-versions/{plan_version_id}/publication:
+    post:
+      operationId: publishPlanVersion
+      summary: Publier une version de produit
+      description: Passe la version en vigueur. Une version publiée est figée (RUL-01) et ne chevauche aucune autre (RUL-02).
+      tags: [produits]
+      x-lot: L2
+      x-roles: [admin]
+      parameters:
+        - $ref: '#/components/parameters/PlanVersionId'
+      responses:
+        '200':
+          description: Version publiée.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PlanVersion'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /v1/providers:
+    get:
+      operationId: listProviders
+      summary: Lister les prestataires
+      description: Réseau de soins, avec l'état de convention à la date demandée.
+      tags: [produits]
+      x-lot: L2
+      x-roles: [gestionnaire, medecin_conseil, admin]
+      parameters:
+        - $ref: '#/components/parameters/AtDate'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Page de prestataires.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ProviderList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      operationId: createProvider
+      summary: Créer un prestataire
+      description: Ajoute un prestataire au réseau (non conventionné tant qu'aucune convention n'existe).
+      tags: [produits]
+      x-lot: L2
+      x-roles: [gestionnaire, admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateProviderRequest'}
+      responses:
+        '201':
+          description: Prestataire créé.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Provider'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/providers/{provider_id}:
+    get:
+      operationId: getProvider
+      summary: Détail d'un prestataire
+      description: Prestataire et historique de ses conventions.
+      tags: [produits]
+      x-lot: L2
+      x-roles: [gestionnaire, medecin_conseil, admin]
+      parameters:
+        - $ref: '#/components/parameters/ProviderId'
+      responses:
+        '200':
+          description: Prestataire.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Provider'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/providers/{provider_id}/conventions:
+    post:
+      operationId: createProviderConvention
+      summary: Conventionner un prestataire
+      description: Ouvre une période de convention (règle R-04).
+      tags: [produits]
+      x-lot: L2
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/ProviderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateProviderConventionRequest'}
+      responses:
+        '201':
+          description: Convention créée.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ProviderConvention'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /v1/tariffs:
+    get:
+      operationId: listTariffs
+      summary: Barème conventionné
+      description: Actes et montants du barème en vigueur à une date (par défaut aujourd'hui).
+      tags: [produits]
+      x-lot: L2
+      x-roles: [gestionnaire, medecin_conseil, clinique, admin]
+      parameters:
+        - $ref: '#/components/parameters/AtDate'
+      responses:
+        '200':
+          description: Barème.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/TariffList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+
+  /v1/acts:
+    get:
+      operationId: listActs
+      summary: Nomenclature des actes
+      description: Actes facturables (libellés de facturation, aucun motif médical).
+      tags: [produits]
+      x-lot: L2
+      x-roles: [gestionnaire, medecin_conseil, admin]
+      responses:
+        '200':
+          description: Actes.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ActList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      operationId: createAct
+      summary: Créer un acte
+      description: Ajoute un acte à la nomenclature, rattaché à une catégorie de garantie.
+      tags: [produits]
+      x-lot: L2
+      x-roles: [gestionnaire, admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateActRequest'}
+      responses:
+        '201':
+          description: Acte créé.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Act'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/acts/{act_id}/tariffs:
+    post:
+      operationId: createTariffItem
+      summary: Tarifer un acte
+      description: Ajoute un montant de barème daté pour un acte (règle R-04, barème de l'année du soin).
+      tags: [produits]
+      x-lot: L2
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/ActId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateTariffItemRequest'}
+      responses:
+        '201':
+          description: Ligne de barème créée.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/TariffItem'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  # -------------------------------------------------------------- L2 règles
+  /v1/rules:
+    get:
+      operationId: listRules
+      summary: Lister les règles
+      description: Règles de décision avec leur version en vigueur et ses paramètres.
+      tags: [regles]
+      x-lot: L2
+      x-roles: [gestionnaire, medecin_conseil, admin]
+      responses:
+        '200':
+          description: Règles.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RuleList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+
+  /v1/rules/{rule_code}/versions:
+    get:
+      operationId: listRuleVersions
+      summary: Versions d'une règle
+      description: Historique complet des versions d'une règle.
+      tags: [regles]
+      x-lot: L2
+      x-roles: [gestionnaire, medecin_conseil, admin]
+      parameters:
+        - $ref: '#/components/parameters/RuleCode'
+      responses:
+        '200':
+          description: Versions.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RuleVersionList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    post:
+      operationId: createRuleVersion
+      summary: Créer une version de règle (brouillon)
+      description: Nouveaux paramètres avec date d'effet ; aucun effet avant publication.
+      tags: [regles]
+      x-lot: L2
+      x-roles: [admin]
+      parameters:
+        - $ref: '#/components/parameters/RuleCode'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateRuleVersionRequest'}
+      responses:
+        '201':
+          description: Version créée en brouillon.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RuleVersion'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/rule-versions/{rule_version_id}/publication:
+    post:
+      operationId: publishRuleVersion
+      summary: Publier une version de règle
+      description: Met la version en vigueur à sa date d'effet. Refus si chevauchement (RUL-02).
+      tags: [regles]
+      x-lot: L2
+      x-roles: [admin]
+      parameters:
+        - $ref: '#/components/parameters/RuleVersionId'
+      responses:
+        '200':
+          description: Version publiée.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RuleVersion'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /v1/rules/evaluation:
+    post:
+      operationId: evaluateRules
+      summary: Simuler une décision
+      description: |
+        Évalue les règles sans rien enregistrer (même entrée + même version = même décision).
+        Les versions de produit et de règle sont celles en vigueur à `service_date`.
+      tags: [regles]
+      x-lot: L2
+      x-roles: [gestionnaire, medecin_conseil, admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EvaluateRulesRequest'}
+      responses:
+        '200':
+          description: Décision simulée et trace par règle.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Decision'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  # -------------------------------------------------------- L3 grand livre
+  /v1/ledger/accounts:
+    get:
+      operationId: listLedgerAccounts
+      summary: Plan de comptes
+      description: Comptes du grand livre de l'organisation.
+      tags: [grand-livre]
+      x-lot: L3
+      x-roles: [gestionnaire, admin]
+      responses:
+        '200':
+          description: Comptes.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LedgerAccountList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+
+  /v1/ledger/entries:
+    get:
+      operationId: listLedgerEntries
+      summary: Journal
+      description: Écritures et leurs lignes, les plus récentes d'abord.
+      tags: [grand-livre]
+      x-lot: L3
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - name: account_code
+          in: query
+          description: Filtre sur un compte (par exemple 6011).
+          schema: {type: string, pattern: '^[0-9]{4,8}$'}
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Page d'écritures.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LedgerEntryList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+
+  /v1/ledger/entries/{entry_id}:
+    get:
+      operationId: getLedgerEntry
+      summary: Détail d'une écriture
+      description: Écriture, lignes et éventuelle contre-passation.
+      tags: [grand-livre]
+      x-lot: L3
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/EntryId'
+      responses:
+        '200':
+          description: Écriture.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LedgerEntry'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/ledger/entries/{entry_id}/reversal:
+    post:
+      operationId: reverseLedgerEntry
+      summary: Contre-passer une écriture
+      description: Crée une écriture inverse liée à l'originale. Une écriture ne se contre-passe qu'une fois (LED-01).
+      tags: [grand-livre]
+      x-lot: L3
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/EntryId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReverseLedgerEntryRequest'}
+      responses:
+        '201':
+          description: Écriture de contre-passation.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LedgerEntry'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /v1/ledger/balance:
+    get:
+      operationId: getLedgerBalance
+      summary: Balance
+      description: Totaux débit / crédit par compte à une date ; le total général est toujours équilibré.
+      tags: [grand-livre]
+      x-lot: L3
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/AtDate'
+      responses:
+        '200':
+          description: Balance.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LedgerBalance'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+
+  # ------------------------------------------------------- L4 adhérents
+  /v1/members:
+    get:
+      operationId: listMembers
+      summary: Lister les adhérents
+      description: Recherche par nom ou numéro MulemaCare ; filtre par statut.
+      tags: [adherents]
+      x-lot: L4
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - name: status
+          in: query
+          description: Statut de l'adhérent.
+          schema: {$ref: '#/components/schemas/MemberStatus'}
+        - name: q
+          in: query
+          description: Texte recherché (nom ou numéro).
+          schema: {type: string, minLength: 2}
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Page d'adhérents.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MemberList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      operationId: createMember
+      summary: Adhérer
+      description: Crée le titulaire ; statut initial « carence » jusqu'à la fin du délai de la version de produit.
+      tags: [adherents]
+      x-lot: L4
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateMemberRequest'}
+      responses:
+        '201':
+          description: Adhérent créé.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Member'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/members/{member_id}:
+    get:
+      operationId: getMember
+      summary: Fiche adhérent
+      description: Identité, formule, payeur, famille et statut. Aucune donnée médicale.
+      tags: [adherents]
+      x-lot: L4
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+      responses:
+        '200':
+          description: Adhérent.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Member'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/members/{member_id}/dependents:
+    post:
+      operationId: addDependent
+      summary: Ajouter un ayant droit
+      description: Ajoute un conjoint, un enfant ou un autre ayant droit au contrat.
+      tags: [adherents]
+      x-lot: L4
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AddDependentRequest'}
+      responses:
+        '201':
+          description: Ayant droit ajouté.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Dependent'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/members/{member_id}/entitlements:
+    get:
+      operationId: getMemberEntitlements
+      summary: Droits d'un adhérent
+      description: Statut, fin de carence, plafond familial consommé et restant à une date.
+      tags: [adherents]
+      x-lot: L4
+      x-roles: [gestionnaire, medecin_conseil, admin]
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+        - $ref: '#/components/parameters/AtDate'
+      responses:
+        '200':
+          description: Droits.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Entitlements'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/members/{member_id}/cards:
+    post:
+      operationId: issueCard
+      summary: Émettre ou réémettre une carte
+      description: Émet une carte à QR dynamique pour un bénéficiaire ; l'ancienne carte active est révoquée.
+      tags: [adherents]
+      x-lot: L4
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/IssueCardRequest'}
+      responses:
+        '201':
+          description: Carte émise.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Card'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/members/{member_id}/status-changes:
+    post:
+      operationId: changeMemberStatus
+      summary: Changer le statut d'un adhérent
+      description: |
+        Décision du gestionnaire (motif `decision_gestionnaire`), journalisée dans
+        member_status_history et l'audit ; émet `member.status_changed`. Les changements
+        automatiques (fin de carence, paiement confirmé, impayé J+45) ne passent pas par ici.
+        Transition impossible : 409 MBR-01.
+      tags: [adherents]
+      x-lot: L4
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ChangeMemberStatusRequest'}
+      responses:
+        '200':
+          description: Adhérent avec son nouveau statut.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Member'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/members/{member_id}/contributions:
+    get:
+      operationId: listMemberContributions
+      summary: Cotisations d'un adhérent
+      description: Échéances et paiements, du plus récent au plus ancien.
+      tags: [cotisations]
+      x-lot: L4
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+      responses:
+        '200':
+          description: Cotisations.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ContributionList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/members/{member_id}/reminders:
+    post:
+      operationId: sendReminder
+      summary: Relancer un adhérent
+      description: Met en file un SMS ou un message WhatsApp de relance, avec lien de paiement.
+      tags: [cotisations]
+      x-lot: L4
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReminderRequest'}
+      responses:
+        '202':
+          description: Message mis en file.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/QueuedMessage'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/contributions/{contribution_id}/payment-links:
+    post:
+      operationId: createPaymentLink
+      summary: Créer un lien de paiement
+      description: Lien à usage unique pour qu'un proche (diaspora) paie la cotisation.
+      tags: [cotisations]
+      x-lot: L4
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/ContributionId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '201':
+          description: Lien créé (le jeton n'est montré qu'une fois).
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PaymentLink'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /v1/public/payment-links/{token}:
+    get:
+      operationId: getPublicPaymentLink
+      summary: Ouvrir un lien de paiement
+      description: Page publique du payeur. Montre le montant et des initiales seulement.
+      tags: [cotisations]
+      x-lot: L4
+      x-roles: [public]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentToken'
+      responses:
+        '200':
+          description: Cotisation à payer.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PublicPaymentLink'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '410': {$ref: '#/components/responses/Gone'}
+
+  /v1/public/payment-links/{token}/checkout:
+    post:
+      operationId: startCheckout
+      summary: Payer par un canal
+      description: Démarre le paiement (canaux simulés tant que l'accès API n'est pas tranché, PRD §10 Q1).
+      tags: [cotisations]
+      x-lot: L4
+      x-roles: [public]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentToken'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CheckoutRequest'}
+      responses:
+        '201':
+          description: Paiement démarré.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Checkout'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '410': {$ref: '#/components/responses/Gone'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/webhooks/{organization_slug}/payments/{channel}:
+    post:
+      operationId: receivePaymentWebhook
+      summary: Webhook de paiement
+      description: |
+        Notification d'un canal de paiement. Signature vérifiée (PAY-01), idempotente sur
+        `event_id` : un même webhook rejoué renvoie 200 avec `duplicate: true` et ne crée rien.
+        Un paiement confirmé ouvre les droits en moins de 60 s (R2).
+      tags: [cotisations]
+      x-lot: L4
+      x-roles: [canal_de_paiement]
+      security:
+        - webhookSignature: []
+      parameters:
+        - name: organization_slug
+          in: path
+          required: true
+          description: Identifiant public de l'organisation destinataire.
+          schema: {type: string, pattern: '^[a-z0-9][a-z0-9-]{1,62}$'}
+        - name: channel
+          in: path
+          required: true
+          description: Canal de paiement.
+          schema: {$ref: '#/components/schemas/PaymentChannel'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PaymentWebhookRequest'}
+      responses:
+        '200':
+          description: Notification traitée (ou déjà traitée).
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WebhookAck'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  # ------------------------------------------------------- L5 comptoir
+  /v1/counter/identifications:
+    post:
+      operationId: startIdentification
+      summary: Scanner la carte
+      description: Étape 1 du comptoir. Lit le QR dynamique (ou le numéro MulemaCare) et renvoie l'identité à confirmer.
+      tags: [comptoir]
+      x-lot: L5
+      x-roles: [clinique]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StartIdentificationRequest'}
+      responses:
+        '201':
+          description: Identification ouverte.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Identification'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '423': {$ref: '#/components/responses/Locked'}
+
+  /v1/counter/identifications/{identification_id}/photo-confirmation:
+    post:
+      operationId: confirmPhoto
+      summary: Confirmer la photo
+      description: Étape 2. L'accueil confirme (ou non) que la personne présente est celle de la photo.
+      tags: [comptoir]
+      x-lot: L5
+      x-roles: [clinique]
+      parameters:
+        - $ref: '#/components/parameters/IdentificationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PhotoConfirmationRequest'}
+      responses:
+        '200':
+          description: Identification mise à jour (refusée si `confirmed` vaut false, code ID-02).
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Identification'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /v1/counter/identifications/{identification_id}/code:
+    post:
+      operationId: sendIdentificationCode
+      summary: Envoyer le code SMS
+      description: Étape 3. Envoie un code à usage unique au téléphone de l'adhérent (renvoi possible).
+      tags: [comptoir]
+      x-lot: L5
+      x-roles: [clinique]
+      parameters:
+        - $ref: '#/components/parameters/IdentificationId'
+      responses:
+        '202':
+          description: Code envoyé.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CodeSent'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '423': {$ref: '#/components/responses/Locked'}
+
+  /v1/counter/identifications/{identification_id}/code-verification:
+    post:
+      operationId: verifyIdentificationCode
+      summary: Vérifier le code SMS
+      description: |
+        Code faux : 422 ID-03 avec le nombre d'essais restants. Au seuil de la règle ID-03
+        (3 codes faux, proto), la carte est bloquée 15 min : 423 ID-04 avec `retry_after_seconds`.
+      tags: [comptoir]
+      x-lot: L5
+      x-roles: [clinique]
+      parameters:
+        - $ref: '#/components/parameters/IdentificationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CodeVerificationRequest'}
+      responses:
+        '200':
+          description: Identité vérifiée par les trois facteurs.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Identification'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '410': {$ref: '#/components/responses/Gone'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+        '423': {$ref: '#/components/responses/Locked'}
+
+  /v1/counter/offline-policy:
+    get:
+      operationId: getOfflinePolicy
+      summary: Politique hors ligne
+      description: Seuil et durée de validité des accords provisoires, et barème à mettre en cache sur l'appareil.
+      tags: [comptoir]
+      x-lot: L5
+      x-roles: [clinique]
+      responses:
+        '200':
+          description: Politique en vigueur.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/OfflinePolicy'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+
+  /v1/counter/devices:
+    post:
+      operationId: registerCounterDevice
+      summary: Enregistrer un appareil de comptoir
+      description: Enregistre la clé publique qui signe les accords provisoires hors ligne.
+      tags: [comptoir]
+      x-lot: L5
+      x-roles: [clinique]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RegisterCounterDeviceRequest'}
+      responses:
+        '201':
+          description: Appareil enregistré.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CounterDevice'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/authorizations/offline-sync:
+    post:
+      operationId: syncOfflineAuthorizations
+      summary: Synchroniser les accords provisoires
+      description: |
+        File de synchronisation du comptoir (R13). Idempotent par (`device_id`, `offline_ref`).
+        Chaque accord est confirmé ou rejeté (OFF-01 expiré, OFF-02 signature invalide,
+        OFF-03 au-dessus du seuil, OFF-04 appareil révoqué) ; émet `authorization.synced`.
+      tags: [comptoir]
+      x-lot: L5
+      x-roles: [clinique]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/OfflineSyncRequest'}
+      responses:
+        '200':
+          description: Résultat par accord.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/OfflineSyncResult'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  # ----------------------------------------------- L5 prises en charge
+  /v1/claims:
+    get:
+      operationId: listClaims
+      summary: Lister les prises en charge
+      description: Une clinique ne voit que ses dossiers. Aucune donnée médicale.
+      tags: [prises-en-charge]
+      x-lot: L5
+      x-roles: [gestionnaire, medecin_conseil, clinique, admin]
+      parameters:
+        - name: status
+          in: query
+          description: Statut du dossier.
+          schema: {$ref: '#/components/schemas/ClaimStatus'}
+        - name: fraud_flagged
+          in: query
+          description: Seulement les alertes fraude.
+          schema: {type: boolean}
+        - name: member_id
+          in: query
+          description: Dossiers d'un adhérent.
+          schema: {type: string, format: uuid}
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Page de dossiers.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ClaimList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      operationId: createClaim
+      summary: Demander une prise en charge
+      description: |
+        Étapes 4 et 5 du comptoir. Exige une identification vérifiée. Le moteur de règles décide :
+        accord automatique (R-12), revue du médecin-conseil (R-20, aucun paiement créé) ou refus
+        avec code stable (R-01, R-04, R-07, R-09). La décision est renvoyée dans `decision`,
+        le dossier est créé dans tous les cas (201).
+      tags: [prises-en-charge]
+      x-lot: L5
+      x-roles: [clinique]
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateClaimRequest'}
+      responses:
+        '201':
+          description: Dossier créé avec sa décision.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ClaimCreated'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/claims/{claim_id}:
+    get:
+      operationId: getClaim
+      summary: Détail d'une prise en charge
+      description: Actes, montants, historique des décisions (règle et version), accord. Jamais le motif médical.
+      tags: [prises-en-charge]
+      x-lot: L5
+      x-roles: [gestionnaire, medecin_conseil, clinique, admin]
+      parameters:
+        - $ref: '#/components/parameters/ClaimId'
+      responses:
+        '200':
+          description: Dossier.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ClaimDetail'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/claims/{claim_id}/decisions:
+    post:
+      operationId: decideClaim
+      summary: Décision du médecin-conseil
+      description: Accorder, refuser ou demander des pièces pour un dossier en revue (sinon 409 CLM-01).
+      tags: [prises-en-charge]
+      x-lot: L5
+      x-roles: [medecin_conseil]
+      parameters:
+        - $ref: '#/components/parameters/ClaimId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DecideClaimRequest'}
+      responses:
+        '200':
+          description: Dossier après décision.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ClaimDetail'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/claims/{claim_id}/documents:
+    post:
+      operationId: submitClaimDocuments
+      summary: Fournir les pièces demandées
+      description: |
+        La clinique répond à une demande de pièces (statut `pieces_demandees`) en déposant des
+        références de documents HealthOS (jamais leur contenu). Le dossier repasse en revue
+        (`en_revue`, décision humaine tracée, `claim.decided` émis). Autre statut : 409 CLM-01.
+      tags: [prises-en-charge]
+      x-lot: L5
+      x-roles: [clinique]
+      parameters:
+        - $ref: '#/components/parameters/ClaimId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SubmitClaimDocumentsRequest'}
+      responses:
+        '200':
+          description: Dossier remis en revue.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ClaimDetail'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/claims/{claim_id}/medical-reason:
+    get:
+      operationId: readMedicalReason
+      summary: Lire le motif médical
+      description: |
+        Réservé au médecin-conseil (sinon 403 SEC-01). Lu à la demande chez HealthOS avec
+        l'identifiant pseudonyme, jamais stocké dans la base assurance. Chaque lecture crée
+        un événement d'audit `claim.medical_reason.read`, dont l'identifiant est renvoyé.
+      tags: [prises-en-charge]
+      x-lot: L5
+      x-roles: [medecin_conseil]
+      parameters:
+        - $ref: '#/components/parameters/ClaimId'
+      responses:
+        '200':
+          description: Motif médical et trace d'audit.
+          headers:
+            Cache-Control:
+              description: Toujours `no-store`.
+              schema: {type: string, const: no-store}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MedicalReason'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '502': {$ref: '#/components/responses/UpstreamUnavailable'}
+
+  /v1/work-queue:
+    get:
+      operationId: getWorkQueue
+      summary: À traiter
+      description: Compteurs calculés sur les données réelles (revues, alertes fraude, impayés). Aucun chiffre saisi à la main.
+      tags: [prises-en-charge]
+      x-lot: L5
+      x-roles: [gestionnaire, medecin_conseil, admin]
+      responses:
+        '200':
+          description: Compteurs.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WorkQueue'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+
+  # ------------------------------------------------------------ L8 JOE
+  /v1/joe/questions:
+    post:
+      operationId: askJoe
+      summary: Poser une question à JOE
+      description: |
+        Réponse en lecture seule, citant les enregistrements consultés. Aucun état ne change.
+        Sans source, JOE répond par un refus explicite (`kind: refus`).
+      tags: [joe]
+      x-lot: L8
+      x-roles: [gestionnaire, medecin_conseil, admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/JoeQuestionRequest'}
+      responses:
+        '200':
+          description: Réponse et sources.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JoeAnswer'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/joe/decision-drafts:
+    post:
+      operationId: draftClaimDecision
+      summary: Brouillon de décision
+      description: Recommandation de JOE pour un dossier en revue. N'est jamais appliquée ; seul decideClaim change l'état.
+      tags: [joe]
+      x-lot: L8
+      x-roles: [medecin_conseil]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DecisionDraftRequest'}
+      responses:
+        '200':
+          description: Brouillon.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DecisionDraft'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/joe/message-drafts:
+    post:
+      operationId: draftMessage
+      summary: Brouillon de message
+      description: Prépare un message pour un adhérent ; l'envoi reste une action humaine (sendReminder).
+      tags: [joe]
+      x-lot: L8
+      x-roles: [gestionnaire, admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/MessageDraftRequest'}
+      responses:
+        '200':
+          description: Brouillon.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MessageDraft'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/search:
+    get:
+      operationId: search
+      summary: Recherche ⌘K
+      description: Adhérents, dossiers et prestataires visibles par l'utilisateur.
+      tags: [joe]
+      x-lot: L8
+      x-roles: [gestionnaire, medecin_conseil, clinique, admin]
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Texte recherché.
+          schema: {type: string, minLength: 2, maxLength: 200}
+      responses:
+        '200':
+          description: Résultats groupés.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SearchResults'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/ai-actions:
+    get:
+      operationId: listAiActions
+      summary: Journal de JOE
+      description: Chaque action de JOE avec ses sources.
+      tags: [joe]
+      x-lot: L8
+      x-roles: [admin]
+      parameters:
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Page d'actions.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AiActionList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+
+  # ------------------------------------------------- P1 espace adhérent et diaspora
+  /v1/me/card:
+    get:
+      operationId: getMyCard
+      summary: Ma carte
+      description: |
+        Carte de l'adhérent connecté, ou d'un bénéficiaire de SON contrat (`person_id`) : QR
+        dynamique à afficher au comptoir (il change toutes les 30 s ; réponse `no-store`),
+        statut de droits et plafond familial restant à aujourd'hui, en entiers FCFA. Le contrat
+        vient du jeton, jamais de la requête ; une personne hors de son contrat donne 404 NOT-01.
+      tags: [espace-adherent]
+      x-lot: P1
+      x-roles: [adherent]
+      parameters:
+        - name: person_id
+          in: query
+          description: Bénéficiaire du contrat (titulaire par défaut).
+          schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: Carte, QR courant et droits.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MyCard'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/me/beneficiaries:
+    get:
+      operationId: listMyBeneficiaries
+      summary: Mes bénéficiaires
+      description: Titulaire et ayants droit de mon contrat, avec l'état de leur carte.
+      tags: [espace-adherent]
+      x-lot: P1
+      x-roles: [adherent]
+      responses:
+        '200':
+          description: Bénéficiaires.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MyBeneficiaryList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+
+  /v1/me/claims:
+    get:
+      operationId: listMyClaims
+      summary: Mes prises en charge
+      description: |
+        Dossiers de mon contrat (titulaire et ayants droit), du plus récent au plus ancien.
+        Jamais de motif médical, d'acte, de score de fraude ni de règle interne : seulement le
+        code public de la règle appliquée et les montants.
+      tags: [espace-adherent]
+      x-lot: P1
+      x-roles: [adherent]
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Page de dossiers.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MyClaimList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/me/claims/{claim_id}/tracking:
+    get:
+      operationId: getMyClaimTracking
+      summary: Suivre mon remboursement
+      description: |
+        Frise en quatre étapes : demande reçue, accordée par la mutuelle, virement en cours,
+        reçu. Un dossier hors de mon contrat donne 404 NOT-01 (on ne dit pas pourquoi).
+      tags: [espace-adherent]
+      x-lot: P1
+      x-roles: [adherent]
+      parameters:
+        - $ref: '#/components/parameters/ClaimId'
+      responses:
+        '200':
+          description: Dossier et étapes.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ClaimTracking'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /v1/me/contributions:
+    get:
+      operationId: listMyContributions
+      summary: Mes cotisations
+      description: Échéances de mon contrat, du plus récent au plus ancien, et la prochaine à payer.
+      tags: [espace-adherent]
+      x-lot: P1
+      x-roles: [adherent]
+      responses:
+        '200':
+          description: Cotisations et échéance.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MyContributions'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+
+  /v1/me/contributions/{contribution_id}/payment-links:
+    post:
+      operationId: createMyPaymentLink
+      summary: Inviter un proche à payer
+      description: |
+        Lien à usage unique pour qu'un proche (diaspora) paie une cotisation de MON contrat ;
+        même flux que `createPaymentLink` (page publique `getPublicPaymentLink`, `startCheckout`,
+        webhook signé). Cotisation hors de mon contrat : 404 NOT-01, contrôlé avant tout rejeu
+        de la clé d'idempotence. Cotisation déjà réglée ou annulée : 409.
+      tags: [espace-adherent]
+      x-lot: P1
+      x-roles: [adherent]
+      parameters:
+        - $ref: '#/components/parameters/ContributionId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '201':
+          description: Lien créé (le jeton n'est montré qu'une fois).
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PaymentLink'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  # ------------------------------------------------------- P2 mesure produit
+  /v1/telemetry/events:
+    post:
+      operationId: recordProductEvent
+      summary: Enregistrer un événement d'usage
+      description: |
+        Mesure produit (CR-P2-01). Un événement de la liste blanche FERMÉE `ProductEventName`,
+        avec des propriétés bornées (énumérations, entiers) : aucun texte libre, aucun
+        identifiant de personne, aucun champ inconnu (422 VAL-01). `session_id` est exactement
+        16 octets tirés au hasard par le navigateur, en 32 caractères hexadécimaux minuscules
+        (CR-P2-02), jamais un identifiant d'utilisateur, d'adhérent, d'organisation ni un
+        numéro ; il est validé puis écarté (ni stocké, ni dérivé). Le contributeur compté est
+        la PERSONNE : le serveur stocke une empreinte HMAC de l'utilisateur du jeton, avec une
+        clé du serveur (hors base, hors dépôt) ; rien de ce que le client envoie n'y entre.
+        L'organisation et l'heure viennent du serveur.
+        `role` doit être un rôle de l'utilisateur du jeton (sinon 403 AUTH-02) et correspondre
+        à `surface` (console : gestionnaire, médecin-conseil, admin, employeur, et en P3
+        assureur et administrateur de plateforme ; comptoir : clinique ; espace adhérent :
+        adhérent). Rien ne sort de l'instance ; rétention
+        configurable, puis purge.
+
+        Propriétés admises par événement (toute autre est refusée, 422) :
+        - `onboarding_started` : toutes surfaces ;
+        - `onboarding_completed` : toutes surfaces, `duration_ms` facultatif (durée de
+          l'accueil, 3 600 000 au plus) ;
+        - `onboarding_step` : toutes surfaces, `step` obligatoire ;
+        - `card_presented` : espace adhérent, `variant` en_ligne ou hors_ligne ;
+        - `counter_decision_shown` : comptoir, `variant` accordee, revue ou refusee,
+          `duration_ms` obligatoire (scan → écran de décision, objectif < 10 s, 300 000 au
+          plus) ;
+        - `payment_link_created` : espace adhérent, console ;
+        - `palette_opened` : console, `variant` clavier ou bouton ;
+        - `joe_question_asked` : console, `variant` exemple ou saisie (jamais la question) ;
+        - `notification_opened` : toutes surfaces, `variant` sms, whatsapp ou in_app ;
+        - `offline_banner_seen` : comptoir, espace adhérent ;
+        - `claim_tracking_viewed` : espace adhérent.
+        `duration_ms` est refusé (422) sur tout autre événement, même à 0.
+      tags: [mesure]
+      x-lot: P2
+      x-roles: [gestionnaire, medecin_conseil, clinique, employeur, admin, adherent, assureur, admin_plateforme]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ProductEventRequest'}
+      responses:
+        '204':
+          description: Événement enregistré.
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/metrics/product:
+    get:
+      operationId: getProductMetrics
+      summary: Indicateurs produit de l'organisation
+      description: |
+        Agrégats calculés à la demande depuis les tables de l'organisation du jeton : dossiers
+        (`claims`, `claim_decisions`), événements d'usage non expirés (`product_events`), liens
+        de paiement, grand livre, événements `contribution.received`. Taux en points de base
+        (entiers, 10 000 = 100 %), durées en millisecondes (médiane discrète ; pour les écrans,
+        médiane par personne puis médiane des personnes), écart du grand livre en francs CFA.
+        Aucune donnée médicale, aucun identifiant.
+
+        Période (CR-P2-02) : jours locaux demandés (366 au plus ; par défaut les 30 derniers),
+        ÉLARGIE aux semaines civiles entières (lundi → dimanche, fuseau de l'organisation) puis
+        COUPÉE à la dernière semaine terminée ; `period_from` et `period_to` rendent la période
+        réellement publiée. Aucune semaine terminée : 422 VAL-01. Rien de postérieur à la fin
+        de la période n'y entre (décision, paiement, réception), et les événements d'usage ne
+        sont comptés que sur des semaines dont aucun n'a pu expirer, postérieures à la dernière
+        rotation de la clé de pseudonymisation.
+
+        k-anonymat : un indicateur est `masque` (ni valeur ni effectif) si moins de 5
+        contributeurs le portent sur la période OU sur une semaine non vide de la période
+        (deux périodes publiées ne diffèrent que de semaines qui passent chacune le seuil).
+        Contributeurs : personnes distinctes (événements d'usage), bénéficiaires (dossiers),
+        adhérents (liens, cotisations), écritures (grand livre).
+      tags: [mesure]
+      x-lot: P2
+      x-roles: [gestionnaire, admin]
+      parameters:
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+      responses:
+        '200':
+          description: Indicateurs de la période.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ProductMetrics'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  # ------------------------------------------------------- P3 marque blanche
+  /v1/public/branding:
+    get:
+      operationId: getOrganizationBranding
+      summary: Marque publique d'une organisation
+      description: |
+        Marque blanche (CR-P3-01), lue SANS jeton avant la connexion, par identifiant public
+        (`slug`) OU par domaine personnalisé (`domain`), exactement l'un des deux (sinon 422).
+        Champs non sensibles seulement : nom affiché, logo, surcharges de jetons (liste fermée,
+        thèmes clair et sombre), pays, devise, domaine et textes légaux. Aucun identifiant
+        interne, aucun utilisateur, aucune donnée métier. Seules les organisations `active` sont
+        servies : inconnue, en intégration ou inactive donnent le MÊME 404 NOT-01 (aucun oracle,
+        CR-P3-02). Par domaine : seulement un domaine PROUVÉ (`verifyBrandingDomain`) ; un
+        domaine en attente de vérification n'est ni résolu ni renvoyé (`custom_domain` null).
+        Sans réglage, `display_name` est le nom de l'organisation et `theme` est vide (jetons du
+        contrat de design).
+      tags: [marque-blanche]
+      x-lot: P3
+      x-roles: [public]
+      security: []
+      parameters:
+        - name: slug
+          in: query
+          description: Identifiant public de l'organisation (exclusif avec `domain`).
+          schema: {type: string, pattern: '^[a-z0-9][a-z0-9-]{1,62}$'}
+        - name: domain
+          in: query
+          description: Domaine personnalisé PROUVÉ par l'organisation (exclusif avec `slug`).
+          schema: {type: string, minLength: 4, maxLength: 253}
+      responses:
+        '200':
+          description: Marque publique.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/OrganizationBranding'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/organization/branding:
+    get:
+      operationId: getBrandingSettings
+      summary: Réglages de marque de l'organisation
+      description: Réglages de marque blanche de l'organisation du jeton, pour l'écran d'administration.
+      tags: [marque-blanche]
+      x-lot: P3
+      x-roles: [admin]
+      responses:
+        '200':
+          description: Réglages de marque.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BrandingSettings'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    put:
+      operationId: updateBrandingSettings
+      summary: Régler la marque de l'organisation
+      description: |
+        Remplace les réglages de marque de l'organisation du jeton (admin d'organisation
+        seulement ; journalisé `organization.branding_updated`). Gardes, dans l'ordre :
+        - liste FERMÉE de jetons (`BrandTokenOverrides`), thèmes clair et sombre seulement, valeurs
+          `#RRGGBB` : toute autre clé, tout CSS libre, le plein soleil : 422 BRD-02 ;
+        - contraste calculé côté serveur sur chaque paire du contrat de design qui touche un jeton
+          surchargé (texte 4,5:1, focus 3:1, WCAG AA), en clair ET en sombre ; un accent égal à
+          une couleur de statut est refusé : 422 BRD-01, chaque paire en défaut dans `errors`
+          (thème, paire, rapport) ;
+        - logo non exécutable : chemin interne, `https` vers un hôte de la liste DÉDIÉE des hôtes
+          de logo de l'instance (jamais la liste blanche réseau du serveur : HealthOS, bases), ou
+          data-URI PNG/WebP/JPEG (signature vérifiée) ou SVG assaini (liste blanche d'éléments et
+          d'attributs, éléments actifs refusés nommément, seule déclaration admise
+          `<?xml version="1.0" encoding="UTF-8"?>`, aucune référence externe), 32 Ko au plus :
+          sinon 422 BRD-03 ;
+        - domaine personnalisé réservé (nom à usage spécial : `localhost`, `.invalid`, `.local`,
+          `.internal`… ; domaines de la plateforme ; hôtes de l'instance — lien de paiement,
+          HealthOS — et leurs zones parentes, sous-domaines compris) : 422 BRD-05 (CR-P3-02) ;
+        - domaine personnalisé déjà déclaré par une autre organisation : 409 BRD-04.
+        Un domaine nouveau ou changé est `en_attente_de_verification` (nouveau jeton, preuve
+        effacée) et n'est pas servi tant que `verifyBrandingDomain` n'a pas abouti ; le même
+        domaine réenregistré garde sa preuve.
+      tags: [marque-blanche]
+      x-lot: P3
+      x-roles: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UpdateBrandingRequest'}
+      responses:
+        '200':
+          description: Réglages enregistrés.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BrandingSettings'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/organization/branding/domain-verification:
+    post:
+      operationId: verifyBrandingDomain
+      summary: Prouver la propriété du domaine personnalisé
+      description: |
+        CR-P3-02. Vérifie que l'organisation du jeton contrôle le domaine déclaré : un
+        enregistrement DNS TXT `custom_domain_verification.record_name` doit porter exactement
+        `custom_domain_verification.record_value` (jeton tiré par le serveur, propre au domaine
+        déclaré). Succès : `custom_domain_status` = `verifie`, le domaine devient résoluble par
+        `getOrganizationBranding` ; journalisé `organization.custom_domain_verified`. Sans
+        domaine déclaré, ou enregistrement absent ou différent : 422 BRD-06 (rien ne change).
+        Domaine devenu réservé : 422 BRD-05. Idempotent : un domaine déjà prouvé est renvoyé tel
+        quel. La résolution DNS passe par un port de l'instance (sans résolveur configuré, aucune
+        preuve n'aboutit et le domaine personnalisé reste désactivé ; le `slug` reste utilisable).
+      tags: [marque-blanche]
+      x-lot: P3
+      x-roles: [admin]
+      responses:
+        '200':
+          description: Réglages de marque, domaine prouvé.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BrandingSettings'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  # ------------------------------------------------------- P3 espace assureur
+  /v1/insurer/portfolio:
+    get:
+      operationId: getInsurerPortfolio
+      summary: Portefeuille agrégé de l'organisation
+      description: |
+        Espace assureur (CR-P3-01), lecture seule. Agrégats de l'organisation du jeton sur la
+        période (jours locaux inclus, 366 au plus, 30 derniers jours par défaut) : adhérents par
+        statut, primes encaissées, sinistres (part mutuelle des dossiers accordés), ratio
+        sinistres/primes (S/P, points de base), prestations par catégorie de garantie (jamais
+        d'acte ni de motif), principaux prestataires, délai moyen de décision, part
+        d'automatisation. k-anonymat : une cellule portée par moins de 5 personnes est `masque` ;
+        les catégories et prestataires sous le seuil sont fondus dans `autres`, et des cellules
+        voisines sont masquées si besoin pour qu'aucune soustraction ne révèle moins de 5
+        personnes. Aucun nom, aucun identifiant de personne.
+        Anti-recoupement (CR-P3-02, même méthode que `getProductMetrics`) : la période demandée
+        est élargie aux semaines civiles entières (lundi → dimanche, fuseau de l'organisation) et
+        coupée à la dernière semaine TERMINÉE (`period_from`/`period_to` rendent la période
+        publiée ; la semaine en cours et le futur ne le sont jamais ; aucune semaine terminée :
+        422 VAL-01) ; une valeur est aussi masquée si UNE semaine non vide de la période a moins
+        de 5 personnes ; rien de postérieur à la fin de la période n'y entre (décision prise
+        après, statut d'adhérent pris à la fin de la période). Jamais de valeur exacte :
+        comptes (adhérents, dossiers) publiés comme `contributors`, au plancher du palier (5, 10,
+        20, 50, 100), montants arrondis au millier de francs CFA ; taux et délai tels quels.
+      tags: [espace-assureur]
+      x-lot: P3
+      x-roles: [assureur, admin]
+      parameters:
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+      responses:
+        '200':
+          description: Portefeuille agrégé.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InsurerPortfolio'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/insurer/portfolio/export:
+    get:
+      operationId: exportInsurerPortfolio
+      summary: Exporter le portefeuille agrégé (CSV)
+      description: |
+        Mêmes agrégats et mêmes masques que `getInsurerPortfolio`, en CSV UTF-8 (séparateur `;`,
+        colonnes `section;cle;statut;valeur;effectif;unite`). Une cellule masquée a `valeur` et
+        `effectif` vides ; comptes et effectifs par palier, montants au millier (aucune valeur
+        exacte). Toute cellule de texte qui commencerait, après d'éventuels espaces, par `=`, `+`,
+        `-`, `@`, une tabulation, un retour chariot, un saut de ligne ou leur forme pleine chasse
+        est préfixée d'une apostrophe (injection de formule). Journalisé
+        `insurer.portfolio_exported`.
+      tags: [espace-assureur]
+      x-lot: P3
+      x-roles: [assureur, admin]
+      parameters:
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+      responses:
+        '200':
+          description: Fichier CSV agrégé.
+          content:
+            text/csv:
+              schema: {type: string}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  # ------------------------------------------------------- P3 espace employeur
+  /v1/employer/consumption:
+    get:
+      operationId: getEmployerConsumption
+      summary: Consommation agrégée du groupe
+      description: |
+        Espace employeur (CR-P3-01) : pour chaque groupe de la portée du jeton (attribut
+        `employer_id` du rôle employeur), adhérents par statut, dossiers et part mutuelle par
+        catégorie de garantie, sur la période. Agrégats k-anonymes (même règle que l'espace
+        assureur, y compris semaines entières et terminées, seuil par semaine, comptes par
+        palier et montants au millier — CR-P3-02) ; aucun nom de salarié, aucun identifiant de
+        personne, aucun dossier.
+      tags: [espace-employeur]
+      x-lot: P3
+      x-roles: [employeur]
+      parameters:
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+      responses:
+        '200':
+          description: Consommation agrégée.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/EmployerConsumption'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/employer/contracts:
+    get:
+      operationId: listEmployerContracts
+      summary: Contrats de groupe et échéances
+      description: |
+        Contrats de groupe de la portée du jeton, avec leur échéance : `a_echeance` si la fin du
+        contrat tombe dans les `within_days` jours (90 par défaut), `echu` si elle est passée.
+        Effectif du groupe k-anonyme, par palier, pris à la fin de la dernière semaine terminée
+        (jamais « en direct », CR-P3-02) ; aucun nom de salarié.
+      tags: [espace-employeur]
+      x-lot: P3
+      x-roles: [employeur]
+      parameters:
+        - name: within_days
+          in: query
+          description: Horizon d'échéance, en jours.
+          schema: {type: integer, minimum: 1, maximum: 365, default: 90}
+      responses:
+        '200':
+          description: Contrats de groupe.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/EmployerContractList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  # ------------------------------------------------------- P3 plateforme
+  /v1/platform/organizations:
+    post:
+      operationId: createOrganization
+      summary: Accueillir une organisation
+      description: |
+        Administrateur de plateforme seulement (rôle `admin_plateforme`, dans une organisation
+        de capacité `plateforme` ; vérifié par la base en plus de la matrice). Crée
+        l'organisation (statut `integration`, jamais « plateforme »), invite son premier
+        gestionnaire (rôles `gestionnaire` et `admin` de la NOUVELLE organisation) et copie le
+        gabarit de configuration demandé (pays identique) en NOUVELLES lignes : plan de comptes,
+        règles et produits en version 1 `brouillon` à publier par l'organisation, actes et
+        barème en vigueur à la date du jour. Aucune ligne n'est partagée entre organisations.
+        Journalisé dans les deux organisations (`organization.created`,
+        `organization.onboarded`). Tout ou rien : une erreur n'en laisse aucune trace.
+        Identifiant public déjà pris : 409 ORG-01 ; gabarit inconnu ou d'un autre pays : 422
+        ORG-02.
+      tags: [plateforme]
+      x-lot: P3
+      x-roles: [admin_plateforme]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateOrganizationRequest'}
+      responses:
+        '201':
+          description: Organisation accueillie.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/OrganizationOnboarding'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /v1/platform/configuration-templates:
+    get:
+      operationId: listConfigurationTemplates
+      summary: Gabarits de configuration
+      description: Gabarits de l'organisation « plateforme » du jeton, toutes versions.
+      tags: [plateforme]
+      x-lot: P3
+      x-roles: [admin_plateforme]
+      responses:
+        '200':
+          description: Gabarits.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigurationTemplateList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      operationId: createConfigurationTemplate
+      summary: Publier une version de gabarit
+      description: |
+        Instantané, à la date du jour, de la configuration EN VIGUEUR de l'organisation
+        « plateforme » du jeton : plan de comptes, règles (paramètres de la version en vigueur),
+        produits (version en vigueur et garanties), actes et barème. Nouvelle version du code
+        (1, 2…), figée (en ajout seul). Aucune donnée de personne. Rien en vigueur : 422 VAL-01.
+        Journalisé `configuration_template.created`.
+      tags: [plateforme]
+      x-lot: P3
+      x-roles: [admin_plateforme]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateConfigurationTemplateRequest'}
+      responses:
+        '201':
+          description: Version de gabarit publiée.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigurationTemplate'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Jeton du fournisseur d'identité (non choisi, PRD §10 Q2). Porte l'organisation et les rôles.
+    webhookSignature:
+      type: apiKey
+      in: header
+      name: X-Signature
+      description: Signature HMAC du corps par le canal de paiement (secret par canal, hors code).
+
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Clé unique par commande (8 à 200 caractères). Rejouer la même clé renvoie la même réponse ; un corps différent donne 409 IDEM-01.
+      schema: {type: string, minLength: 8, maxLength: 200}
+    Cursor:
+      name: cursor
+      in: query
+      description: Curseur opaque renvoyé par la page précédente.
+      schema: {type: string}
+    Limit:
+      name: limit
+      in: query
+      description: Taille de page.
+      schema: {type: integer, minimum: 1, maximum: 200, default: 50}
+    From:
+      name: from
+      in: query
+      description: Début de période (inclus).
+      schema: {type: string, format: date}
+    To:
+      name: to
+      in: query
+      description: Fin de période (incluse).
+      schema: {type: string, format: date}
+    AtDate:
+      name: at
+      in: query
+      description: Date d'évaluation ; par défaut aujourd'hui (heure locale de l'instance).
+      schema: {type: string, format: date}
+    ActId:
+      name: act_id
+      in: path
+      required: true
+      description: Identifiant de l'acte.
+      schema: {type: string, format: uuid}
+    UserId:
+      name: user_id
+      in: path
+      required: true
+      description: Identifiant de l'utilisateur.
+      schema: {type: string, format: uuid}
+    PlanId:
+      name: plan_id
+      in: path
+      required: true
+      description: Identifiant du produit.
+      schema: {type: string, format: uuid}
+    PlanVersionId:
+      name: plan_version_id
+      in: path
+      required: true
+      description: Identifiant de la version de produit.
+      schema: {type: string, format: uuid}
+    RuleCode:
+      name: rule_code
+      in: path
+      required: true
+      description: Code stable de la règle.
+      schema: {$ref: '#/components/schemas/RuleCodeValue'}
+    RuleVersionId:
+      name: rule_version_id
+      in: path
+      required: true
+      description: Identifiant de la version de règle.
+      schema: {type: string, format: uuid}
+    ProviderId:
+      name: provider_id
+      in: path
+      required: true
+      description: Identifiant du prestataire.
+      schema: {type: string, format: uuid}
+    EntryId:
+      name: entry_id
+      in: path
+      required: true
+      description: Identifiant de l'écriture.
+      schema: {type: string, format: uuid}
+    MemberId:
+      name: member_id
+      in: path
+      required: true
+      description: Identifiant de l'adhérent.
+      schema: {type: string, format: uuid}
+    ContributionId:
+      name: contribution_id
+      in: path
+      required: true
+      description: Identifiant de la cotisation.
+      schema: {type: string, format: uuid}
+    PaymentToken:
+      name: token
+      in: path
+      required: true
+      description: Jeton du lien de paiement.
+      schema: {type: string, minLength: 32, maxLength: 128}
+    IdentificationId:
+      name: identification_id
+      in: path
+      required: true
+      description: Identifiant de l'identification au comptoir.
+      schema: {type: string, format: uuid}
+    ClaimId:
+      name: claim_id
+      in: path
+      required: true
+      description: Identifiant du dossier.
+      schema: {type: string, format: uuid}
+
+  responses:
+    Unauthorized:
+      description: Non authentifié (AUTH-01) ou signature de webhook invalide (PAY-01).
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+          example:
+            code: AUTH-01
+            message: Votre session a expiré.
+            action: Reconnectez-vous puis recommencez.
+            request_id: req_01J9Z6
+    Forbidden:
+      description: Rôle insuffisant (AUTH-02) ou motif médical réservé au médecin-conseil (SEC-01).
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+          example:
+            code: SEC-01
+            message: Le motif médical est réservé au médecin-conseil.
+            action: Demandez l'avis du médecin-conseil depuis le dossier.
+            request_id: req_01J9Z7
+    NotFound:
+      description: Introuvable ou hors de votre périmètre (NOT-01, ID-06). On ne distingue pas les deux.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+          example:
+            code: ID-06
+            message: Aucune carte active ne correspond à ce code.
+            action: Vérifiez le numéro sur la carte ou demandez une nouvelle carte à la mutuelle.
+            request_id: req_01J9Z8
+    Conflict:
+      description: État incompatible (CLM-01, MBR-01, LED-01, RUL-01, RUL-02, IDEM-01, IDEM-02, PAY-02, BRD-04, ORG-01).
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+          example:
+            code: LED-01
+            message: Cette écriture a déjà été contre-passée.
+            action: Consultez l'écriture de contre-passation liée.
+            request_id: req_01J9Z9
+    ValidationError:
+      description: Données invalides (VAL-01), code SMS faux (ID-03), acte hors barème (CLM-02), marque refusée (BRD-01, BRD-02, BRD-03), gabarit inconnu (ORG-02).
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+          example:
+            code: ID-03
+            message: Code incorrect. Il reste 2 essais.
+            action: Demandez à l'adhérent de relire le SMS, ou renvoyez le code.
+            remaining_attempts: 2
+            request_id: req_01J9ZA
+    Gone:
+      description: Code SMS expiré (ID-05) ou lien de paiement expiré ou déjà utilisé (PAY-03).
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+          example:
+            code: PAY-03
+            message: Ce lien de paiement a expiré.
+            action: Demandez un nouveau lien à l'adhérent ou à la mutuelle.
+            request_id: req_01J9ZB
+    Locked:
+      description: Carte bloquée après trop de codes faux (ID-04).
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+          example:
+            code: ID-04
+            message: Carte bloquée pendant 15 minutes après 3 codes faux.
+            action: Faites patienter l'adhérent ou contactez la mutuelle.
+            retry_after_seconds: 900
+            request_id: req_01J9ZC
+    UpstreamUnavailable:
+      description: HealthOS indisponible (INT-01).
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+          example:
+            code: INT-01
+            message: Le dossier médical est momentanément indisponible.
+            action: Réessayez dans quelques minutes.
+            request_id: req_01J9ZD
+
+  schemas:
+    # ---------------------------------------------------------- communs
+    ErrorCode:
+      type: string
+      description: |
+        Codes stables. Motifs de règle : R-01 droits suspendus ou non ouverts, R-04 hors réseau
+        ou hors barème, R-07 carence en cours, R-09 plafond insuffisant, R-12 accord automatique,
+        R-20 revue médecin-conseil. Identification : ID-02 identité refusée, ID-03 code faux,
+        ID-04 carte bloquée, ID-05 code expiré, ID-06 carte inconnue ou révoquée, ID-07
+        identification incomplète. Hors ligne : OFF-01 expiré, OFF-02 signature invalide,
+        OFF-03 au-dessus du seuil, OFF-04 appareil révoqué. Autres : AUTH-01 non authentifié,
+        AUTH-02 rôle insuffisant, SEC-01 motif médical réservé, VAL-01 données invalides,
+        NOT-01 introuvable, IDEM-01 clé réutilisée avec un autre contenu, IDEM-02 requête en
+        cours, CLM-01 transition interdite, CLM-02 acte hors barème, MBR-01 changement de statut
+        d'adhérent impossible, RUL-01 version publiée
+        figée, RUL-02 chevauchement de versions, LED-01 déjà contre-passée, PAY-01 signature
+        invalide, PAY-02 montant différent, PAY-03 lien expiré ou utilisé, INT-01 HealthOS
+        indisponible, SYS-01 erreur interne. Marque blanche et plateforme (P3) : BRD-01
+        contraste insuffisant (WCAG AA) ou accent pris à un statut, BRD-02 jeton hors liste
+        fermée ou couleur hors format, BRD-03 logo refusé (exécutable ou hors liste blanche),
+        BRD-04 domaine déjà déclaré, BRD-05 domaine réservé (plateforme, instance, usage
+        spécial), BRD-06 propriété du domaine non prouvée (enregistrement DNS TXT absent),
+        ORG-01 identifiant public d'organisation déjà pris, ORG-02 gabarit de configuration
+        inconnu ou d'un autre pays.
+      enum:
+        - R-01
+        - R-04
+        - R-07
+        - R-09
+        - R-12
+        - R-20
+        - ID-02
+        - ID-03
+        - ID-04
+        - ID-05
+        - ID-06
+        - ID-07
+        - OFF-01
+        - OFF-02
+        - OFF-03
+        - OFF-04
+        - AUTH-01
+        - AUTH-02
+        - SEC-01
+        - VAL-01
+        - NOT-01
+        - IDEM-01
+        - IDEM-02
+        - CLM-01
+        - CLM-02
+        - MBR-01
+        - RUL-01
+        - RUL-02
+        - LED-01
+        - PAY-01
+        - PAY-02
+        - PAY-03
+        - INT-01
+        - SYS-01
+        - BRD-01
+        - BRD-02
+        - BRD-03
+        - BRD-04
+        - BRD-05
+        - BRD-06
+        - ORG-01
+        - ORG-02
+    Problem:
+      type: object
+      description: Erreur métier. `message` et `action` sont en français simple, prêts à afficher.
+      required: [code, message, action, request_id]
+      properties:
+        code: {$ref: '#/components/schemas/ErrorCode'}
+        message:
+          type: string
+          description: Ce qui s'est passé, en une phrase.
+        action:
+          type: string
+          description: Ce que l'utilisateur doit faire.
+        request_id:
+          type: string
+          description: Identifiant de la requête pour le support.
+        remaining_attempts:
+          type: integer
+          minimum: 0
+          description: Essais restants (ID-03).
+        retry_after_seconds:
+          type: integer
+          minimum: 0
+          description: Délai avant nouvel essai (ID-04).
+        errors:
+          type: array
+          description: Détail par champ (VAL-01).
+          items: {$ref: '#/components/schemas/FieldError'}
+    FieldError:
+      type: object
+      required: [field, message]
+      properties:
+        field: {type: string}
+        message: {type: string}
+    AmountXof:
+      type: integer
+      format: int64
+      minimum: 0
+      description: Montant en francs CFA, entier.
+    Currency:
+      type: string
+      const: XOF
+      description: Franc CFA UEMOA.
+    PageInfo:
+      type: object
+      required: [next_cursor]
+      properties:
+        next_cursor:
+          type: [string, 'null']
+          description: Curseur de la page suivante ; null en fin de liste.
+    Role:
+      type: string
+      description: |
+        `assureur` (P3) lit les agrégats k-anonymes de son organisation ; `admin_plateforme` (P3)
+        n'existe que dans une organisation « plateforme » et n'est jamais attribué par l'API.
+      enum: [gestionnaire, medecin_conseil, clinique, employeur, admin, adherent, assureur, admin_plateforme]
+    RuleCodeValue:
+      type: string
+      pattern: '^[A-Z]{1,3}-[0-9]{2}$'
+      description: Code stable d'une règle (R-01, R-12, ID-03…).
+    RuleRef:
+      type: object
+      description: Règle et version appliquées.
+      required: [code, version]
+      properties:
+        code: {$ref: '#/components/schemas/RuleCodeValue'}
+        version: {type: integer, minimum: 1}
+    Source:
+      type: object
+      description: Enregistrement consulté.
+      required: [type, id]
+      properties:
+        type:
+          type: string
+          enum: [member, claim, contribution, ledger_entry, plan_version, rule_version, provider, tariff_item]
+        id: {type: string, format: uuid}
+        label:
+          type: string
+          description: Libellé lisible (numéro de dossier, d'écriture…), sans donnée médicale.
+
+    # ------------------------------------------------------------- L1
+    CurrentUser:
+      type: object
+      required: [user, organization, roles]
+      properties:
+        user: {$ref: '#/components/schemas/User'}
+        organization: {$ref: '#/components/schemas/Organization'}
+        roles:
+          type: array
+          items: {$ref: '#/components/schemas/RoleGrant'}
+    Organization:
+      type: object
+      required: [id, slug, name, country_code, timezone, currency, capabilities]
+      properties:
+        id: {type: string, format: uuid, readOnly: true}
+        slug: {type: string}
+        name: {type: string}
+        country_code: {type: string, enum: [CI, SN]}
+        timezone: {type: string, enum: [Africa/Abidjan, Africa/Dakar]}
+        currency: {$ref: '#/components/schemas/Currency'}
+        capabilities:
+          type: array
+          items: {type: string, enum: [porteur_de_risque, gestionnaire, distributeur, plateforme]}
+    RoleGrant:
+      type: object
+      required: [role]
+      properties:
+        role: {$ref: '#/components/schemas/Role'}
+        provider_id:
+          type: [string, 'null']
+          format: uuid
+          description: Obligatoire pour le rôle clinique.
+        employer_id:
+          type: [string, 'null']
+          format: uuid
+          description: Obligatoire pour le rôle employeur.
+        member_id:
+          type: [string, 'null']
+          format: uuid
+          description: Obligatoire pour le rôle adherent (son contrat), interdit sinon (P1).
+    User:
+      type: object
+      required: [id, display_name, status, roles]
+      properties:
+        id: {type: string, format: uuid}
+        display_name: {type: string}
+        email: {type: [string, 'null'], format: email}
+        status: {type: string, enum: [active, disabled]}
+        roles:
+          type: array
+          items: {$ref: '#/components/schemas/RoleGrant'}
+    UserList:
+      type: object
+      required: [items, page]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/User'}
+        page: {$ref: '#/components/schemas/PageInfo'}
+    CreateUserRequest:
+      type: object
+      additionalProperties: false
+      required: [idp_subject, display_name, roles]
+      properties:
+        idp_subject: {type: string, minLength: 1}
+        display_name: {type: string, minLength: 1}
+        email: {type: string, format: email}
+        roles:
+          type: array
+          minItems: 1
+          items: {$ref: '#/components/schemas/RoleGrant'}
+    ReplaceUserRolesRequest:
+      type: object
+      additionalProperties: false
+      required: [roles]
+      properties:
+        roles:
+          type: array
+          items: {$ref: '#/components/schemas/RoleGrant'}
+    AuditEvent:
+      type: object
+      required: [id, occurred_at, action, target_type]
+      properties:
+        id: {type: string, format: uuid}
+        occurred_at: {type: string, format: date-time}
+        actor_user_id: {type: [string, 'null'], format: uuid}
+        actor_role: {type: [string, 'null']}
+        action: {type: string, examples: [claim.medical_reason.read]}
+        target_type: {type: string}
+        target_id: {type: [string, 'null'], format: uuid}
+        request_id: {type: [string, 'null']}
+    AuditEventList:
+      type: object
+      required: [items, page]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/AuditEvent'}
+        page: {$ref: '#/components/schemas/PageInfo'}
+
+    # ------------------------------------------------------------- L2
+    PlanVersionState:
+      type: string
+      enum: [brouillon, soumise, en_vigueur, cloturee]
+    Coverage:
+      type: object
+      required: [category, label, limit_scope]
+      properties:
+        category: {type: string, pattern: '^[a-z_]{2,40}$'}
+        label: {type: string}
+        coverage_rate_bp:
+          type: [integer, 'null']
+          minimum: 0
+          maximum: 10000
+          description: Taux propre en points de base ; null = taux de la version.
+        annual_limit_xof:
+          type: [integer, 'null']
+          format: int64
+          minimum: 0
+        limit_scope: {type: string, enum: [famille, beneficiaire]}
+    PlanVersion:
+      type: object
+      required: [id, plan_id, version, valid_from, valid_to, state, coverage_rate_bp, family_annual_ceiling_xof, waiting_period_days, monthly_contribution_xof, currency, coverages]
+      properties:
+        id: {type: string, format: uuid}
+        plan_id: {type: string, format: uuid}
+        version: {type: integer, minimum: 1}
+        valid_from: {type: string, format: date}
+        valid_to: {type: [string, 'null'], format: date}
+        state: {$ref: '#/components/schemas/PlanVersionState'}
+        coverage_rate_bp:
+          type: integer
+          minimum: 0
+          maximum: 10000
+          description: Taux de couverture en points de base (8000 = 80 %).
+        family_annual_ceiling_xof: {$ref: '#/components/schemas/AmountXof'}
+        waiting_period_days: {type: integer, minimum: 0}
+        monthly_contribution_xof: {$ref: '#/components/schemas/AmountXof'}
+        currency: {$ref: '#/components/schemas/Currency'}
+        coverages:
+          type: array
+          items: {$ref: '#/components/schemas/Coverage'}
+    Plan:
+      type: object
+      required: [id, code, name, status, versions]
+      properties:
+        id: {type: string, format: uuid}
+        code: {type: string}
+        name: {type: string}
+        status: {type: string, enum: [active, retired]}
+        current_version_id: {type: [string, 'null'], format: uuid}
+        versions:
+          type: array
+          items: {$ref: '#/components/schemas/PlanVersion'}
+    PlanList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/Plan'}
+    CreatePlanRequest:
+      type: object
+      additionalProperties: false
+      required: [code, name]
+      properties:
+        code: {type: string, pattern: '^[A-Z0-9-]{2,32}$'}
+        name: {type: string, minLength: 1}
+    CreatePlanVersionRequest:
+      type: object
+      additionalProperties: false
+      required: [valid_from, coverage_rate_bp, family_annual_ceiling_xof, waiting_period_days, monthly_contribution_xof, coverages]
+      properties:
+        valid_from: {type: string, format: date}
+        valid_to: {type: string, format: date}
+        coverage_rate_bp: {type: integer, minimum: 0, maximum: 10000}
+        family_annual_ceiling_xof: {$ref: '#/components/schemas/AmountXof'}
+        waiting_period_days: {type: integer, minimum: 0}
+        monthly_contribution_xof: {$ref: '#/components/schemas/AmountXof'}
+        coverages:
+          type: array
+          items: {$ref: '#/components/schemas/Coverage'}
+    Provider:
+      type: object
+      required: [id, name, kind, city, country_code, status, conventioned]
+      properties:
+        id: {type: string, format: uuid}
+        name: {type: string}
+        kind: {type: string, enum: [clinique, hopital, pharmacie, laboratoire, imagerie, cabinet]}
+        city: {type: string}
+        country_code: {type: string, enum: [CI, SN]}
+        status: {type: string, enum: [actif, suspendu]}
+        conventioned:
+          type: boolean
+          description: Conventionné à la date demandée (règle R-04).
+        conventions:
+          type: array
+          items: {$ref: '#/components/schemas/ProviderConvention'}
+    ProviderList:
+      type: object
+      required: [items, page]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/Provider'}
+        page: {$ref: '#/components/schemas/PageInfo'}
+    CreateProviderRequest:
+      type: object
+      additionalProperties: false
+      required: [name, kind, city, country_code]
+      properties:
+        name: {type: string, minLength: 1}
+        kind: {type: string, enum: [clinique, hopital, pharmacie, laboratoire, imagerie, cabinet]}
+        city: {type: string, minLength: 1}
+        country_code: {type: string, enum: [CI, SN]}
+    ProviderConvention:
+      type: object
+      required: [id, valid_from, valid_to]
+      properties:
+        id: {type: string, format: uuid}
+        valid_from: {type: string, format: date}
+        valid_to: {type: [string, 'null'], format: date}
+    CreateProviderConventionRequest:
+      type: object
+      additionalProperties: false
+      required: [valid_from]
+      properties:
+        valid_from: {type: string, format: date}
+        valid_to: {type: string, format: date}
+    TariffItem:
+      type: object
+      required: [act_code, label, amount_xof, currency, valid_from, requires_prior_approval]
+      properties:
+        act_code: {type: string}
+        label: {type: string}
+        amount_xof: {$ref: '#/components/schemas/AmountXof'}
+        currency: {$ref: '#/components/schemas/Currency'}
+        valid_from: {type: string, format: date}
+        valid_to: {type: [string, 'null'], format: date}
+        requires_prior_approval: {type: boolean}
+    Act:
+      type: object
+      required: [id, code, label, coverage_category, requires_prior_approval]
+      properties:
+        id: {type: string, format: uuid}
+        code: {type: string, pattern: '^[A-Z0-9-]{2,32}$'}
+        label: {type: string}
+        coverage_category: {type: string, pattern: '^[a-z_]{2,40}$'}
+        requires_prior_approval: {type: boolean}
+    ActList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/Act'}
+    CreateActRequest:
+      type: object
+      additionalProperties: false
+      required: [code, label, coverage_category]
+      properties:
+        code: {type: string, pattern: '^[A-Z0-9-]{2,32}$'}
+        label: {type: string, minLength: 1, maxLength: 120}
+        coverage_category: {type: string, pattern: '^[a-z_]{2,40}$'}
+        requires_prior_approval: {type: boolean, default: false}
+    CreateTariffItemRequest:
+      type: object
+      additionalProperties: false
+      required: [amount_xof, valid_from]
+      properties:
+        amount_xof: {$ref: '#/components/schemas/AmountXof'}
+        valid_from: {type: string, format: date}
+        valid_to: {type: string, format: date}
+    TariffList:
+      type: object
+      required: [at, items]
+      properties:
+        at: {type: string, format: date}
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/TariffItem'}
+    RuleVersion:
+      type: object
+      required: [id, rule_code, version, valid_from, valid_to, state, params]
+      properties:
+        id: {type: string, format: uuid}
+        rule_code: {$ref: '#/components/schemas/RuleCodeValue'}
+        version: {type: integer, minimum: 1}
+        valid_from: {type: string, format: date}
+        valid_to: {type: [string, 'null'], format: date}
+        state: {type: string, enum: [brouillon, soumise, en_vigueur, cloturee]}
+        params:
+          type: object
+          description: Seuils et conditions (montants en entiers FCFA, scores en décimaux).
+          additionalProperties: true
+    RuleVersionList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/RuleVersion'}
+    Rule:
+      type: object
+      required: [code, label, kind, current_version]
+      properties:
+        code: {$ref: '#/components/schemas/RuleCodeValue'}
+        label: {type: string}
+        kind: {type: string, enum: [droits, reseau, carence, plafond, accord_automatique, revue, identification, hors_ligne]}
+        current_version:
+          oneOf:
+            - {$ref: '#/components/schemas/RuleVersion'}
+            - {type: 'null'}
+    RuleList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/Rule'}
+    CreateRuleVersionRequest:
+      type: object
+      additionalProperties: false
+      required: [valid_from, params]
+      properties:
+        valid_from: {type: string, format: date}
+        valid_to: {type: string, format: date}
+        params:
+          type: object
+          additionalProperties: true
+    ClaimItemInput:
+      type: object
+      additionalProperties: false
+      required: [act_code, quantity]
+      properties:
+        act_code: {type: string}
+        quantity: {type: integer, minimum: 1, default: 1}
+    EvaluateRulesRequest:
+      type: object
+      additionalProperties: false
+      required: [member_id, beneficiary_id, provider_id, service_date, items]
+      properties:
+        member_id: {type: string, format: uuid}
+        beneficiary_id: {type: string, format: uuid}
+        provider_id: {type: string, format: uuid}
+        service_date: {type: string, format: date}
+        fraud_score: {type: number, minimum: 0, maximum: 1}
+        items:
+          type: array
+          minItems: 1
+          items: {$ref: '#/components/schemas/ClaimItemInput'}
+    RuleCheck:
+      type: object
+      required: [rule, passed, message]
+      properties:
+        rule: {$ref: '#/components/schemas/RuleRef'}
+        passed: {type: boolean}
+        message:
+          type: string
+          description: Explication en français (« Prestataire conventionné · barème 2026 »).
+    Decision:
+      type: object
+      description: Décision du moteur de règles (déterministe, rejouable).
+      required: [outcome, rule, reason_code, message, total_xof, covered_xof, patient_share_xof, currency, plan_version_id, checks]
+      properties:
+        outcome: {type: string, enum: [accordee_auto, en_revue, refusee]}
+        rule: {$ref: '#/components/schemas/RuleRef'}
+        reason_code: {$ref: '#/components/schemas/ErrorCode'}
+        message:
+          type: string
+          examples: [Accord automatique · toutes les conditions de la règle R-12 sont remplies.]
+        total_xof: {$ref: '#/components/schemas/AmountXof'}
+        covered_xof: {$ref: '#/components/schemas/AmountXof'}
+        patient_share_xof: {$ref: '#/components/schemas/AmountXof'}
+        currency: {$ref: '#/components/schemas/Currency'}
+        plan_version_id: {type: string, format: uuid}
+        review_due_at: {type: [string, 'null'], format: date-time}
+        checks:
+          type: array
+          items: {$ref: '#/components/schemas/RuleCheck'}
+
+    # ------------------------------------------------------------- L3
+    LedgerAccount:
+      type: object
+      required: [code, label, account_class]
+      properties:
+        code: {type: string, pattern: '^[0-9]{4,8}$'}
+        label: {type: string}
+        account_class: {type: string, enum: [actif, passif, charge, produit]}
+    LedgerAccountList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/LedgerAccount'}
+    LedgerLine:
+      type: object
+      required: [line_no, account_code, account_label, debit_xof, credit_xof]
+      properties:
+        line_no: {type: integer, minimum: 1}
+        account_code: {type: string}
+        account_label: {type: string}
+        debit_xof: {$ref: '#/components/schemas/AmountXof'}
+        credit_xof: {$ref: '#/components/schemas/AmountXof'}
+        provider_id: {type: [string, 'null'], format: uuid}
+        member_id: {type: [string, 'null'], format: uuid}
+    LedgerEntry:
+      type: object
+      required: [id, entry_number, accounting_date, posted_at, label, source_type, currency, lines]
+      properties:
+        id: {type: string, format: uuid}
+        entry_number: {type: string, examples: [J-2026-0918402]}
+        accounting_date: {type: string, format: date}
+        posted_at: {type: string, format: date-time}
+        label: {type: string}
+        source_type: {type: string, enum: [prise_en_charge, cotisation, reglement, contre_passation]}
+        source_id: {type: [string, 'null'], format: uuid}
+        reverses_entry_id: {type: [string, 'null'], format: uuid}
+        reversed_by_entry_id: {type: [string, 'null'], format: uuid}
+        currency: {$ref: '#/components/schemas/Currency'}
+        lines:
+          type: array
+          minItems: 2
+          items: {$ref: '#/components/schemas/LedgerLine'}
+    LedgerEntryList:
+      type: object
+      required: [items, page]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/LedgerEntry'}
+        page: {$ref: '#/components/schemas/PageInfo'}
+    ReverseLedgerEntryRequest:
+      type: object
+      additionalProperties: false
+      required: [reason]
+      properties:
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 200
+          description: Motif comptable (par exemple « erreur de barème »), sans donnée médicale.
+    LedgerBalanceRow:
+      type: object
+      required: [account_code, account_label, debit_xof, credit_xof]
+      properties:
+        account_code: {type: string}
+        account_label: {type: string}
+        debit_xof: {$ref: '#/components/schemas/AmountXof'}
+        credit_xof: {$ref: '#/components/schemas/AmountXof'}
+    LedgerBalance:
+      type: object
+      required: [at, currency, rows, total_debit_xof, total_credit_xof]
+      properties:
+        at: {type: string, format: date}
+        currency: {$ref: '#/components/schemas/Currency'}
+        rows:
+          type: array
+          items: {$ref: '#/components/schemas/LedgerBalanceRow'}
+        total_debit_xof: {$ref: '#/components/schemas/AmountXof'}
+        total_credit_xof: {$ref: '#/components/schemas/AmountXof'}
+
+    # ------------------------------------------------------------- L4
+    MemberStatus:
+      type: string
+      enum: [actif, carence, suspendu]
+    PersonInput:
+      type: object
+      additionalProperties: false
+      required: [given_name, family_name, birth_date]
+      properties:
+        given_name: {type: string, minLength: 1}
+        family_name: {type: string, minLength: 1}
+        birth_date: {type: string, format: date}
+        phone_e164: {type: string, pattern: '^\+[1-9][0-9]{7,14}$'}
+    CreateMemberRequest:
+      type: object
+      additionalProperties: false
+      required: [holder, plan_code, enrolled_on]
+      properties:
+        holder: {$ref: '#/components/schemas/PersonInput'}
+        plan_code: {type: string}
+        employer_id: {type: string, format: uuid}
+        enrolled_on: {type: string, format: date}
+    Dependent:
+      type: object
+      required: [id, person_id, given_name, family_name, relationship, valid_from]
+      properties:
+        id: {type: string, format: uuid}
+        person_id: {type: string, format: uuid}
+        given_name: {type: string}
+        family_name: {type: string}
+        relationship: {type: string, enum: [conjoint, enfant, autre]}
+        valid_from: {type: string, format: date}
+        valid_to: {type: [string, 'null'], format: date}
+    AddDependentRequest:
+      type: object
+      additionalProperties: false
+      required: [person, relationship, valid_from]
+      properties:
+        person: {$ref: '#/components/schemas/PersonInput'}
+        relationship: {type: string, enum: [conjoint, enfant, autre]}
+        valid_from: {type: string, format: date}
+    MemberSummary:
+      type: object
+      required: [id, member_number, given_name, family_name, plan_code, status]
+      properties:
+        id: {type: string, format: uuid}
+        member_number: {type: string, pattern: '^MC-[0-9]{8}$'}
+        given_name: {type: string}
+        family_name: {type: string}
+        plan_code: {type: string}
+        status: {$ref: '#/components/schemas/MemberStatus'}
+    Member:
+      type: object
+      required: [id, member_number, holder, plan_code, status, status_changed_at, enrolled_on, waiting_period_ends_on, dependents]
+      properties:
+        id: {type: string, format: uuid}
+        member_number: {type: string, pattern: '^MC-[0-9]{8}$'}
+        holder:
+          type: object
+          required: [person_id, given_name, family_name, birth_date]
+          properties:
+            person_id: {type: string, format: uuid}
+            given_name: {type: string}
+            family_name: {type: string}
+            birth_date: {type: string, format: date}
+            phone_e164: {type: [string, 'null']}
+        plan_code: {type: string}
+        employer_id: {type: [string, 'null'], format: uuid}
+        status: {$ref: '#/components/schemas/MemberStatus'}
+        status_changed_at: {type: string, format: date-time}
+        enrolled_on: {type: string, format: date}
+        waiting_period_ends_on: {type: string, format: date}
+        dependents:
+          type: array
+          items: {$ref: '#/components/schemas/Dependent'}
+    MemberList:
+      type: object
+      required: [items, page]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/MemberSummary'}
+        page: {$ref: '#/components/schemas/PageInfo'}
+    Entitlements:
+      type: object
+      required: [member_id, at, status, rights_open, waiting_period_ends_on, plan_version_id, family_annual_ceiling_xof, consumed_xof, remaining_xof, currency]
+      properties:
+        member_id: {type: string, format: uuid}
+        at: {type: string, format: date}
+        status: {$ref: '#/components/schemas/MemberStatus'}
+        rights_open:
+          type: boolean
+          description: Droits ouverts selon R-01 à la date.
+        waiting_period_ends_on: {type: string, format: date}
+        plan_version_id: {type: string, format: uuid}
+        family_annual_ceiling_xof: {$ref: '#/components/schemas/AmountXof'}
+        consumed_xof: {$ref: '#/components/schemas/AmountXof'}
+        remaining_xof: {$ref: '#/components/schemas/AmountXof'}
+        currency: {$ref: '#/components/schemas/Currency'}
+    ChangeMemberStatusRequest:
+      type: object
+      additionalProperties: false
+      required: [to_status]
+      properties:
+        to_status: {$ref: '#/components/schemas/MemberStatus'}
+    IssueCardRequest:
+      type: object
+      additionalProperties: false
+      required: [person_id]
+      properties:
+        person_id:
+          type: string
+          format: uuid
+          description: Bénéficiaire (titulaire ou ayant droit).
+    Card:
+      type: object
+      required: [id, person_id, status, issued_at]
+      properties:
+        id: {type: string, format: uuid}
+        person_id: {type: string, format: uuid}
+        status: {type: string, enum: [active, revoquee]}
+        issued_at: {type: string, format: date-time}
+        revoked_card_id:
+          type: [string, 'null']
+          format: uuid
+          description: Carte précédente révoquée par cette émission.
+    Contribution:
+      type: object
+      required: [id, period_start, due_on, amount_xof, currency, status]
+      properties:
+        id: {type: string, format: uuid}
+        period_start: {type: string, format: date}
+        due_on: {type: string, format: date}
+        amount_xof: {$ref: '#/components/schemas/AmountXof'}
+        currency: {$ref: '#/components/schemas/Currency'}
+        status: {type: string, enum: [a_payer, payee, en_retard, annulee]}
+        paid_at: {type: [string, 'null'], format: date-time}
+        channel:
+          oneOf:
+            - {$ref: '#/components/schemas/PaymentChannel'}
+            - {type: 'null'}
+    ContributionList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/Contribution'}
+    PaymentChannel:
+      type: string
+      enum: [wave, orange_money, mtn_momo, virement, prelevement_employeur, simulation]
+    PaymentLink:
+      type: object
+      required: [url, expires_at]
+      properties:
+        url: {type: string, format: uri}
+        expires_at: {type: string, format: date-time}
+    PublicPaymentLink:
+      type: object
+      required: [period_start, amount_xof, currency, holder_initials, channels]
+      properties:
+        period_start: {type: string, format: date}
+        amount_xof: {$ref: '#/components/schemas/AmountXof'}
+        currency: {$ref: '#/components/schemas/Currency'}
+        holder_initials:
+          type: string
+          description: Initiales du titulaire seulement (« A. K. »).
+        channels:
+          type: array
+          items: {$ref: '#/components/schemas/PaymentChannel'}
+    CheckoutRequest:
+      type: object
+      additionalProperties: false
+      required: [channel]
+      properties:
+        channel: {$ref: '#/components/schemas/PaymentChannel'}
+        payer_country_code: {type: string, pattern: '^[A-Z]{2}$'}
+    Checkout:
+      type: object
+      required: [payment_id, status]
+      properties:
+        payment_id: {type: string, format: uuid}
+        status: {type: string, enum: [en_attente, confirme, echoue]}
+        redirect_url: {type: [string, 'null'], format: uri}
+    ReminderRequest:
+      type: object
+      additionalProperties: false
+      required: [channel, template_code]
+      properties:
+        channel: {type: string, enum: [sms, whatsapp]}
+        template_code: {type: string, pattern: '^[a-z_]{2,64}$'}
+        contribution_id: {type: string, format: uuid}
+    QueuedMessage:
+      type: object
+      required: [id, status]
+      properties:
+        id: {type: string, format: uuid}
+        status: {type: string, enum: [en_file, envoye, echoue]}
+    PaymentWebhookRequest:
+      type: object
+      description: Format normalisé (implémentations simulées). Chaque canal réel aura son adaptateur.
+      additionalProperties: false
+      required: [event_id, provider_reference, merchant_reference, status, amount_xof, currency, occurred_at]
+      properties:
+        event_id:
+          type: string
+          minLength: 8
+          description: Identifiant de la notification chez le canal (clé d'idempotence).
+        provider_reference: {type: string}
+        merchant_reference:
+          type: string
+          format: uuid
+          description: Identifiant du paiement créé au checkout (payments.id).
+        status: {type: string, enum: [confirme, echoue]}
+        amount_xof: {$ref: '#/components/schemas/AmountXof'}
+        currency: {$ref: '#/components/schemas/Currency'}
+        occurred_at: {type: string, format: date-time}
+    WebhookAck:
+      type: object
+      required: [received, duplicate]
+      properties:
+        received: {type: boolean}
+        duplicate:
+          type: boolean
+          description: Vrai si la notification avait déjà été traitée (aucun effet).
+
+    # ------------------------------------------------------------- L5
+    StartIdentificationRequest:
+      type: object
+      additionalProperties: false
+      description: Le QR dynamique de la carte, ou le numéro MulemaCare saisi à la main.
+      properties:
+        qr_payload: {type: string, minLength: 16}
+        member_number: {type: string, pattern: '^MC-[0-9]{8}$'}
+      oneOf:
+        - required: [qr_payload]
+        - required: [member_number]
+    Beneficiary:
+      type: object
+      description: Ce que l'accueil doit voir pour confirmer l'identité. Aucune donnée médicale.
+      required: [person_id, member_number, display_name, photo_url, plan_code, coverage_rate_bp, member_status]
+      properties:
+        person_id: {type: string, format: uuid}
+        member_number: {type: string}
+        display_name: {type: string}
+        photo_url:
+          type: [string, 'null']
+          format: uri
+          description: URL signée, courte durée, hébergée dans le pays.
+        plan_code: {type: string}
+        coverage_rate_bp: {type: integer, minimum: 0, maximum: 10000}
+        member_status: {$ref: '#/components/schemas/MemberStatus'}
+    Identification:
+      type: object
+      required: [id, status, qr_verified, photo_confirmed, code_verified, beneficiary]
+      properties:
+        id: {type: string, format: uuid}
+        status: {type: string, enum: [ouverte, verifiee, identite_refusee, bloquee, expiree]}
+        qr_verified: {type: boolean}
+        photo_confirmed: {type: [boolean, 'null']}
+        code_verified: {type: boolean}
+        beneficiary: {$ref: '#/components/schemas/Beneficiary'}
+    PhotoConfirmationRequest:
+      type: object
+      additionalProperties: false
+      required: [confirmed]
+      properties:
+        confirmed: {type: boolean}
+    CodeSent:
+      type: object
+      required: [sent_at, expires_at]
+      properties:
+        sent_at: {type: string, format: date-time}
+        expires_at: {type: string, format: date-time}
+    CodeVerificationRequest:
+      type: object
+      additionalProperties: false
+      required: [code]
+      properties:
+        code: {type: string, pattern: '^[0-9]{6}$'}
+    CreateClaimRequest:
+      type: object
+      additionalProperties: false
+      required: [identification_id, service_date, items]
+      properties:
+        identification_id: {type: string, format: uuid}
+        service_date: {type: string, format: date}
+        items:
+          type: array
+          minItems: 1
+          items: {$ref: '#/components/schemas/ClaimItemInput'}
+        healthos_encounter_ref:
+          type: string
+          description: Référence pseudonyme de la consultation chez HealthOS (jamais le motif).
+    ClaimStatus:
+      type: string
+      enum: [demandee, accordee_auto, en_revue, pieces_demandees, accordee, refusee, payee, annulee]
+    ClaimItem:
+      type: object
+      required: [line_no, act_code, label, quantity, unit_amount_xof, amount_xof, covered_xof]
+      properties:
+        line_no: {type: integer, minimum: 1}
+        act_code: {type: string}
+        label: {type: string}
+        quantity: {type: integer, minimum: 1}
+        unit_amount_xof: {$ref: '#/components/schemas/AmountXof'}
+        amount_xof: {$ref: '#/components/schemas/AmountXof'}
+        covered_xof: {$ref: '#/components/schemas/AmountXof'}
+    ClaimSummary:
+      type: object
+      required: [id, claim_number, member_id, member_display_name, provider_id, provider_name, service_date, requested_at, status, total_xof, covered_xof, currency, fraud_flagged]
+      properties:
+        id: {type: string, format: uuid}
+        claim_number: {type: string, examples: [PEC-26-09814]}
+        member_id: {type: string, format: uuid}
+        member_display_name: {type: string}
+        provider_id: {type: string, format: uuid}
+        provider_name: {type: string}
+        service_date: {type: string, format: date}
+        requested_at: {type: string, format: date-time}
+        status: {$ref: '#/components/schemas/ClaimStatus'}
+        total_xof: {$ref: '#/components/schemas/AmountXof'}
+        covered_xof: {$ref: '#/components/schemas/AmountXof'}
+        currency: {$ref: '#/components/schemas/Currency'}
+        fraud_score: {type: [number, 'null'], minimum: 0, maximum: 1}
+        fraud_flagged: {type: boolean}
+        rule:
+          oneOf:
+            - {$ref: '#/components/schemas/RuleRef'}
+            - {type: 'null'}
+    ClaimList:
+      type: object
+      required: [items, page]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/ClaimSummary'}
+        page: {$ref: '#/components/schemas/PageInfo'}
+    ClaimDecisionRecord:
+      type: object
+      required: [sequence, outcome, source, reason_code, decided_at]
+      properties:
+        sequence: {type: integer, minimum: 1}
+        outcome: {type: string, enum: [accordee_auto, en_revue, accordee, refusee, pieces_demandees, annulee]}
+        source: {type: string, enum: [regle, humain]}
+        rule:
+          oneOf:
+            - {$ref: '#/components/schemas/RuleRef'}
+            - {type: 'null'}
+        reason_code: {type: string}
+        decided_by: {type: [string, 'null'], format: uuid}
+        decided_at: {type: string, format: date-time}
+    Authorization:
+      type: object
+      required: [id, authorization_number, kind, status, covered_xof, currency, rule, issued_at]
+      properties:
+        id: {type: string, format: uuid}
+        authorization_number: {type: string}
+        kind: {type: string, enum: [en_ligne, provisoire_hors_ligne]}
+        status: {type: string, enum: [emise, synchronisee, rejetee_a_la_synchro, expiree, annulee]}
+        covered_xof: {$ref: '#/components/schemas/AmountXof'}
+        currency: {$ref: '#/components/schemas/Currency'}
+        rule: {$ref: '#/components/schemas/RuleRef'}
+        issued_at: {type: string, format: date-time}
+        expires_at: {type: [string, 'null'], format: date-time}
+    ClaimDetail:
+      type: object
+      required: [claim, items, decisions]
+      properties:
+        claim: {$ref: '#/components/schemas/ClaimSummary'}
+        patient_share_xof: {$ref: '#/components/schemas/AmountXof'}
+        plan_version_id: {type: string, format: uuid}
+        review_due_at: {type: [string, 'null'], format: date-time}
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/ClaimItem'}
+        decisions:
+          type: array
+          items: {$ref: '#/components/schemas/ClaimDecisionRecord'}
+        authorization:
+          oneOf:
+            - {$ref: '#/components/schemas/Authorization'}
+            - {type: 'null'}
+    ClaimCreated:
+      type: object
+      required: [claim, decision]
+      properties:
+        claim: {$ref: '#/components/schemas/ClaimSummary'}
+        decision: {$ref: '#/components/schemas/Decision'}
+        authorization:
+          oneOf:
+            - {$ref: '#/components/schemas/Authorization'}
+            - {type: 'null'}
+    ClaimDocumentInput:
+      type: object
+      additionalProperties: false
+      required: [kind, healthos_document_ref]
+      properties:
+        kind: {type: string, enum: [facture, piece_clinique, justificatif_identite, autre]}
+        healthos_document_ref:
+          type: string
+          minLength: 1
+          description: Référence du document chez HealthOS ; le contenu n'entre jamais ici.
+    SubmitClaimDocumentsRequest:
+      type: object
+      additionalProperties: false
+      required: [documents]
+      properties:
+        documents:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items: {$ref: '#/components/schemas/ClaimDocumentInput'}
+    DecideClaimRequest:
+      type: object
+      additionalProperties: false
+      description: Pas de champ texte libre, pour qu'aucune donnée médicale n'entre dans la base assurance.
+      required: [decision, reason_code]
+      properties:
+        decision: {type: string, enum: [accorder, refuser, demander_pieces]}
+        reason_code:
+          type: string
+          pattern: '^[A-Z]{1,4}-[0-9]{2}$'
+          description: Motif administratif codé (liste à valider, voir QUESTIONS.md).
+    MedicalReason:
+      type: object
+      required: [claim_id, text, source, read_at, audit_event_id]
+      properties:
+        claim_id: {type: string, format: uuid}
+        text:
+          type: string
+          description: Motif renvoyé par HealthOS ; jamais stocké côté assurance.
+        source: {type: string, const: healthos}
+        read_at: {type: string, format: date-time}
+        audit_event_id: {type: string, format: uuid}
+    OfflinePolicy:
+      type: object
+      required: [threshold_xof, validity_minutes, currency, rules, tariff]
+      properties:
+        threshold_xof:
+          $ref: '#/components/schemas/AmountXof'
+        validity_minutes: {type: integer, minimum: 1}
+        currency: {$ref: '#/components/schemas/Currency'}
+        rules:
+          type: array
+          description: Versions des règles R-12 et HL-01 dont la politique est issue.
+          items: {$ref: '#/components/schemas/RuleRef'}
+        tariff: {$ref: '#/components/schemas/TariffList'}
+    RegisterCounterDeviceRequest:
+      type: object
+      additionalProperties: false
+      required: [label, public_key]
+      properties:
+        label: {type: string, minLength: 1, maxLength: 80}
+        public_key:
+          type: string
+          description: Clé publique (JWK sérialisée) de l'appareil.
+    CounterDevice:
+      type: object
+      required: [id, label, status, registered_at]
+      properties:
+        id: {type: string, format: uuid}
+        label: {type: string}
+        status: {type: string, enum: [actif, revoque]}
+        registered_at: {type: string, format: date-time}
+    OfflineAuthorizationInput:
+      type: object
+      additionalProperties: false
+      required: [offline_ref, member_number, beneficiary_id, service_date, items, total_xof, covered_xof, issued_at, expires_at, signed_payload, signature]
+      properties:
+        offline_ref: {type: string, format: uuid}
+        member_number: {type: string, pattern: '^MC-[0-9]{8}$'}
+        beneficiary_id: {type: string, format: uuid}
+        service_date: {type: string, format: date}
+        items:
+          type: array
+          minItems: 1
+          items: {$ref: '#/components/schemas/ClaimItemInput'}
+        total_xof: {$ref: '#/components/schemas/AmountXof'}
+        covered_xof: {$ref: '#/components/schemas/AmountXof'}
+        issued_at: {type: string, format: date-time}
+        expires_at: {type: string, format: date-time}
+        signed_payload:
+          type: string
+          description: Contenu canonique signé (JSON encodé en base64url).
+        signature: {type: string}
+    OfflineSyncRequest:
+      type: object
+      additionalProperties: false
+      required: [device_id, authorizations]
+      properties:
+        device_id: {type: string, format: uuid}
+        authorizations:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items: {$ref: '#/components/schemas/OfflineAuthorizationInput'}
+    OfflineSyncItemResult:
+      type: object
+      required: [offline_ref, outcome]
+      properties:
+        offline_ref: {type: string, format: uuid}
+        outcome: {type: string, enum: [confirmee, rejetee]}
+        reason_code:
+          oneOf:
+            - {$ref: '#/components/schemas/ErrorCode'}
+            - {type: 'null'}
+        claim_id: {type: [string, 'null'], format: uuid}
+        authorization_id: {type: [string, 'null'], format: uuid}
+    OfflineSyncResult:
+      type: object
+      required: [results]
+      properties:
+        results:
+          type: array
+          items: {$ref: '#/components/schemas/OfflineSyncItemResult'}
+    WorkQueue:
+      type: object
+      required: [claims_in_review, fraud_alerts, members_unpaid_over_30_days, auto_approved_today]
+      properties:
+        claims_in_review: {type: integer, minimum: 0}
+        fraud_alerts: {type: integer, minimum: 0}
+        members_unpaid_over_30_days: {type: integer, minimum: 0}
+        auto_approved_today: {type: integer, minimum: 0}
+
+    # ------------------------------------------------------------- L8
+    JoeQuestionRequest:
+      type: object
+      additionalProperties: false
+      required: [question]
+      properties:
+        question: {type: string, minLength: 2, maxLength: 1000}
+        claim_id: {type: string, format: uuid}
+        member_id: {type: string, format: uuid}
+    JoeAnswer:
+      type: object
+      required: [ai_action_id, kind, answer, sources]
+      properties:
+        ai_action_id: {type: string, format: uuid}
+        kind: {type: string, enum: [reponse, refus]}
+        answer: {type: string}
+        sources:
+          type: array
+          description: Obligatoirement non vide si `kind` vaut `reponse`.
+          items: {$ref: '#/components/schemas/Source'}
+    DecisionDraftRequest:
+      type: object
+      additionalProperties: false
+      required: [claim_id]
+      properties:
+        claim_id: {type: string, format: uuid}
+    DecisionDraft:
+      type: object
+      required: [ai_action_id, claim_id, recommendation, rationale, sources, applied]
+      properties:
+        ai_action_id: {type: string, format: uuid}
+        claim_id: {type: string, format: uuid}
+        recommendation: {type: string, enum: [accorder, refuser, demander_pieces]}
+        rationale: {type: string}
+        sources:
+          type: array
+          minItems: 1
+          items: {$ref: '#/components/schemas/Source'}
+        applied:
+          type: boolean
+          const: false
+          description: Toujours faux ; seul le médecin-conseil décide.
+    MessageDraftRequest:
+      type: object
+      additionalProperties: false
+      required: [member_id, purpose]
+      properties:
+        member_id: {type: string, format: uuid}
+        purpose: {type: string, enum: [relance_cotisation, confirmation_accord, demande_pieces]}
+    MessageDraft:
+      type: object
+      required: [ai_action_id, channel, text, sources]
+      properties:
+        ai_action_id: {type: string, format: uuid}
+        channel: {type: string, enum: [sms, whatsapp]}
+        text: {type: string}
+        sources:
+          type: array
+          minItems: 1
+          items: {$ref: '#/components/schemas/Source'}
+    SearchHit:
+      type: object
+      required: [type, id, label]
+      properties:
+        type: {type: string, enum: [member, claim, provider]}
+        id: {type: string, format: uuid}
+        label: {type: string}
+        meta: {type: [string, 'null']}
+    SearchResults:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/SearchHit'}
+    AiAction:
+      type: object
+      required: [id, occurred_at, user_id, kind, tool, sources]
+      properties:
+        id: {type: string, format: uuid}
+        occurred_at: {type: string, format: date-time}
+        user_id: {type: string, format: uuid}
+        kind: {type: string, enum: [lecture, preparation, reponse, refus]}
+        tool: {type: string}
+        model: {type: [string, 'null']}
+        sources:
+          type: array
+          items: {$ref: '#/components/schemas/Source'}
+    AiActionList:
+      type: object
+      required: [items, page]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/AiAction'}
+        page: {$ref: '#/components/schemas/PageInfo'}
+
+    # ------------------------------------------------------------- P1
+    BeneficiaryRelationship:
+      type: string
+      description: Lien avec le titulaire du contrat.
+      enum: [titulaire, conjoint, enfant, autre]
+    MyCard:
+      type: object
+      description: |
+        Carte d'un bénéficiaire de mon contrat. `qr_payload` est le QR dynamique à afficher
+        (foncé sur blanc) ; le redemander à `qr_refresh_at`. `card_status` vaut `bloquee`
+        pendant le blocage après trois codes faux (R1, `blocked_until`).
+      required: [card_id, person_id, given_name, family_name, relationship, member_number, plan_code, coverage_rate_bp, beneficiaries_count, card_status, blocked_until, qr_payload, qr_generated_at, qr_refresh_at, entitlements]
+      properties:
+        card_id: {type: string, format: uuid}
+        person_id: {type: string, format: uuid}
+        given_name: {type: string}
+        family_name: {type: string}
+        relationship: {$ref: '#/components/schemas/BeneficiaryRelationship'}
+        member_number: {type: string, pattern: '^MC-[0-9]{8}$'}
+        plan_code: {type: string}
+        coverage_rate_bp: {type: integer, minimum: 0, maximum: 10000}
+        beneficiaries_count: {type: integer, minimum: 1}
+        card_status: {type: string, enum: [active, bloquee]}
+        blocked_until: {type: [string, 'null'], format: date-time}
+        qr_payload: {type: string, minLength: 16}
+        qr_generated_at: {type: string, format: date-time}
+        qr_refresh_at:
+          type: string
+          format: date-time
+          description: Début de la fenêtre suivante du QR (30 s).
+        entitlements: {$ref: '#/components/schemas/Entitlements'}
+    MyBeneficiary:
+      type: object
+      required: [person_id, given_name, family_name, relationship, valid_from, valid_to, card_status]
+      properties:
+        person_id: {type: string, format: uuid}
+        given_name: {type: string}
+        family_name: {type: string}
+        relationship: {$ref: '#/components/schemas/BeneficiaryRelationship'}
+        valid_from: {type: string, format: date}
+        valid_to: {type: [string, 'null'], format: date}
+        card_status: {type: string, enum: [active, bloquee, aucune]}
+    MyBeneficiaryList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/MyBeneficiary'}
+    MyClaim:
+      type: object
+      description: Dossier vu par l'adhérent. Aucun acte, motif, score ni règle interne.
+      required: [id, claim_number, beneficiary_person_id, beneficiary_given_name, provider_name, service_date, requested_at, status, total_xof, covered_xof, patient_share_xof, currency, rule]
+      properties:
+        id: {type: string, format: uuid}
+        claim_number: {type: string, examples: [PEC-26-09814]}
+        beneficiary_person_id: {type: string, format: uuid}
+        beneficiary_given_name: {type: string}
+        provider_name: {type: string}
+        service_date: {type: string, format: date}
+        requested_at: {type: string, format: date-time}
+        status: {$ref: '#/components/schemas/ClaimStatus'}
+        total_xof: {$ref: '#/components/schemas/AmountXof'}
+        covered_xof: {$ref: '#/components/schemas/AmountXof'}
+        patient_share_xof: {$ref: '#/components/schemas/AmountXof'}
+        currency: {$ref: '#/components/schemas/Currency'}
+        rule:
+          description: Code public et version de la règle appliquée (R-12 v3), ou null.
+          oneOf:
+            - {$ref: '#/components/schemas/RuleRef'}
+            - {type: 'null'}
+    MyClaimList:
+      type: object
+      required: [items, page]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/MyClaim'}
+        page: {$ref: '#/components/schemas/PageInfo'}
+    TrackingStep:
+      type: object
+      description: |
+        Étape de la frise. `key` et `state` sont des codes ; les libellés sont dans les fichiers
+        de traduction de l'interface. `at` est nul quand le contrat ne date pas l'étape.
+      required: [key, state, at, rule, reason_code]
+      properties:
+        key: {type: string, enum: [demande_recue, accordee, virement, recu]}
+        state: {type: string, enum: [fait, en_cours, a_venir, refuse, annule, sans_objet]}
+        at: {type: [string, 'null'], format: date-time}
+        rule:
+          oneOf:
+            - {$ref: '#/components/schemas/RuleRef'}
+            - {type: 'null'}
+        reason_code:
+          type: [string, 'null']
+          description: Code stable de la décision (R-12, ou motif administratif MC-02).
+    ClaimTracking:
+      type: object
+      required: [claim, steps]
+      properties:
+        claim: {$ref: '#/components/schemas/MyClaim'}
+        steps:
+          type: array
+          minItems: 4
+          maxItems: 4
+          items: {$ref: '#/components/schemas/TrackingStep'}
+    MyContribution:
+      type: object
+      description: Cotisation de mon contrat, avec le type et le pays du payeur (aucune autre donnée sur lui).
+      required: [id, period_start, due_on, amount_xof, currency, status, paid_at, channel, payer_kind, payer_country_code]
+      properties:
+        id: {type: string, format: uuid}
+        period_start: {type: string, format: date}
+        due_on: {type: string, format: date}
+        amount_xof: {$ref: '#/components/schemas/AmountXof'}
+        currency: {$ref: '#/components/schemas/Currency'}
+        status: {type: string, enum: [a_payer, payee, en_retard, annulee]}
+        paid_at: {type: [string, 'null'], format: date-time}
+        channel:
+          oneOf:
+            - {$ref: '#/components/schemas/PaymentChannel'}
+            - {type: 'null'}
+        payer_kind: {type: [string, 'null'], enum: [adherent, employeur, proche, null]}
+        payer_country_code: {type: [string, 'null'], pattern: '^[A-Z]{2}$'}
+    MyContributions:
+      type: object
+      required: [items, next_due]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/MyContribution'}
+        next_due:
+          description: Plus ancienne échéance à payer (a_payer ou en_retard), ou null.
+          oneOf:
+            - {$ref: '#/components/schemas/MyContribution'}
+            - {type: 'null'}
+
+    # ------------------------------------------------------------- P2
+    ProductEventName:
+      type: string
+      description: Liste blanche FERMÉE des événements d'usage (CR-P2-01). Tout autre nom est refusé (422).
+      enum:
+        - onboarding_started
+        - onboarding_step
+        - onboarding_completed
+        - card_presented
+        - counter_decision_shown
+        - payment_link_created
+        - palette_opened
+        - joe_question_asked
+        - notification_opened
+        - offline_banner_seen
+        - claim_tracking_viewed
+    ProductSurface:
+      type: string
+      description: Écran d'origine ; il doit correspondre au rôle déclaré.
+      enum: [console, comptoir, espace_adherent]
+    ProductEventVariant:
+      type: string
+      description: Variante bornée d'un événement (voir `recordProductEvent`).
+      enum: [en_ligne, hors_ligne, accordee, revue, refusee, clavier, bouton, exemple, saisie, sms, whatsapp, in_app]
+    ProductEventRequest:
+      type: object
+      description: Événement d'usage. Aucun texte libre, aucun identifiant de personne, aucun champ inconnu.
+      additionalProperties: false
+      required: [name, surface, role, session_id]
+      properties:
+        name: {$ref: '#/components/schemas/ProductEventName'}
+        surface: {$ref: '#/components/schemas/ProductSurface'}
+        role: {$ref: '#/components/schemas/Role'}
+        session_id:
+          type: string
+          pattern: '^[0-9a-f]{32}$'
+          description: 16 octets aléatoires du navigateur en hexadécimal minuscule, renouvelés ; validés puis écartés (ni stockés, ni dérivés).
+        duration_ms:
+          type: integer
+          minimum: 0
+          maximum: 3600000
+          description: Durée mesurée par l'écran, en millisecondes ; seulement pour counter_decision_shown (obligatoire, 300 000 au plus) et onboarding_completed (facultative), refusée ailleurs.
+        step:
+          type: integer
+          minimum: 1
+          maximum: 20
+          description: Numéro d'étape (onboarding_step seulement).
+        variant: {$ref: '#/components/schemas/ProductEventVariant'}
+    ProductMetricKey:
+      type: string
+      description: |
+        Indicateur et comportement mesuré :
+        `claims_auto_approved_rate` dossiers dont la première décision est un accord automatique ;
+        `claims_review_rate` dossiers routés en revue du médecin-conseil ;
+        `claims_decision_median_ms` délai demande → première décision définitive (accord ou refus) ;
+        `counter_decision_display_median_ms` scan → écran de décision au comptoir ;
+        `onboarding_completion_rate` accueils terminés sur accueils commencés ;
+        `first_card_median_ms` début de l'accueil → première carte présentée ;
+        `payment_links_paid_rate` cotisations payées parmi celles qui ont reçu un lien ;
+        `ledger_balance_gap_xof` total des débits moins total des crédits (attendu : 0) ;
+        `webhook_duplicate_rate` cotisations reçues plus d'une fois (attendu : 0).
+        Contributeurs : bénéficiaires distincts (dossiers), personnes distinctes (événements
+        d'usage, empreinte de l'utilisateur et non de la session), adhérents distincts (liens,
+        cotisations), écritures (grand livre).
+      enum:
+        - claims_auto_approved_rate
+        - claims_review_rate
+        - claims_decision_median_ms
+        - counter_decision_display_median_ms
+        - onboarding_completion_rate
+        - first_card_median_ms
+        - payment_links_paid_rate
+        - ledger_balance_gap_xof
+        - webhook_duplicate_rate
+    ProductMetric:
+      type: object
+      required: [key, unit, status, value, contributors]
+      properties:
+        key: {$ref: '#/components/schemas/ProductMetricKey'}
+        unit:
+          type: string
+          enum: [pour_dix_mille, millisecondes, xof]
+        status:
+          type: string
+          description: '`masque` : moins de 5 contributeurs sur la période ou sur l''une de ses semaines non vides, aucune valeur publiée.'
+          enum: [disponible, masque]
+        value:
+          type: [integer, 'null']
+          format: int64
+          description: Valeur entière ; null si masquée.
+        contributors:
+          type: [integer, 'null']
+          minimum: 5
+          description: Palier de l'effectif qui porte la valeur, jamais l'effectif exact (5 = de 5 à 9, 10 = de 10 à 19, 20 = de 20 à 49, 50 = de 50 à 99, 100 = 100 ou plus) ; null si masquée.
+    ProductMetrics:
+      type: object
+      required: [period_from, period_to, generated_at, k_anonymity_threshold, items]
+      properties:
+        period_from: {type: string, format: date}
+        period_to: {type: string, format: date}
+        generated_at: {type: string, format: date-time}
+        k_anonymity_threshold:
+          type: integer
+          const: 5
+          description: Effectif minimal pour publier un indicateur.
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/ProductMetric'}
+
+    # ------------------------------------------------------------- P3 (CR-P3-01)
+    HexColor:
+      type: string
+      pattern: '^#[0-9A-Fa-f]{6}$'
+      description: Couleur `#RRGGBB` ; aucune autre forme (ni nom, ni rgb(), ni CSS).
+    BrandTokenOverrides:
+      type: object
+      description: |
+        Liste FERMÉE des jetons surchargeables (`--accent`, `--accent-hover`, `--accent-fg`,
+        `--brand-deep` ; le focus suit l'accent). Toute autre clé : 422 BRD-02.
+      additionalProperties: false
+      properties:
+        accent: {$ref: '#/components/schemas/HexColor'}
+        accent_hover: {$ref: '#/components/schemas/HexColor'}
+        accent_fg: {$ref: '#/components/schemas/HexColor'}
+        brand_deep: {$ref: '#/components/schemas/HexColor'}
+    BrandTheme:
+      type: object
+      description: Surcharges par thème ; le plein soleil (noir sur blanc) ne se surcharge pas.
+      additionalProperties: false
+      properties:
+        light: {$ref: '#/components/schemas/BrandTokenOverrides'}
+        dark: {$ref: '#/components/schemas/BrandTokenOverrides'}
+    BrandLogo:
+      type: object
+      additionalProperties: false
+      required: [kind, src]
+      properties:
+        kind:
+          type: string
+          enum: [url, data_uri]
+        src:
+          type: string
+          minLength: 1
+          maxLength: 43756
+          description: Chemin interne, https vers un hôte autorisé, ou data-URI d'image (32 Ko).
+    OrganizationBranding:
+      type: object
+      description: Marque publique (non sensible) d'une organisation.
+      required: [slug, display_name, country_code, currency, logo, theme, custom_domain, legal_notice, privacy_notice]
+      properties:
+        slug: {type: string}
+        display_name: {type: string}
+        country_code: {type: string, enum: [CI, SN]}
+        currency: {$ref: '#/components/schemas/Currency'}
+        logo:
+          oneOf:
+            - {$ref: '#/components/schemas/BrandLogo'}
+            - {type: 'null'}
+        theme: {$ref: '#/components/schemas/BrandTheme'}
+        custom_domain: {type: [string, 'null']}
+        legal_notice: {type: [string, 'null']}
+        privacy_notice: {type: [string, 'null']}
+    BrandingSettings:
+      type: object
+      description: Réglages de marque de l'organisation du jeton.
+      required: [display_name, logo, theme, custom_domain, legal_notice, privacy_notice, customized, updated_at, custom_domain_status, custom_domain_verification]
+      properties:
+        display_name: {type: string}
+        logo:
+          oneOf:
+            - {$ref: '#/components/schemas/BrandLogo'}
+            - {type: 'null'}
+        theme: {$ref: '#/components/schemas/BrandTheme'}
+        custom_domain: {type: [string, 'null']}
+        legal_notice: {type: [string, 'null']}
+        privacy_notice: {type: [string, 'null']}
+        customized:
+          type: boolean
+          description: Faux tant que l'organisation n'a rien réglé (valeurs par défaut).
+        updated_at: {type: [string, 'null'], format: date-time}
+        custom_domain_status:
+          type: [string, 'null']
+          enum: [en_attente_de_verification, verifie, null]
+          description: |
+            CR-P3-02 (ajout). Null sans domaine ; `en_attente_de_verification` tant que la
+            propriété n'est pas prouvée (domaine jamais servi) ; `verifie` ensuite.
+        custom_domain_verification:
+          oneOf:
+            - {$ref: '#/components/schemas/DomainVerification'}
+            - {type: 'null'}
+          description: CR-P3-02 (ajout). Enregistrement DNS à publier ; null sans domaine.
+    DomainVerification:
+      type: object
+      description: Enregistrement DNS TXT qui prouve la propriété du domaine personnalisé.
+      required: [record_type, record_name, record_value]
+      properties:
+        record_type: {type: string, enum: [TXT]}
+        record_name:
+          type: string
+          description: Nom à créer, `_mulemacare-verification.<domaine>`.
+        record_value:
+          type: string
+          description: Valeur exacte, `mulemacare-verification=<jeton de 32 hexadécimaux>`.
+    UpdateBrandingRequest:
+      type: object
+      description: Remplace tous les réglages de marque (texte brut, aucun balisage).
+      additionalProperties: false
+      required: [display_name]
+      properties:
+        display_name: {type: string, minLength: 1, maxLength: 80}
+        logo:
+          oneOf:
+            - {$ref: '#/components/schemas/BrandLogo'}
+            - {type: 'null'}
+        theme: {$ref: '#/components/schemas/BrandTheme'}
+        custom_domain:
+          type: [string, 'null']
+          maxLength: 253
+          pattern: '^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$'
+        legal_notice: {type: [string, 'null'], maxLength: 4000}
+        privacy_notice: {type: [string, 'null'], maxLength: 4000}
+    KAnonymousValue:
+      type: object
+      description: Valeur entière publiée seulement si portée par au moins 5 personnes.
+      required: [status, value, contributors]
+      properties:
+        status:
+          type: string
+          enum: [disponible, masque]
+        value:
+          type: [integer, 'null']
+          format: int64
+          description: Null si masquée.
+        contributors:
+          type: [integer, 'null']
+          minimum: 5
+          description: |
+            Personnes distinctes qui portent la valeur, publiées par palier (5, 10, 20, 50, 100 :
+            plancher du palier, jamais l'effectif exact) ; null si masquée.
+    StatusCount:
+      type: object
+      required: [status, count]
+      properties:
+        status: {type: string, enum: [actif, carence, suspendu]}
+        count: {$ref: '#/components/schemas/KAnonymousValue'}
+    BenefitCategory:
+      type: object
+      description: Prestations d'une catégorie de garantie (jamais d'acte ni de motif) ; `autres` regroupe les catégories sous le seuil.
+      required: [category, claims, covered_xof]
+      properties:
+        category: {type: string, pattern: '^[a-z_]{2,40}$'}
+        claims: {$ref: '#/components/schemas/KAnonymousValue'}
+        covered_xof: {$ref: '#/components/schemas/KAnonymousValue'}
+    ProviderShare:
+      type: object
+      required: [provider_id, name, claims, covered_xof]
+      properties:
+        provider_id: {type: string, format: uuid}
+        name: {type: string}
+        claims: {$ref: '#/components/schemas/KAnonymousValue'}
+        covered_xof: {$ref: '#/components/schemas/KAnonymousValue'}
+    OtherProviders:
+      type: object
+      description: Tous les prestataires hors du classement, fondus ; masqué sous le seuil.
+      required: [claims, covered_xof]
+      properties:
+        claims: {$ref: '#/components/schemas/KAnonymousValue'}
+        covered_xof: {$ref: '#/components/schemas/KAnonymousValue'}
+    InsurerPortfolio:
+      type: object
+      required: [period_from, period_to, generated_at, k_anonymity_threshold, currency, members_total, members_by_status, premiums_xof, claims_cost_xof, loss_ratio_bp, benefits_by_category, top_providers, other_providers, decision_delay_mean_ms, automation_rate_bp]
+      properties:
+        period_from: {type: string, format: date}
+        period_to: {type: string, format: date}
+        generated_at: {type: string, format: date-time}
+        k_anonymity_threshold: {type: integer, const: 5}
+        currency: {$ref: '#/components/schemas/Currency'}
+        members_total: {$ref: '#/components/schemas/KAnonymousValue'}
+        members_by_status:
+          type: array
+          items: {$ref: '#/components/schemas/StatusCount'}
+        premiums_xof: {$ref: '#/components/schemas/KAnonymousValue'}
+        claims_cost_xof: {$ref: '#/components/schemas/KAnonymousValue'}
+        loss_ratio_bp: {$ref: '#/components/schemas/KAnonymousValue'}
+        benefits_by_category:
+          type: array
+          items: {$ref: '#/components/schemas/BenefitCategory'}
+        top_providers:
+          type: array
+          maxItems: 5
+          items: {$ref: '#/components/schemas/ProviderShare'}
+        other_providers: {$ref: '#/components/schemas/OtherProviders'}
+        decision_delay_mean_ms: {$ref: '#/components/schemas/KAnonymousValue'}
+        automation_rate_bp: {$ref: '#/components/schemas/KAnonymousValue'}
+    EmployerGroupConsumption:
+      type: object
+      required: [employer_id, name, members_total, members_by_status, claims, covered_xof, benefits_by_category]
+      properties:
+        employer_id: {type: string, format: uuid}
+        name: {type: string}
+        members_total: {$ref: '#/components/schemas/KAnonymousValue'}
+        members_by_status:
+          type: array
+          items: {$ref: '#/components/schemas/StatusCount'}
+        claims: {$ref: '#/components/schemas/KAnonymousValue'}
+        covered_xof: {$ref: '#/components/schemas/KAnonymousValue'}
+        benefits_by_category:
+          type: array
+          items: {$ref: '#/components/schemas/BenefitCategory'}
+    EmployerConsumption:
+      type: object
+      required: [period_from, period_to, generated_at, k_anonymity_threshold, currency, groups]
+      properties:
+        period_from: {type: string, format: date}
+        period_to: {type: string, format: date}
+        generated_at: {type: string, format: date-time}
+        k_anonymity_threshold: {type: integer, const: 5}
+        currency: {$ref: '#/components/schemas/Currency'}
+        groups:
+          type: array
+          items: {$ref: '#/components/schemas/EmployerGroupConsumption'}
+    EmployerContract:
+      type: object
+      required: [employer_id, name, contract_start, contract_end, days_remaining, status, members_total]
+      properties:
+        employer_id: {type: string, format: uuid}
+        name: {type: string}
+        contract_start: {type: string, format: date}
+        contract_end: {type: [string, 'null'], format: date}
+        days_remaining:
+          type: [integer, 'null']
+          description: Jours jusqu'à la fin du contrat (négatif si échu) ; null sans fin.
+        status:
+          type: string
+          enum: [en_cours, a_echeance, echu, sans_echeance]
+        members_total: {$ref: '#/components/schemas/KAnonymousValue'}
+    EmployerContractList:
+      type: object
+      required: [as_of, within_days, items]
+      properties:
+        as_of: {type: string, format: date}
+        within_days: {type: integer, minimum: 1, maximum: 365}
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/EmployerContract'}
+    FirstManager:
+      type: object
+      additionalProperties: false
+      required: [idp_subject, display_name]
+      properties:
+        idp_subject: {type: string, minLength: 1, maxLength: 200}
+        display_name: {type: string, minLength: 1, maxLength: 120}
+        email: {type: string, format: email}
+    TemplateRef:
+      type: object
+      additionalProperties: false
+      required: [code]
+      properties:
+        code: {type: string, pattern: '^[a-z0-9][a-z0-9-]{1,39}$'}
+        version:
+          type: integer
+          minimum: 1
+          description: Par défaut, la dernière version du code.
+    CreateOrganizationRequest:
+      type: object
+      additionalProperties: false
+      required: [slug, name, country_code, capabilities, first_manager, template]
+      properties:
+        slug: {type: string, pattern: '^[a-z0-9][a-z0-9-]{1,62}$'}
+        name: {type: string, minLength: 1, maxLength: 120}
+        country_code: {type: string, enum: [CI, SN]}
+        capabilities:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: {type: string, enum: [porteur_de_risque, gestionnaire, distributeur]}
+        regulator: {type: [string, 'null'], maxLength: 40}
+        first_manager: {$ref: '#/components/schemas/FirstManager'}
+        template: {$ref: '#/components/schemas/TemplateRef'}
+    TemplateContents:
+      type: object
+      required: [ledger_accounts, rules, plans, coverages, acts, tariff_items]
+      properties:
+        ledger_accounts: {type: integer, minimum: 0}
+        rules: {type: integer, minimum: 0}
+        plans: {type: integer, minimum: 0}
+        coverages: {type: integer, minimum: 0}
+        acts: {type: integer, minimum: 0}
+        tariff_items: {type: integer, minimum: 0}
+    OrganizationOnboarding:
+      type: object
+      required: [organization, first_manager, template, copied]
+      properties:
+        organization: {$ref: '#/components/schemas/Organization'}
+        first_manager: {$ref: '#/components/schemas/User'}
+        template:
+          type: object
+          required: [code, version]
+          properties:
+            code: {type: string}
+            version: {type: integer, minimum: 1}
+        copied: {$ref: '#/components/schemas/TemplateContents'}
+    ConfigurationTemplate:
+      type: object
+      required: [id, code, version, country_code, label, created_at, contents]
+      properties:
+        id: {type: string, format: uuid}
+        code: {type: string}
+        version: {type: integer, minimum: 1}
+        country_code: {type: string, enum: [CI, SN]}
+        label: {type: string}
+        created_at: {type: string, format: date-time}
+        contents: {$ref: '#/components/schemas/TemplateContents'}
+    ConfigurationTemplateList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/ConfigurationTemplate'}
+    CreateConfigurationTemplateRequest:
+      type: object
+      additionalProperties: false
+      required: [code, country_code, label]
+      properties:
+        code: {type: string, pattern: '^[a-z0-9][a-z0-9-]{1,39}$'}
+        country_code: {type: string, enum: [CI, SN]}
+        label: {type: string, minLength: 1, maxLength: 120}

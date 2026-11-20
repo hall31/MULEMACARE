@@ -1,0 +1,1140 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>MulemaCare One</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Hanken+Grotesk:wght@400;500;600&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: console opérationnelle — barre latérale fixe 240px, contenu max 1320px, tiroir objet à droite, palette ⌘K centrale.
+   Accent indigo (teinture indigo d'Afrique de l'Ouest), neutres légèrement bleutés, sémantique séparée. */
+:root{
+  --bg:#f6f7fa; --surface:#ffffff; --sunk:#eef0f5; --line:#e1e4ec; --line-2:#cdd2de;
+  --fg:#161a2b; --fg-2:#4b5268; --fg-3:#7c8298;
+  --accent:#2e3fa6; --accent-2:#e7eafb; --accent-fg:#ffffff;
+  --ok:#1d7a4c; --ok-bg:#e3f4ea; --warn:#9a5b00; --warn-bg:#fdf0da; --crit:#b3261e; --crit-bg:#fbe5e3;
+  --shadow:0 12px 40px rgba(20,26,60,.18);
+  --f-display:"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-body:"Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r-lg:12px; --r-md:8px; --r-sm:7px; --r-btn:8px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1220; --surface:#161a2b; --sunk:#1c2135; --line:#262c44; --line-2:#343b58;
+  --fg:#e9ebf3; --fg-2:#aab0c5; --fg-3:#7a8199;
+  --accent:#8e9cf2; --accent-2:#232a52; --accent-fg:#0f1220;
+  --ok:#5ccf92; --ok-bg:#15301f; --warn:#f0b454; --warn-bg:#35270e; --crit:#f08a82; --crit-bg:#3a1a18;
+  --shadow:0 12px 40px rgba(0,0,0,.5); color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0f1220; --surface:#161a2b; --sunk:#1c2135; --line:#262c44; --line-2:#343b58;
+  --fg:#e9ebf3; --fg-2:#aab0c5; --fg-3:#7a8199;
+  --accent:#8e9cf2; --accent-2:#232a52; --accent-fg:#0f1220;
+  --ok:#5ccf92; --ok-bg:#15301f; --warn:#f0b454; --warn-bg:#35270e; --crit:#f08a82; --crit-bg:#3a1a18;
+  --shadow:0 12px 40px rgba(0,0,0,.5); color-scheme:dark;}
+
+/* ===== Thèmes (skins). Chaque thème redéfinit ses jetons clairs, puis ses jetons sombres. ===== */
+/* Style Notion : blanc pur, gris chauds, bleu d'action, coins serrés, police système */
+:root[data-skin="notion"]{
+  --bg:#ffffff; --surface:#ffffff; --sunk:#f7f6f3; --line:#ebeae6; --line-2:#dcdbd7;
+  --fg:#37352f; --fg-2:#6b6a65; --fg-3:#9b9a97;
+  --accent:#2383e2; --accent-2:#e7f3fe; --accent-fg:#ffffff;
+  --ok:#448361; --ok-bg:#edf3ec; --warn:#9f6b53; --warn-bg:#fbecdd; --crit:#d44c47; --crit-bg:#fdebec;
+  --shadow:0 8px 30px rgba(15,15,15,.12);
+  --f-display:ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --f-body:ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --f-mono:"SFMono-Regular", Menlo, Consolas, monospace;
+  --r-lg:6px; --r-md:4px; --r-sm:4px; --r-btn:4px;
+}
+@media (prefers-color-scheme: dark){:root[data-skin="notion"]:not([data-theme="light"]){
+  --bg:#191919; --surface:#202020; --sunk:#252525; --line:#2f2f2f; --line-2:#3a3a3a;
+  --fg:#e6e5e3; --fg-2:#a5a4a1; --fg-3:#7d7c78;
+  --accent:#529cca; --accent-2:#1f3444; --accent-fg:#ffffff;
+  --ok:#6ec48f; --ok-bg:#1f2e25; --warn:#d69a6e; --warn-bg:#3a2a1f; --crit:#ec7d78; --crit-bg:#3b2020;}}
+:root[data-skin="notion"][data-theme="dark"]{
+  --bg:#191919; --surface:#202020; --sunk:#252525; --line:#2f2f2f; --line-2:#3a3a3a;
+  --fg:#e6e5e3; --fg-2:#a5a4a1; --fg-3:#7d7c78;
+  --accent:#529cca; --accent-2:#1f3444; --accent-fg:#ffffff;
+  --ok:#6ec48f; --ok-bg:#1f2e25; --warn:#d69a6e; --warn-bg:#3a2a1f; --crit:#ec7d78; --crit-bg:#3b2020;}
+
+/* Style Google : fond bleuté très clair, bleu d'action, surfaces tonales, coins arrondis, boutons en pilule */
+:root[data-skin="google"]{
+  --bg:#f8fafd; --surface:#ffffff; --sunk:#f0f4f9; --line:#e1e3e1; --line-2:#c4c7c5;
+  --fg:#1f1f1f; --fg-2:#444746; --fg-3:#747775;
+  --accent:#0b57d0; --accent-2:#d3e3fd; --accent-fg:#ffffff;
+  --ok:#146c2e; --ok-bg:#c4eed0; --warn:#8a5300; --warn-bg:#ffdfa0; --crit:#b3261e; --crit-bg:#f9dedc;
+  --shadow:0 4px 16px rgba(60,64,67,.18);
+  --f-display:"Roboto", Arial, sans-serif; --f-body:"Roboto", Arial, sans-serif; --f-mono:"Roboto Mono", ui-monospace, monospace;
+  --r-lg:20px; --r-md:12px; --r-sm:999px; --r-btn:999px;
+}
+@media (prefers-color-scheme: dark){:root[data-skin="google"]:not([data-theme="light"]){
+  --bg:#131314; --surface:#1e1f20; --sunk:#282a2c; --line:#333537; --line-2:#444746;
+  --fg:#e3e3e3; --fg-2:#c4c7c5; --fg-3:#8e918f;
+  --accent:#a8c7fa; --accent-2:#0842a0; --accent-fg:#062e6f;
+  --ok:#6dd58c; --ok-bg:#0f5223; --warn:#ffb951; --warn-bg:#4a2e00; --crit:#f2b8b5; --crit-bg:#601410;}}
+:root[data-skin="google"][data-theme="dark"]{
+  --bg:#131314; --surface:#1e1f20; --sunk:#282a2c; --line:#333537; --line-2:#444746;
+  --fg:#e3e3e3; --fg-2:#c4c7c5; --fg-3:#8e918f;
+  --accent:#a8c7fa; --accent-2:#0842a0; --accent-fg:#062e6f;
+  --ok:#6dd58c; --ok-bg:#0f5223; --warn:#ffb951; --warn-bg:#4a2e00; --crit:#f2b8b5; --crit-bg:#601410;}
+
+/* Style Anthropic : ivoire chaud, orange argile, titres en sérif éditorial, texte en sans-sérif */
+:root[data-skin="anthropic"]{
+  --bg:#faf9f5; --surface:#fffefb; --sunk:#f0eee6; --line:#e5e2d8; --line-2:#d1cdc0;
+  --fg:#141413; --fg-2:#5e5d59; --fg-3:#87867f;
+  --accent:#c15f3c; --accent-2:#f5e4dc; --accent-fg:#ffffff;
+  --ok:#3f7a4a; --ok-bg:#e4efe2; --warn:#8c5a12; --warn-bg:#f6e8cc; --crit:#b0392f; --crit-bg:#f6dfdb;
+  --shadow:0 10px 30px rgba(40,30,20,.14);
+  --f-display:"Newsreader", Georgia, "Times New Roman", serif; --f-body:"Hanken Grotesk", system-ui, sans-serif; --f-mono:"Geist Mono", ui-monospace, monospace;
+  --r-lg:14px; --r-md:10px; --r-sm:8px; --r-btn:10px;
+}
+@media (prefers-color-scheme: dark){:root[data-skin="anthropic"]:not([data-theme="light"]){
+  --bg:#262624; --surface:#30302e; --sunk:#1f1e1d; --line:#3e3d39; --line-2:#4d4c47;
+  --fg:#faf9f5; --fg-2:#c2c0b6; --fg-3:#8f8d85;
+  --accent:#d97757; --accent-2:#4a2e24; --accent-fg:#1f1e1d;
+  --ok:#86c28f; --ok-bg:#243526; --warn:#e3b064; --warn-bg:#3d2f19; --crit:#eb8a80; --crit-bg:#45241f;}}
+:root[data-skin="anthropic"][data-theme="dark"]{
+  --bg:#262624; --surface:#30302e; --sunk:#1f1e1d; --line:#3e3d39; --line-2:#4d4c47;
+  --fg:#faf9f5; --fg-2:#c2c0b6; --fg-3:#8f8d85;
+  --accent:#d97757; --accent-2:#4a2e24; --accent-fg:#1f1e1d;
+  --ok:#86c28f; --ok-bg:#243526; --warn:#e3b064; --warn-bg:#3d2f19; --crit:#eb8a80; --crit-bg:#45241f;}
+/* Style Linear : gris neutres froids, violet d'action, très dense, coins serrés */
+:root[data-skin="linear"]{
+  --bg:#fbfbfc; --surface:#ffffff; --sunk:#f3f4f6; --line:#e6e7ea; --line-2:#d3d5da;
+  --fg:#1b1c1f; --fg-2:#55585f; --fg-3:#80838b;
+  --accent:#5e6ad2; --accent-2:#eceefc; --accent-fg:#ffffff;
+  --ok:#2f7d4f; --ok-bg:#e5f3ea; --warn:#9a6200; --warn-bg:#fbefd7; --crit:#c2362e; --crit-bg:#fbe6e4;
+  --shadow:0 8px 28px rgba(20,22,30,.16);
+  --f-display:"Inter", system-ui, sans-serif; --f-body:"Inter", system-ui, sans-serif; --f-mono:"Geist Mono", ui-monospace, monospace;
+  --r-lg:8px; --r-md:6px; --r-sm:5px; --r-btn:6px;
+}
+@media (prefers-color-scheme: dark){:root[data-skin="linear"]:not([data-theme="light"]){
+  --bg:#0e0f11; --surface:#16171a; --sunk:#1c1d21; --line:#26282d; --line-2:#34363d;
+  --fg:#eeeff1; --fg-2:#a7aab2; --fg-3:#767a84;
+  --accent:#8b94f0; --accent-2:#23264a; --accent-fg:#0e0f11;
+  --ok:#5cc58a; --ok-bg:#16291f; --warn:#e8b25c; --warn-bg:#33270f; --crit:#f0837b; --crit-bg:#381c1a;}}
+:root[data-skin="linear"][data-theme="dark"]{
+  --bg:#0e0f11; --surface:#16171a; --sunk:#1c1d21; --line:#26282d; --line-2:#34363d;
+  --fg:#eeeff1; --fg-2:#a7aab2; --fg-3:#767a84;
+  --accent:#8b94f0; --accent-2:#23264a; --accent-fg:#0e0f11;
+  --ok:#5cc58a; --ok-bg:#16291f; --warn:#e8b25c; --warn-bg:#33270f; --crit:#f0837b; --crit-bg:#381c1a;}
+
+/* Style Stripe : fond blanc, bleu nuit pour le texte, violet d'action, cartes légèrement ombrées */
+:root[data-skin="stripe"]{
+  --bg:#f6f9fc; --surface:#ffffff; --sunk:#f0f3f9; --line:#e3e8ee; --line-2:#c9d1dc;
+  --fg:#0a2540; --fg-2:#425466; --fg-3:#6b7c93;
+  --accent:#635bff; --accent-2:#ebeaff; --accent-fg:#ffffff;
+  --ok:#0a7d4f; --ok-bg:#d7f7e6; --warn:#946200; --warn-bg:#fdf0cf; --crit:#c0123c; --crit-bg:#ffe5ec;
+  --shadow:0 12px 36px rgba(50,50,93,.2);
+  --f-display:"Inter", system-ui, sans-serif; --f-body:"Inter", system-ui, sans-serif; --f-mono:"Geist Mono", ui-monospace, monospace;
+  --r-lg:8px; --r-md:6px; --r-sm:6px; --r-btn:6px;
+}
+@media (prefers-color-scheme: dark){:root[data-skin="stripe"]:not([data-theme="light"]){
+  --bg:#0a1524; --surface:#10203a; --sunk:#14294a; --line:#1f3456; --line-2:#2c456d;
+  --fg:#e6ecf5; --fg-2:#a9b7cc; --fg-3:#7588a4;
+  --accent:#9b95ff; --accent-2:#2a2a66; --accent-fg:#0a1524;
+  --ok:#4fd39b; --ok-bg:#0f3326; --warn:#f2c35c; --warn-bg:#3a2d0c; --crit:#ff8aa5; --crit-bg:#431222;}}
+:root[data-skin="stripe"][data-theme="dark"]{
+  --bg:#0a1524; --surface:#10203a; --sunk:#14294a; --line:#1f3456; --line-2:#2c456d;
+  --fg:#e6ecf5; --fg-2:#a9b7cc; --fg-3:#7588a4;
+  --accent:#9b95ff; --accent-2:#2a2a66; --accent-fg:#0a1524;
+  --ok:#4fd39b; --ok-bg:#0f3326; --warn:#f2c35c; --warn-bg:#3a2d0c; --crit:#ff8aa5; --crit-bg:#431222;}
+
+/* Style GitHub : gris neutres, bleu lien, statuts verts et rouges francs, coins 6px */
+:root[data-skin="github"]{
+  --bg:#f6f8fa; --surface:#ffffff; --sunk:#eff2f5; --line:#d1d9e0; --line-2:#b6bfc9;
+  --fg:#1f2328; --fg-2:#3d444d; --fg-3:#59636e;
+  --accent:#0969da; --accent-2:#ddf4ff; --accent-fg:#ffffff;
+  --ok:#1a7f37; --ok-bg:#dafbe1; --warn:#9a6700; --warn-bg:#fff8c5; --crit:#cf222e; --crit-bg:#ffebe9;
+  --shadow:0 8px 24px rgba(140,149,159,.3);
+  --f-display:-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  --f-body:-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  --f-mono:ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --r-lg:6px; --r-md:6px; --r-sm:6px; --r-btn:6px;
+}
+@media (prefers-color-scheme: dark){:root[data-skin="github"]:not([data-theme="light"]){
+  --bg:#0d1117; --surface:#151b23; --sunk:#1c232c; --line:#30363d; --line-2:#3d444d;
+  --fg:#f0f6fc; --fg-2:#c9d1d9; --fg-3:#8b949e;
+  --accent:#4493f8; --accent-2:#0d2d5c; --accent-fg:#ffffff;
+  --ok:#3fb950; --ok-bg:#0f2d1a; --warn:#d29922; --warn-bg:#2f2508; --crit:#f85149; --crit-bg:#3a1416;}}
+:root[data-skin="github"][data-theme="dark"]{
+  --bg:#0d1117; --surface:#151b23; --sunk:#1c232c; --line:#30363d; --line-2:#3d444d;
+  --fg:#f0f6fc; --fg-2:#c9d1d9; --fg-3:#8b949e;
+  --accent:#4493f8; --accent-2:#0d2d5c; --accent-fg:#ffffff;
+  --ok:#3fb950; --ok-bg:#0f2d1a; --warn:#d29922; --warn-bg:#2f2508; --crit:#f85149; --crit-bg:#3a1416;}
+
+/* Style Apple : gris système, bleu d'action, grands arrondis, police système */
+:root[data-skin="apple"]{
+  --bg:#f5f5f7; --surface:#ffffff; --sunk:#ececf0; --line:#e5e5ea; --line-2:#c7c7cc;
+  --fg:#1d1d1f; --fg-2:#515154; --fg-3:#86868b;
+  --accent:#0071e3; --accent-2:#e5f1fd; --accent-fg:#ffffff;
+  --ok:#248a3d; --ok-bg:#e3f6e8; --warn:#a15c00; --warn-bg:#fff0d6; --crit:#d70015; --crit-bg:#ffe5e8;
+  --shadow:0 12px 40px rgba(0,0,0,.16);
+  --f-display:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+  --f-body:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  --f-mono:ui-monospace, "SF Mono", Menlo, monospace;
+  --r-lg:18px; --r-md:12px; --r-sm:10px; --r-btn:999px;
+}
+@media (prefers-color-scheme: dark){:root[data-skin="apple"]:not([data-theme="light"]){
+  --bg:#000000; --surface:#1c1c1e; --sunk:#2c2c2e; --line:#38383a; --line-2:#48484a;
+  --fg:#f5f5f7; --fg-2:#c7c7cc; --fg-3:#8e8e93;
+  --accent:#2997ff; --accent-2:#0a2a4d; --accent-fg:#ffffff;
+  --ok:#30d158; --ok-bg:#0d2e18; --warn:#ffb340; --warn-bg:#3a2a08; --crit:#ff6961; --crit-bg:#3d1512;}}
+:root[data-skin="apple"][data-theme="dark"]{
+  --bg:#000000; --surface:#1c1c1e; --sunk:#2c2c2e; --line:#38383a; --line-2:#48484a;
+  --fg:#f5f5f7; --fg-2:#c7c7cc; --fg-3:#8e8e93;
+  --accent:#2997ff; --accent-2:#0a2a4d; --accent-fg:#ffffff;
+  --ok:#30d158; --ok-bg:#0d2e18; --warn:#ffb340; --warn-bg:#3a2a08; --crit:#ff6961; --crit-bg:#3d1512;}
+:root[data-skin="apple"] .panel,:root[data-skin="apple"] .joe-card{border-color:transparent}
+:root[data-skin="apple"] .kpis{border-color:transparent}
+:root[data-skin="stripe"] .panel{box-shadow:0 1px 3px rgba(50,50,93,.1)}
+
+/* Sélecteur de thème dans la barre du haut */
+.theme-btn{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 8px;border:1px solid var(--line-2);border-radius:999px;background:var(--surface);font-size:12px;font-weight:500;min-height:32px}
+.theme-btn:hover{background:var(--sunk)}
+.sw{display:inline-flex;width:18px;height:18px;border-radius:50%;border:1px solid var(--line-2);overflow:hidden;flex:none}
+.sw i{flex:1;display:block}
+.tmenu-wrap{position:relative}
+.tmenu{position:absolute;right:0;top:calc(100% + 8px);width:min(300px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:6px;z-index:15;display:flex;flex-direction:column;gap:2px}
+.tmenu button{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:0;background:none;border-radius:var(--r-md);text-align:left;min-height:40px}
+.tmenu button:hover{background:var(--sunk)}
+.tmenu button[aria-checked="true"]{background:var(--accent-2);color:var(--accent)}
+.tmenu small{display:block;color:var(--fg-3);font-size:11px}
+.tmenu .chk{margin-left:auto;font-weight:700}
+:root[data-skin="google"] .kpis{gap:12px;background:transparent;border:0}
+:root[data-skin="google"] .kpi{border-radius:var(--r-md);background:var(--sunk)}
+:root[data-skin="google"] .panel,:root[data-skin="google"] .joe-card{border-color:transparent;box-shadow:0 1px 2px rgba(60,64,67,.15)}
+:root[data-skin="google"] .nav a{border-radius:999px}
+:root[data-skin="notion"] .nav a{padding:5px 10px}
+:root[data-skin="notion"] .side{background:var(--sunk)}
+:root[data-skin="anthropic"] h1{font-weight:500;font-size:30px}
+
+.theme-row{display:flex;gap:6px}
+.seg{display:inline-flex;padding:3px;gap:2px;border:1px solid var(--line);border-radius:999px;background:var(--sunk)}
+.seg button{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--fg-2);font-size:12px;font-weight:500;padding:5px 10px;border-radius:999px;min-height:28px}
+.seg button svg{width:14px;height:14px}
+.seg button:hover{color:var(--fg)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+@media (max-width:900px){.seg button span{display:none}.seg button{padding:5px 8px}}
+.theme-row .select{flex:1;min-width:0}
+
+/* ===== Comptoir mobile : règles d'accessibilité façon Material (48 px, 16 px, contraste renforcé) ===== */
+.mob-wrap{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:28px;align-items:start}
+.phone{border:1px solid var(--line-2);border-radius:28px;background:var(--bg);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:720px;max-width:100%}
+.m-app{--m-t:48px;font-size:16px;line-height:1.45;color:var(--fg);background:var(--bg);display:flex;flex-direction:column;flex:1}
+.m-app .m-secondary{color:var(--fg)}
+.m-bar{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;background:var(--surface);border-bottom:1px solid var(--line)}
+.m-bar b{font-family:var(--f-display);font-size:17px}
+.m-prog{height:4px;background:var(--sunk)} .m-prog i{display:block;height:100%;background:var(--accent);transition:width .2s}
+.m-net{padding:10px 16px;background:var(--warn-bg);color:var(--warn);font-size:14px;font-weight:500;display:flex;gap:8px;align-items:center}
+.m-body{flex:1;padding:20px 16px;display:flex;flex-direction:column;gap:16px}
+.m-body h2{font-size:22px;line-height:1.25}
+.m-step{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg)}
+.m-foot{padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.m-btn{min-height:56px;width:100%;border-radius:999px;border:0;background:var(--accent);color:var(--accent-fg);font-size:17px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 20px}
+.m-btn.sec{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.m-btn.bad{background:transparent;color:var(--crit);border:2px solid var(--crit)}
+.m-btn:disabled{opacity:.4;cursor:not-allowed}
+.m-scan{border:2px dashed var(--line-2);border-radius:20px;aspect-ratio:1/1;max-width:100%;display:grid;place-items:center;background:var(--surface);color:var(--fg)}
+.m-scan svg{width:96px;height:96px}
+.m-field{display:flex;flex-direction:column;gap:6px}
+.m-field label{font-size:15px;font-weight:500}
+.m-input{min-height:var(--m-t);border:2px solid var(--line-2);border-radius:12px;padding:0 14px;font-size:17px;background:var(--surface)}
+.m-input:focus{outline:none;border-color:var(--accent)}
+.m-otp{font-family:var(--f-mono);font-size:30px;letter-spacing:.35em;text-align:center;min-height:64px}
+.m-id{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px;border-radius:20px;background:var(--surface);border:1px solid var(--line);text-align:center}
+.m-id .photo{width:120px;height:120px;border-radius:20px;font-size:40px}
+.m-acts{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface)}
+.m-act{display:flex;align-items:center;gap:14px;min-height:60px;padding:8px 16px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;width:100%;font-size:16px}
+.m-act:last-child{border-bottom:0}
+.m-box{width:26px;height:26px;border-radius:7px;border:2px solid var(--line-2);display:grid;place-items:center;flex:none;font-size:16px;color:var(--accent-fg)}
+.m-act[aria-checked="true"] .m-box{background:var(--accent);border-color:var(--accent)}
+.m-act .num{margin-left:auto;font-size:15px}
+.m-total{display:flex;justify-content:space-between;align-items:baseline;font-size:17px}
+.m-total b{font-family:var(--f-display);font-size:24px;font-variant-numeric:tabular-nums}
+.m-split{display:grid;gap:10px}
+.m-split div{padding:16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.m-split .big{font-family:var(--f-display);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
+.m-split .mc{background:var(--accent-2);border-color:transparent} .m-split .mc .big{color:var(--accent)}
+.m-verdict{padding:16px;border-radius:16px;font-size:16px;display:flex;flex-direction:column;gap:6px}
+.m-verdict.auto{background:var(--ok-bg);color:var(--ok)} .m-verdict.review{background:var(--warn-bg);color:var(--warn)}
+.m-verdict b{font-size:18px}
+.m-done{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding-top:24px}
+.m-done .ring{width:96px;height:96px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;font-size:48px}
+.m-cash{padding:16px;border-radius:16px;border:2px solid var(--fg);width:100%;font-size:17px}
+.m-cash b{font-family:var(--f-display);font-size:28px;display:block;font-variant-numeric:tabular-nums}
+/* Mode plein soleil : noir sur blanc, traits épais — volontairement identique quel que soit le thème */
+.m-app.sun{--bg:#ffffff;--surface:#ffffff;--sunk:#e8e8e8;--line:#000000;--line-2:#000000;--fg:#000000;--fg-2:#000000;--fg-3:#000000;--accent:#0038a8;--accent-2:#dfe7ff;--accent-fg:#ffffff;--ok:#00551f;--ok-bg:#d8f5de;--warn:#6b3d00;--warn-bg:#ffe7b3;--crit:#9c0000;--crit-bg:#ffdcdc;color-scheme:light}
+.m-app.sun .m-act,.m-app.sun .m-bar,.m-app.sun .m-foot{border-width:2px}
+.rules{display:flex;flex-direction:column;gap:14px}
+.rule-item{display:flex;gap:12px;align-items:flex-start}
+.rule-item .k{font-family:var(--f-mono);font-size:12px;padding:2px 8px;border-radius:6px;background:var(--accent-2);color:var(--accent);white-space:nowrap;margin-top:2px}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.toggle:last-child{border-bottom:0}
+.switch{width:44px;height:26px;border-radius:999px;border:0;background:var(--line-2);position:relative;flex:none}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}
+.switch[aria-checked="true"]{background:var(--accent)} .switch[aria-checked="true"]::after{left:21px}
+@media (max-width:900px){.mob-wrap{grid-template-columns:1fr}.phone{border-radius:20px;min-height:0}}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.num,.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:26px;font-weight:600}
+h2{font-size:17px;font-weight:600}
+h3{font-size:14px;font-weight:600}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-3);font-weight:600}
+.muted{color:var(--fg-2)} .faint{color:var(--fg-3)}
+
+/* Shell */
+.app{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100%}
+.side{border-right:1px solid var(--line);background:var(--surface);padding:16px 12px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px}
+.brand-mark{width:28px;height:28px;border-radius:var(--r-md);background:var(--accent);display:grid;place-items:center;color:var(--accent-fg);font-family:var(--f-display);font-weight:700;font-size:14px}
+.brand b{font-family:var(--f-display);font-size:15px;display:block;line-height:1.1}
+.brand span{font-size:11px;color:var(--fg-3)}
+.search-btn{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border:1px solid var(--line);background:var(--sunk);border-radius:var(--r-md);color:var(--fg-3);text-align:left}
+.search-btn kbd{margin-left:auto}
+kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--fg-2);background:var(--surface)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav-group{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-3);font-weight:600;padding:10px 10px 4px}
+.nav a{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:var(--r-sm);color:var(--fg-2);text-decoration:none;font-weight:500}
+.nav a:hover{background:var(--sunk);color:var(--fg)}
+.nav a[aria-current="page"]{background:var(--accent-2);color:var(--accent)}
+.nav svg{width:16px;height:16px;flex:none}
+.nav .count{margin-left:auto;font-family:var(--f-mono);font-size:11px;color:var(--fg-3)}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:8px;font-size:12px}
+.role-label{font-size:11px;color:var(--fg-3)}
+.select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface)}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:12px;padding:12px 24px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.crumb{font-size:13px;color:var(--fg-3)} .crumb b{color:var(--fg);font-weight:600}
+.topbar .spacer{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--fg-2);background:var(--surface);white-space:nowrap}
+.chip .dot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.content{padding-block:24px 64px;padding-inline:24px;max-width:1320px;width:100%;display:flex;flex-direction:column;gap:20px}
+
+/* Components */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg)}
+.panel-h{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.panel-h .spacer{flex:1}
+.panel-b{padding:16px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;min-height:34px;border-radius:var(--r-btn);border:1px solid var(--line-2);background:var(--surface);font-weight:500;font-size:13px;white-space:nowrap}
+.btn:hover{background:var(--sunk)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--crit)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-ok{background:var(--ok-bg);color:var(--ok)} .p-warn{background:var(--warn-bg);color:var(--warn)} .p-crit{background:var(--crit-bg);color:var(--crit)} .p-info{background:var(--accent-2);color:var(--accent)} .p-mute{background:var(--sunk);color:var(--fg-2)}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-3);font-weight:600;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--sunk)}
+td.r,th.r{text-align:right}
+.who{display:flex;align-items:center;gap:10px}
+.av{width:28px;height:28px;border-radius:50%;background:var(--accent-2);color:var(--accent);display:grid;place-items:center;font-size:11px;font-weight:600;flex:none}
+.bar{height:6px;border-radius:999px;background:var(--sunk);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:999px;background:var(--accent)}
+.bar.ok i{background:var(--ok)} .bar.warn i{background:var(--warn)} .bar.crit i{background:var(--crit)}
+
+/* Home */
+.hello{display:flex;flex-direction:column;gap:14px;padding:28px 0 8px;align-items:flex-start}
+.ask{display:flex;align-items:center;gap:12px;width:100%;max-width:720px;padding:14px 16px;border:1px solid var(--line-2);border-radius:var(--r-lg);background:var(--surface);color:var(--fg-3);text-align:left;font-size:15px;box-shadow:0 1px 0 var(--line)}
+.ask .joe{color:var(--accent);font-weight:600}
+.ask kbd{margin-left:auto}
+.sugs{display:flex;flex-wrap:wrap;gap:8px}
+.sug{font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg-2)}
+.sug:hover{border-color:var(--accent);color:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.kpi{background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .v{font-family:var(--f-display);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:12px}
+.up{color:var(--ok)} .down-bad{color:var(--crit)}
+.grid-2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px}
+.todo{display:flex;flex-direction:column}
+.todo button{display:flex;align-items:center;gap:12px;padding:12px 16px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;width:100%}
+.todo button:last-child{border-bottom:0}
+.todo button:hover{background:var(--sunk)}
+.todo .n{font-family:var(--f-mono);font-size:13px;min-width:44px;text-align:right;color:var(--fg)}
+.todo .t{flex:1;min-width:0}
+.todo .t small{display:block;color:var(--fg-3);font-size:12px}
+.sev{width:3px;align-self:stretch;border-radius:2px;background:var(--line-2)}
+.sev.crit{background:var(--crit)} .sev.warn{background:var(--warn)} .sev.ok{background:var(--ok)} .sev.info{background:var(--accent)}
+.joe-card{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:12px}
+.joe-h{display:flex;align-items:center;gap:8px;font-weight:600;font-family:var(--f-display)}
+.joe-badge{width:22px;height:22px;border-radius:6px;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;font-size:12px}
+.insight{padding:10px 12px;border-radius:var(--r-md);background:var(--sunk);font-size:13px;display:flex;flex-direction:column;gap:6px}
+.insight .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.feed{display:flex;flex-direction:column}
+.feed div{display:flex;gap:10px;padding:9px 16px;font-size:13px;border-bottom:1px solid var(--line)}
+.feed div:last-child{border-bottom:0}
+.feed time{font-family:var(--f-mono);font-size:12px;color:var(--fg-3);min-width:40px}
+
+/* Tiers payant */
+.tp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+.idcard{display:flex;gap:14px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--sunk)}
+.photo{width:56px;height:56px;border-radius:var(--r-md);background:var(--accent-2);display:grid;place-items:center;font-family:var(--f-display);font-weight:600;color:var(--accent);font-size:18px;flex:none}
+.checks{display:flex;flex-direction:column;gap:2px;margin-top:12px}
+.check{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;font-size:13px}
+.check .ic{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;flex:none;margin-top:1px;background:var(--ok-bg);color:var(--ok)}
+.check .ic.w{background:var(--warn-bg);color:var(--warn)}
+.check code{font-family:var(--f-mono);font-size:11px;color:var(--fg-3);margin-left:auto;white-space:nowrap}
+.acts td{padding:9px 10px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.split div{padding:12px;border-radius:var(--r-md);border:1px solid var(--line)}
+.split .v{font-family:var(--f-display);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.split .mc{background:var(--accent-2);border-color:transparent}
+.split .mc .v{color:var(--accent)}
+.decision{margin-top:14px;padding:14px;border-radius:var(--r-md);display:flex;flex-direction:column;gap:8px}
+.decision.auto{background:var(--ok-bg)} .decision.review{background:var(--warn-bg)}
+.decision b{font-family:var(--f-display);font-size:15px}
+.decision.auto b{color:var(--ok)} .decision.review b{color:var(--warn)}
+.rule{font-family:var(--f-mono);font-size:12px;color:var(--fg-2);line-height:1.7;white-space:pre-wrap}
+.row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.add-act{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+/* Filters */
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{font-size:12px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg-2)}
+.filters button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+/* Drawer */
+.scrim{position:fixed;inset:0;background:rgba(15,18,40,.35);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:21;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.drawer-h{display:flex;align-items:flex-start;gap:12px;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 16px;border-bottom:1px solid var(--line)}
+.drawer-b{padding:18px 20px calc(40px + env(safe-area-inset-bottom,0px));overflow:auto;display:flex;flex-direction:column;gap:18px}
+.props{display:grid;grid-template-columns:140px minmax(0,1fr);gap:8px 14px;font-size:13px}
+.props dt{color:var(--fg-3)} .props dd{margin:0;min-width:0}
+.secret{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:var(--r-md);border:1px dashed var(--line-2);color:var(--fg-3);font-size:12px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{border:0;background:none;padding:8px 10px;color:var(--fg-3);font-weight:500;border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.fam{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.fam div{padding:10px;border:1px solid var(--line);border-radius:var(--r-md);font-size:13px}
+.garantie{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:6px 14px;align-items:center;font-size:13px}
+
+/* Ledger */
+.ledger td{font-size:12.5px}
+.ledger .acct{font-family:var(--f-mono);font-size:12px}
+.ledger tr.first td{border-top:1px solid var(--line-2)}
+.banner{display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:var(--r-md);background:var(--accent-2);color:var(--accent);font-size:13px}
+
+/* Produits */
+.versions{display:flex;gap:10px;flex-wrap:wrap}
+.ver{flex:1;min-width:180px;padding:12px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface);text-align:left;display:flex;flex-direction:column;gap:4px}
+.ver[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.diff-up{color:var(--ok);font-family:var(--f-mono);font-size:12px}
+.diff-dn{color:var(--crit);font-family:var(--f-mono);font-size:12px}
+
+/* Porteurs */
+.cards-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.org{padding:16px;display:flex;flex-direction:column;gap:10px}
+.org .roles{display:flex;gap:6px;flex-wrap:wrap}
+.matrix td,.matrix th{text-align:center} .matrix td:first-child,.matrix th:first-child{text-align:left}
+.yes{color:var(--ok);font-weight:600} .no{color:var(--fg-3)}
+
+/* Palette */
+.pal-scrim{position:fixed;inset:0;background:rgba(15,18,40,.4);z-index:30;display:flex;justify-content:center;align-items:flex-start;padding:10vh 16px 16px}
+.pal{width:min(640px,100%);background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;max-height:75vh}
+.pal input{border:0;border-bottom:1px solid var(--line);padding:16px 18px;font-size:16px;background:transparent;outline:none;width:100%}
+.pal-list{overflow:auto;padding:6px}
+.pal-sec{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-3);font-weight:600;padding:10px 12px 4px}
+.pal-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:0;background:none;border-radius:var(--r-md);text-align:left}
+.pal-item[aria-selected="true"]{background:var(--accent-2)}
+.pal-item small{margin-left:auto;color:var(--fg-3);font-family:var(--f-mono);font-size:11px}
+.pal-answer{padding:14px 18px;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);background:var(--sunk)}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:var(--r-md);font-size:13px;z-index:40;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+
+/* Responsive */
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.cards-3{grid-template-columns:1fr 1fr}}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:12px 16px;gap:10px}
+  .nav{flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:4px}
+  .nav-group{display:none}
+  .nav a{white-space:nowrap}
+  .side-foot{flex-direction:row;flex-wrap:wrap;align-items:center;margin-top:0}
+  .side-foot > .select,.side-foot > .theme-row{flex:1 1 200px;min-width:0}
+  .side-foot .role-label{display:none}
+  .topbar{padding:10px 16px}
+  .content{padding-inline:16px}
+  .grid-2,.tp{grid-template-columns:1fr}
+  .cards-3{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .props{grid-template-columns:110px minmax(0,1fr)}
+  .fam{grid-template-columns:1fr}
+  .topbar .hide-sm{display:none}
+}
+@media (prefers-reduced-motion:no-preference){
+  .drawer{animation:slide .18s ease-out}
+  @keyframes slide{from{transform:translateX(24px);opacity:.6}to{transform:none;opacity:1}}
+}
+</style>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div><b>MulemaCare One</b><span>Mutuelle · Côte d'Ivoire</span></div>
+    </div>
+    <button class="search-btn" id="open-pal" type="button">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      Chercher ou demander à JOE <kbd>⌘K</kbd>
+    </button>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">
+      <span class="role-label">Vous êtes connecté en tant que</span>
+      <select class="select" id="role" aria-label="Rôle">
+        <option value="gest">Gestionnaire mutuelle</option>
+        <option value="mc">Médecin-conseil</option>
+        <option value="clin">Clinique (prestataire)</option>
+      </select>
+      <span class="role-label">Thème</span>
+      <div class="theme-row">
+        <select class="select" id="skin" aria-label="Thème">
+          <option value="mulema">MulemaCare (recommandé)</option>
+          <option value="notion">Style Notion</option>
+          <option value="google">Style Google</option>
+          <option value="anthropic">Style Anthropic</option>
+          <option value="linear">Style Linear</option>
+          <option value="stripe">Style Stripe</option>
+          <option value="github">Style GitHub</option>
+          <option value="apple">Style Apple</option>
+        </select>
+        <select class="select" id="mode" aria-label="Clair ou sombre" style="flex:0 0 auto;width:auto">
+          <option value="auto">Auto</option>
+          <option value="light">Clair</option>
+          <option value="dark">Sombre</option>
+        </select>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb" id="crumb"></div>
+      <div class="spacer"></div>
+      <span class="chip hide-sm"><span class="dot"></span>Instance CI · données hébergées à Abidjan</span>
+      <span class="chip hide-sm">Données de démonstration</span>
+      <div class="tmenu-wrap">
+        <button type="button" class="theme-btn" id="theme-btn" aria-haspopup="true" aria-expanded="false"><span class="sw" id="theme-sw"></span><span id="theme-name">Thème</span></button>
+        <div class="tmenu" id="tmenu" role="menu" aria-label="Choisir un thème" hidden></div>
+      </div>
+      <div class="seg" role="group" aria-label="Apparence">
+        <button type="button" data-mode="light" aria-label="Thème clair" title="Clair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Clair</span></button>
+        <button type="button" data-mode="dark" aria-label="Thème sombre" title="Sombre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>Sombre</span></button>
+        <button type="button" data-mode="auto" aria-label="Suivre le système" title="Auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span>Auto</span></button>
+      </div>
+    </header>
+    <main class="content" id="view"></main>
+  </div>
+</div>
+
+<div id="drawer-root"></div>
+<div id="pal-root"></div>
+<div id="toast-root"></div>
+
+<script>
+(() => {
+const $ = (s, r=document) => r.querySelector(s);
+const fmt = n => new Intl.NumberFormat('fr-FR').format(Math.round(n));
+const F = n => fmt(n) + ' FCFA';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const initials = n => n.split(' ').map(w=>w[0]).slice(0,2).join('');
+
+/* ---------- Données fictives ---------- */
+const members = [
+  {id:'MC-00249218', name:'Koffi Yao', plan:'Santé Famille Or', rate:80, sponsor:'Employeur · SOTRA démo', status:'Actif', lives:4, ceiling:3000000, used:1110000, city:'Abidjan · Cocody', payer:'Employeur (prélèvement)', since:'mars 2024'},
+  {id:'MC-00928194', name:'Awa Koné', plan:'Santé Famille Or', rate:80, sponsor:'Individuel', status:'Actif', lives:3, ceiling:3000000, used:420000, city:'Abidjan · Marcory', payer:'Diaspora · Paris (son frère)', since:'janv. 2025'},
+  {id:'MC-00311407', name:'Mariama Diallo', plan:'Santé Essentiel', rate:70, sponsor:'Individuel', status:'Actif', lives:2, ceiling:1200000, used:1020000, city:'Dakar · Mermoz', payer:'Wave', since:'juin 2025'},
+  {id:'MC-00187752', name:'Jean-Baptiste Kouassi', plan:'Santé Essentiel', rate:70, sponsor:'Individuel', status:'Suspendu', lives:1, ceiling:1200000, used:180000, city:'Bouaké', payer:'Orange Money', since:'sept. 2024', note:'Cotisation impayée depuis 47 jours'},
+  {id:'MC-00455190', name:'Fatou Ndiaye', plan:'Santé Famille Or', rate:80, sponsor:'Employeur · Groupe démo', status:'Actif', lives:5, ceiling:3000000, used:2640000, city:'Dakar · Plateau', payer:'Employeur (prélèvement)', since:'févr. 2024'},
+  {id:'MC-00502066', name:'Ibrahim Traoré', plan:'Santé Jeune', rate:60, sponsor:'Individuel', status:'Carence', lives:1, ceiling:600000, used:0, city:'Abidjan · Yopougon', payer:'MTN MoMo', since:'sept. 2026', note:'Carence jusqu\'au 12 nov. 2026'},
+];
+const providers = ['Clinique Les Palmiers · Cocody','Polyclinique du Plateau','Pharmacie Riviera 3','Laboratoire Marcory Centre','Clinique Mermoz · Dakar','Centre d\'imagerie Deux-Plateaux'];
+
+let claims = [
+  {id:'PEC-26-09814', m:0, prov:0, date:'30/09 18:42', total:48000, share:38400, status:'auto', fraud:.06, acts:['Consultation généraliste','NFS','ECG'], dx:'Douleur thoracique atypique — bilan cardiaque', rule:'R-12 v3'},
+  {id:'PEC-26-09813', m:4, prov:5, date:'30/09 17:15', total:185000, share:148000, status:'review', fraud:.18, acts:['IRM genou'], dx:'Suspicion lésion méniscale', rule:'R-20 v2'},
+  {id:'PEC-26-09811', m:2, prov:4, date:'30/09 16:03', total:62000, share:43400, status:'review', fraud:.11, acts:['Échographie pelvienne','Consultation gynécologie'], dx:'Suivi grossesse T2', rule:'R-20 v2'},
+  {id:'PEC-26-09807', m:1, prov:2, date:'30/09 14:51', total:21500, share:17200, status:'paid', fraud:.03, acts:['Amoxicilline 1 g','Paracétamol 500 mg'], dx:'Angine bactérienne', rule:'R-12 v3'},
+  {id:'PEC-26-09802', m:4, prov:3, date:'30/09 12:30', total:96000, share:76800, status:'fraud', fraud:.72, acts:['Bilan lipidique','HbA1c','Bilan hépatique','Bilan rénal'], dx:'Bilan de routine', rule:'F-03 v1', flag:'4ᵉ bilan complet en 6 semaines pour le même bénéficiaire'},
+  {id:'PEC-26-09796', m:0, prov:1, date:'29/09 19:08', total:35500, share:28400, status:'paid', fraud:.04, acts:['Consultation cardiologie'], dx:'Contrôle HTA', rule:'R-12 v3'},
+  {id:'PEC-26-09790', m:3, prov:0, date:'29/09 10:22', total:25000, share:0, status:'rejected', fraud:.09, acts:['Consultation généraliste'], dx:'Céphalées', rule:'R-01 v1', flag:'Droits suspendus (cotisation impayée)'},
+  {id:'PEC-26-09781', m:1, prov:0, date:'28/09 09:47', total:40000, share:32000, status:'auto', fraud:.05, acts:['Consultation pédiatrie','CRP'], dx:'Fièvre enfant 4 ans', rule:'R-12 v3'},
+];
+const statusMap = {
+  auto:['Accordée automatiquement','p-ok'], review:['Revue médecin-conseil','p-warn'], fraud:['Alerte fraude','p-crit'],
+  paid:['Payée au prestataire','p-mute'], rejected:['Refusée','p-crit'], approved:['Accordée (humain)','p-ok'], info:['Pièces demandées','p-info']
+};
+
+let ledger = [
+  {id:'J-2026-0918402', t:'30/09 18:42', lib:'PEC-26-09814 · accord tiers payant', lines:[['6011','Prestations santé — soins',38400,0],['4011','Prestataires à payer · Clinique Les Palmiers',0,38400]]},
+  {id:'J-2026-0918399', t:'30/09 18:05', lib:'Cotisation oct. · MC-00928194 · payée depuis Paris', lines:[['5121','Mobile money · Wave',27500,0],['7061','Cotisations acquises',0,27500]]},
+  {id:'J-2026-0918391', t:'30/09 15:10', lib:'Règlement groupé prestataires · lot 2026-39', lines:[['4011','Prestataires à payer',4812300,0],['5122','Mobile money · Orange Money',0,4812300]]},
+  {id:'J-2026-0918388', t:'30/09 14:51', lib:'PEC-26-09807 · accord tiers payant', lines:[['6011','Prestations santé — pharmacie',17200,0],['4011','Prestataires à payer · Pharmacie Riviera 3',0,17200]]},
+  {id:'J-2026-0918377', t:'30/09 11:02', lib:'Contre-passation J-2026-0918201 · erreur de barème', lines:[['4011','Prestataires à payer · Polyclinique du Plateau',6000,0],['6011','Prestations santé — soins',0,6000]]},
+  {id:'J-2026-0918350', t:'30/09 08:00', lib:'Prélèvement employeur · SOTRA démo · 212 adhérents', lines:[['5110','Banque · virement employeur',9328000,0],['7061','Cotisations acquises',0,9328000]]},
+];
+
+const feed = [
+  ['18:42','PEC-26-09814 accordée automatiquement (règle R-12 v3) — Clinique Les Palmiers'],
+  ['18:05','Cotisation d\'Awa Koné payée depuis Paris par un proche — 27 500 FCFA'],
+  ['17:15','IRM de Fatou Ndiaye routée vers le médecin-conseil (montant > 150 000)'],
+  ['15:10','Lot de règlement 2026-39 envoyé à 37 prestataires — 4,81 M FCFA'],
+  ['12:30','JOE a signalé PEC-26-09802 : 4ᵉ bilan complet en 6 semaines'],
+];
+
+let role = 'gest';
+let view = 'home';
+let claimFilter = 'all';
+
+/* ---------- Navigation ---------- */
+const I = {
+  home:'<path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  tp:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',
+  claims:'<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 14 2 2 4-4"/>',
+  members:'<circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.9-4-5.7"/>',
+  ledger:'<path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M8 9h8M8 13h8M8 17h5"/>',
+  products:'<path d="M12 3 3 7.5l9 4.5 9-4.5z"/><path d="m3 12 9 4.5 9-4.5M3 16.5 12 21l9-4.5"/>',
+  carriers:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M17.5 14v7M14 17.5h7"/>',
+  mobile:'<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+};
+const nav = [
+  {g:'Pilotage'},
+  {k:'home', l:'Accueil', roles:['gest','mc']},
+  {g:'Opérations'},
+  {k:'tp', l:'Tiers payant', roles:['gest','clin']},
+  {k:'mobile', l:'Comptoir mobile', roles:['gest','clin']},
+  {k:'claims', l:'Prises en charge', roles:['gest','mc','clin'], count:()=>claims.filter(c=>c.status==='review'||c.status==='fraud').length},
+  {k:'members', l:'Adhérents', roles:['gest']},
+  {g:'Finance & produit'},
+  {k:'ledger', l:'Grand livre', roles:['gest']},
+  {k:'products', l:'Produits & garanties', roles:['gest']},
+  {k:'carriers', l:'Porteurs de risque', roles:['gest']},
+];
+const titles = {home:'Accueil', tp:'Tiers payant', mobile:'Comptoir mobile', claims:'Prises en charge', members:'Adhérents', ledger:'Grand livre', products:'Produits & garanties', carriers:'Porteurs de risque'};
+
+function renderNav(){
+  let html = '', pendingGroup = null;
+  nav.forEach(n => {
+    if(n.g){ pendingGroup = n.g; return; }
+    if(!n.roles.includes(role)) return;
+    if(pendingGroup){ html += `<div class="nav-group">${pendingGroup}</div>`; pendingGroup = null; }
+    const c = n.count ? `<span class="count">${n.count()}</span>` : '';
+    html += `<a href="#${n.k}" data-view="${n.k}" ${view===n.k?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[n.k]}</svg>${n.l}${c}</a>`;
+  });
+  $('#nav').innerHTML = html;
+}
+function go(v){
+  const item = nav.find(n=>n.k===v);
+  if(!item || !item.roles.includes(role)) v = role==='clin' ? 'tp' : 'home';
+  view = v; renderNav();
+  const roleName = {gest:'Gestionnaire', mc:'Médecin-conseil', clin:'Clinique Les Palmiers'}[role];
+  $('#crumb').innerHTML = `${roleName} / <b>${titles[v]}</b>`;
+  ({home:vHome, tp:vTP, mobile:vMobile, claims:vClaims, members:vMembers, ledger:vLedger, products:vProducts, carriers:vCarriers})[v]();
+  window.scrollTo(0,0);
+}
+$('#nav').addEventListener('click', e => { const a = e.target.closest('a[data-view]'); if(!a) return; e.preventDefault(); go(a.dataset.view); });
+$('#role').addEventListener('change', e => { role = e.target.value; closeDrawer(); go(view); toast({gest:'Vue gestionnaire : aucun diagnostic affiché.', mc:'Vue médecin-conseil : diagnostics visibles, accès journalisé.', clin:'Vue clinique : seules vos propres prises en charge sont visibles.'}[role]); });
+
+/* ---------- Home ---------- */
+function spark(vals){
+  const w=120,h=32,min=Math.min(...vals)-2,max=Math.max(...vals)+2;
+  const pts = vals.map((v,i)=>[i*(w/(vals.length-1)), h-(v-min)/(max-min)*h]);
+  const d = pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const last = pts[pts.length-1];
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${d} L${w} ${h} L0 ${h}Z" fill="var(--accent-2)"/><path d="${d}" fill="none" stroke="var(--accent)" stroke-width="1.6"/><circle cx="${last[0]}" cy="${last[1]}" r="2.6" fill="var(--accent)"/></svg>`;
+}
+function vHome(){
+  const review = claims.filter(c=>c.status==='review').length, fraud = claims.filter(c=>c.status==='fraud').length;
+  $('#view').innerHTML = `
+  <section class="hello">
+    <span class="eyebrow">Mercredi 30 septembre 2026</span>
+    <h1>Bonsoir. Que voulez-vous faire ?</h1>
+    <button class="ask" type="button" data-pal><span class="joe">✦ JOE</span> Chercher un adhérent, une prise en charge, ou poser une question… <kbd>⌘K</kbd></button>
+    <div class="sugs">
+      <button class="sug" data-q="Combien avons-nous payé en imagerie ce mois-ci ?">Dépenses d'imagerie ce mois</button>
+      <button class="sug" data-q="Quelles prises en charge sont suspectes ?">Prises en charge suspectes</button>
+      <button class="sug" data-q="Quels contrats employeurs expirent dans 60 jours ?">Contrats employeurs à renouveler</button>
+      <button class="sug" data-q="Qui est en impayé depuis plus de 30 jours ?">Impayés > 30 jours</button>
+    </div>
+  </section>
+  <section class="kpis" aria-label="Indicateurs">
+    <div class="kpi"><span class="eyebrow">Adhérents actifs</span><span class="v">48 290</span><span class="d up">+3,1 % sur 30 j</span></div>
+    <div class="kpi"><span class="eyebrow">Vies couvertes</span><span class="v">131 402</span><span class="d muted">2,7 par contrat</span></div>
+    <div class="kpi"><span class="eyebrow">Cotisations · sept.</span><span class="v">214,6 M</span><span class="d muted">FCFA · 94 % encaissé</span></div>
+    <div class="kpi"><span class="eyebrow">Prestations · sept.</span><span class="v">146,1 M</span><span class="d muted">FCFA · 11 408 PEC</span></div>
+    <div class="kpi"><span class="eyebrow">Ratio S/C · 6 mois</span><span class="v">68,1 %</span>${spark([71.2,70.4,69.8,70.9,68.7,68.1])}</div>
+  </section>
+  <section class="grid-2">
+    <div class="panel">
+      <div class="panel-h"><h2>À traiter</h2><div class="spacer"></div><span class="faint" style="font-size:12px">Trié par urgence</span></div>
+      <div class="todo">
+        <button data-go="claims" data-f="fraud"><span class="sev crit"></span><span class="n">${fraud}</span><span class="t">Alertes fraude à examiner<small>Score &gt; 0,6 · bloquées avant paiement</small></span></button>
+        <button data-go="claims" data-f="review"><span class="sev warn"></span><span class="n">${review}</span><span class="t">Prises en charge en revue médecin-conseil<small>Montant &gt; 50 000 FCFA ou acte soumis à accord préalable</small></span></button>
+        <button data-go="members"><span class="sev warn"></span><span class="n">312</span><span class="t">Adhérents en impayé depuis plus de 30 jours<small>Relance WhatsApp prête · suspension automatique à J+45</small></span></button>
+        <button data-go="claims" data-f="auto"><span class="sev ok"></span><span class="n">118</span><span class="t">Prises en charge accordées automatiquement aujourd'hui<small>Délai médian au comptoir : 9 secondes</small></span></button>
+        <button data-go="carriers"><span class="sev info"></span><span class="n">1</span><span class="t">Porteur de risque en cours d'intégration<small>Assureur pilote · gestion déléguée santé groupe</small></span></button>
+      </div>
+    </div>
+    <div class="joe-card">
+      <div class="joe-h"><span class="joe-badge">✦</span>JOE a remarqué</div>
+      <div class="insight"><div class="row"><span class="pill p-warn">Imagerie</span><span class="faint" style="font-size:12px">Centre d'imagerie Deux-Plateaux</span></div>Les IRM ont augmenté de 37 % en septembre chez ce prestataire, contre 4 % sur le reste du réseau. 62 % sont prescrites par le même médecin.<div class="row"><button class="btn" data-q="Montre-moi les IRM du Centre d'imagerie Deux-Plateaux">Voir le détail</button></div></div>
+      <div class="insight"><div class="row"><span class="pill p-info">Renouvellement</span></div>14 contrats employeurs (3 820 vies) arrivent à échéance avant le 30 novembre. Le ratio S/C de 9 d'entre eux permet une reconduction au même tarif.</div>
+      <div class="insight"><div class="row"><span class="pill p-ok">Économies</span></div>Passer 3 pharmacies au barème générique conventionné économiserait environ 2,4 M FCFA par mois.</div>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="panel-h"><h2>Activité récente</h2></div>
+    <div class="feed">${feed.map(f=>`<div><time>${f[0]}</time><span>${esc(f[1])}</span></div>`).join('')}</div>
+  </section>`;
+}
+
+/* ---------- Tiers payant ---------- */
+const bareme = [
+  ['Consultation généraliste',25000],['NFS (numération)',8000],['ECG',15000],['Échographie abdominale',30000],['Radiographie thorax',18000],['Consultation spécialiste',35000]
+];
+let tpActs = [['Consultation généraliste',25000],['NFS (numération)',8000],['ECG',15000]];
+let tpIssued = false;
+function vTP(){
+  const m = members[1];
+  const total = tpActs.reduce((a,x)=>a+x[1],0);
+  const share = Math.round(total*m.rate/100);
+  const remaining = m.ceiling - m.used;
+  const auto = total < 50000;
+  $('#view').innerHTML = `
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="eyebrow">Comptoir · Clinique Les Palmiers, Cocody</span><h1>Tiers payant en temps réel</h1><p class="muted" style="margin:0;max-width:65ch">La carte est scannée, les droits vérifiés, la part de chacun calculée. La décision vient du moteur de règles ; JOE l'explique.</p></div>
+  <div class="tp">
+    <div class="panel">
+      <div class="panel-h"><h2>1 · Identification</h2><div class="spacer"></div><span class="pill p-ok">Identité confirmée</span></div>
+      <div class="panel-b">
+        <div class="idcard">
+          <div class="photo">${initials(m.name)}</div>
+          <div style="min-width:0"><b style="font-size:15px">${m.name}</b><div class="mono faint" style="font-size:12px">${m.id} · QR dynamique</div><div class="muted" style="font-size:13px">${m.plan} · ${m.rate} % · ${m.lives} bénéficiaires</div></div>
+        </div>
+        <div class="checks">
+          <div class="check"><span class="ic">✓</span><span>Photo du bénéficiaire comparée par l'accueil</span><code>ID-02</code></div>
+          <div class="check"><span class="ic">✓</span><span>Code à usage unique confirmé sur le téléphone de l'adhérente</span><code>ID-03</code></div>
+          <div class="check"><span class="ic">✓</span><span>Droits ouverts · cotisation d'octobre payée depuis Paris</span><code>R-01 v1</code></div>
+          <div class="check"><span class="ic">✓</span><span>Prestataire conventionné · barème 2026</span><code>R-04 v2</code></div>
+          <div class="check"><span class="ic">✓</span><span>Délai de carence écoulé</span><code>R-07 v1</code></div>
+          <div class="check"><span class="ic">✓</span><span>Plafond annuel restant : <b class="num">${F(remaining)}</b></span><code>R-09 v1</code></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h2>2 · Actes et décision</h2></div>
+      <div class="panel-b">
+        <div class="tbl-wrap"><table class="acts"><thead><tr><th>Acte</th><th class="r">Barème conventionné</th><th></th></tr></thead><tbody>
+          ${tpActs.map((a,i)=>`<tr><td>${a[0]}</td><td class="r num">${fmt(a[1])}</td><td class="r"><button class="btn ghost" data-rm="${i}" aria-label="Retirer ${a[0]}" ${tpIssued?'disabled':''}>✕</button></td></tr>`).join('')}
+          <tr><td><b>Total</b></td><td class="r num"><b>${F(total)}</b></td><td></td></tr>
+        </tbody></table></div>
+        <div class="add-act">
+          <select class="select" id="act-sel" style="flex:1;min-width:180px" aria-label="Acte à ajouter" ${tpIssued?'disabled':''}>${bareme.map((b,i)=>`<option value="${i}">${b[0]} — ${fmt(b[1])}</option>`).join('')}</select>
+          <button class="btn" id="act-add" ${tpIssued?'disabled':''}>Ajouter l'acte</button>
+        </div>
+        <div class="split">
+          <div class="mc"><span class="eyebrow">Part MulemaCare · ${m.rate} %</span><div class="v">${F(share)}</div></div>
+          <div><span class="eyebrow">Reste à charge patient</span><div class="v">${F(total-share)}</div></div>
+        </div>
+        <div class="decision ${auto?'auto':'review'}">
+          <b>${auto?'Accord automatique':'Revue médecin-conseil requise'}</b>
+          <div class="rule">${auto
+            ? `SI droits = ouverts ET conventionné\n ET total &lt; 50 000 ET score fraude &lt; 0,20 (actuel : 0,06)\nALORS accorder · réserver ${fmt(share)} sur le plafond\nRègle R-12 · version 3 · en vigueur depuis le 01/01/2026`
+            : `Total ${fmt(total)} ≥ 50 000 FCFA\nALORS router vers le médecin-conseil · délai cible 2 h\nRègle R-20 · version 2 · en vigueur depuis le 01/01/2026`}</div>
+          <div style="font-size:13px"><b style="font-size:13px;font-family:var(--f-body)">✦ JOE :</b> ${auto
+            ? `Parcours cohérent avec une douleur thoracique chez une adhérente sans antécédent de fraude. Quatrième passage cette année, dernier en juin.`
+            : `L'échographie fait passer le total au-dessus du seuil d'accord automatique. Le médecin-conseil reçoit le dossier avec la prescription jointe.`}</div>
+        </div>
+        <div class="row-actions">
+          ${tpIssued
+            ? `<span class="pill p-ok">Accord émis · ${claims[0].id}</span><button class="btn" id="tp-reset">Nouveau patient</button>`
+            : `<button class="btn primary" id="tp-issue">${auto?'Émettre l\'accord':'Envoyer au médecin-conseil'}</button><button class="btn" data-q="Explique la décision de prise en charge d'Awa Koné">Demander à JOE</button>`}
+        </div>
+      </div>
+    </div>
+  </div>`;
+  $('#view').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{tpActs.splice(+b.dataset.rm,1);vTP();});
+  const add = $('#act-add'); if(add) add.onclick=()=>{tpActs.push(bareme[+$('#act-sel').value]);vTP();};
+  const iss = $('#tp-issue'); if(iss) iss.onclick=()=>{
+    const id = 'PEC-26-0' + (9815 + claims.length);
+    claims.unshift({id, m:1, prov:0, date:'30/09 20:31', total, share, status:auto?'auto':'review', fraud:.06, acts:tpActs.map(a=>a[0]), dx:'Douleur thoracique — bilan', rule:auto?'R-12 v3':'R-20 v2'});
+    if(auto){
+      ledger.unshift({id:'J-2026-09184'+(10+ledger.length), t:'30/09 20:31', lib:`${id} · accord tiers payant`, lines:[['6011','Prestations santé — soins',share,0],['4011','Prestataires à payer · Clinique Les Palmiers',0,share]]});
+      feed.unshift(['20:31',`${id} accordée automatiquement (R-12 v3) — Awa Koné`]);
+    } else feed.unshift(['20:31',`${id} envoyée au médecin-conseil — Awa Koné`]);
+    tpIssued = true; renderNav(); vTP();
+    toast(auto ? `Accord ${id} émis. SMS envoyé à l'adhérente, écriture passée au grand livre.` : `${id} envoyée au médecin-conseil.`);
+  };
+  const rs = $('#tp-reset'); if(rs) rs.onclick=()=>{tpIssued=false;tpActs=[['Consultation généraliste',25000],['NFS (numération)',8000],['ECG',15000]];vTP();};
+}
+
+/* ---------- Comptoir mobile ---------- */
+const mob = {step:0, otp:'', acts:new Set([0,1,2]), sun:false, offline:false, issued:null, mcInput:''};
+const OTP_DEMO = '482913';
+function vMobile(){
+  const m = members[1];
+  const steps = ['Carte','Identité','Code','Actes','Décision'];
+  const sel = [...mob.acts].sort((a,b)=>a-b).map(i=>bareme[i]);
+  const total = sel.reduce((a,x)=>a+x[1],0), share = Math.round(total*m.rate/100), auto = total>0 && total<50000;
+  const pct = mob.issued ? 100 : Math.round(mob.step/steps.length*100);
+  let body='', foot='';
+  if(mob.issued){
+    body = `<div class="m-done"><div class="ring" aria-hidden="true">✓</div><h2>${mob.issued.auto?(mob.offline?'Accord provisoire émis':'Accord émis'):'Envoyé au médecin-conseil'}</h2>
+      <p class="mono" style="margin:0">${mob.issued.id}</p>
+      ${mob.issued.auto?`<div class="m-cash">Encaisser auprès du patient<b>${F(mob.issued.total-mob.issued.share)}</b></div>`:`<p style="margin:0">Réponse attendue en moins de 2 heures. Le patient peut patienter ou revenir.</p>`}
+      ${mob.offline&&mob.issued.auto?`<p style="margin:0">Signé sur cet appareil, valable 2 heures. Il sera synchronisé dès le retour du réseau.</p>`:`<p style="margin:0">SMS de confirmation envoyé à ${m.name}.</p>`}</div>`;
+    foot = `<button class="m-btn" data-m="next-patient">Patient suivant</button>`;
+  } else if(mob.step===0){
+    body = `<span class="m-step">Étape 1 sur 5</span><h2>Scannez la carte de l'adhérent</h2>
+      <button class="m-scan" data-m="scan" aria-label="Scanner la carte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><rect x="8" y="8" width="3" height="3"/><rect x="13" y="8" width="3" height="3"/><rect x="8" y="13" width="3" height="3"/><path d="M13 13h3v3"/></svg></button>
+      <div class="m-field"><label for="m-num">Ou saisissez le numéro MulemaCare</label><input class="m-input mono" id="m-num" placeholder="MC-00928194" value="${esc(mob.mcInput)}" autocomplete="off"></div>`;
+    foot = `<button class="m-btn" data-m="scan">Scanner la carte</button><button class="m-btn sec" data-m="lookup">Rechercher le numéro</button>`;
+  } else if(mob.step===1){
+    body = `<span class="m-step">Étape 2 sur 5</span><h2>La personne en face de vous est-elle bien celle-ci ?</h2>
+      <div class="m-id"><div class="photo">${initials(m.name)}</div><b style="font-size:20px">${m.name}</b><span class="mono">${m.id}</span><span>${m.plan} · ${m.rate} %</span><span class="pill p-ok">Droits ouverts</span></div>`;
+    foot = `<button class="m-btn" data-m="id-yes">Oui, c'est elle</button><button class="m-btn bad" data-m="id-no">Non, ce n'est pas elle</button>`;
+  } else if(mob.step===2){
+    body = `<span class="m-step">Étape 3 sur 5</span><h2>Demandez le code reçu par SMS</h2>
+      <p style="margin:0">Un code à 6 chiffres vient d'être envoyé au téléphone de ${m.name}. Il confirme qu'elle est présente.</p>
+      <div class="m-field"><label for="m-otp">Code à 6 chiffres</label><input class="m-input m-otp" id="m-otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" value="${esc(mob.otp)}"></div>
+      <p class="mono" style="margin:0;font-size:14px">Démo : ${OTP_DEMO.slice(0,3)} ${OTP_DEMO.slice(3)}</p>`;
+    foot = `<button class="m-btn" data-m="otp" ${mob.otp.length===6?'':'disabled'}>Valider le code</button><button class="m-btn sec" data-m="resend">Renvoyer le code</button>`;
+  } else if(mob.step===3){
+    body = `<span class="m-step">Étape 4 sur 5</span><h2>Quels actes aujourd'hui ?</h2>
+      <div class="m-acts" role="group" aria-label="Actes">${bareme.map((b,i)=>`<button class="m-act" role="checkbox" aria-checked="${mob.acts.has(i)}" data-act="${i}"><span class="m-box" aria-hidden="true">${mob.acts.has(i)?'✓':''}</span><span>${b[0]}</span><span class="num">${fmt(b[1])}</span></button>`).join('')}</div>
+      <div class="m-total"><span>Total au barème</span><b>${F(total)}</b></div>`;
+    foot = `<button class="m-btn" data-m="to-decision" ${total?'':'disabled'}>Calculer la prise en charge</button>`;
+  } else {
+    body = `<span class="m-step">Étape 5 sur 5</span><h2>Prise en charge</h2>
+      <div class="m-split"><div class="mc"><span>MulemaCare paie</span><span class="big">${F(share)}</span></div><div><span>Le patient paie</span><span class="big">${F(total-share)}</span></div></div>
+      <div class="m-verdict ${auto?'auto':'review'}"><b>${auto?(mob.offline?'Accord provisoire possible':'Accord immédiat'):'Avis du médecin-conseil requis'}</b>
+      <span>${auto?(mob.offline?'Réseau coupé : l\'accord est signé sur cet appareil et reste valable 2 heures.':'Toutes les conditions de la règle R-12 sont remplies.'):mob.offline?'Réseau coupé : le dossier partira dès le retour du réseau.':`Le total dépasse 50 000 FCFA. Réponse en moins de 2 heures.`}</span></div>`;
+    foot = `<button class="m-btn" data-m="issue">${auto?'Émettre l\'accord':'Envoyer au médecin-conseil'}</button><button class="m-btn sec" data-m="back">Modifier les actes</button>`;
+  }
+  $('#view').innerHTML = `
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="eyebrow">Portail prestataire · téléphone Android du comptoir</span><h1>Comptoir mobile</h1><p class="muted" style="margin:0;max-width:65ch">Le même tiers payant, pensé pour un téléphone d'entrée de gamme, une connexion instable et une file d'attente. Une seule décision par écran.</p></div>
+  <div class="mob-wrap">
+    <div class="phone"><div class="m-app ${mob.sun?'sun':''}">
+      <div class="m-bar"><span class="brand-mark" style="width:32px;height:32px">M</span><div style="min-width:0"><b>Clinique Les Palmiers</b><div style="font-size:13px">Comptoir 2 · Aya</div></div></div>
+      <div class="m-prog" aria-hidden="true"><i style="width:${pct}%"></i></div>
+      ${mob.offline?`<div class="m-net" role="status">Hors ligne · les accords sous 50 000 FCFA restent possibles</div>`:''}
+      <div class="m-body">${body}</div>
+      <div class="m-foot">${foot}</div>
+    </div></div>
+    <div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+      <div class="panel"><div class="panel-h"><h2>Conditions du terrain</h2></div><div class="panel-b" style="padding-block:4px">
+        <div class="toggle"><div><b style="font-weight:600">Mode plein soleil</b><div class="muted" style="font-size:13px">Noir sur blanc, traits épais, quel que soit le thème</div></div><button class="switch" role="switch" aria-checked="${mob.sun}" data-sw="sun" aria-label="Mode plein soleil"></button></div>
+        <div class="toggle"><div><b style="font-weight:600">Simuler une coupure réseau</b><div class="muted" style="font-size:13px">Accord provisoire signé sur l'appareil, synchronisé ensuite</div></div><button class="switch" role="switch" aria-checked="${mob.offline}" data-sw="offline" aria-label="Simuler une coupure réseau"></button></div>
+      </div></div>
+      <div class="panel"><div class="panel-h"><h2>Règles appliquées</h2></div><div class="panel-b rules">
+        <div class="rule-item"><span class="k">48 px</span><span>Toute zone tactile fait au moins 48 px de haut ; les actions principales 56 px, en bas de l'écran, sous le pouce.</span></div>
+        <div class="rule-item"><span class="k">16 px</span><span>Texte courant à 16 px minimum, montants à 24 px et plus. Aucun texte secondaire en gris clair.</span></div>
+        <div class="rule-item"><span class="k">4,5 : 1</span><span>Contraste minimum AA partout ; le mode plein soleil dépasse 15 : 1.</span></div>
+        <div class="rule-item"><span class="k">1 écran</span><span>Une question par écran, formulée comme on la dit au comptoir : « Est-ce bien elle ? »</span></div>
+        <div class="rule-item"><span class="k">hors ligne</span><span>Les accords sous le seuil automatique se signent sur l'appareil et se synchronisent au retour du réseau.</span></div>
+        <div class="rule-item"><span class="k">clavier</span><span>Le code s'ouvre sur le pavé numérique et se remplit depuis le SMS quand le téléphone le permet.</span></div>
+      </div></div>
+    </div>
+  </div>`;
+  const root = $('#view');
+  root.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{mob[b.dataset.sw]=!mob[b.dataset.sw];vMobile();});
+  root.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{const i=+b.dataset.act;mob.acts.has(i)?mob.acts.delete(i):mob.acts.add(i);vMobile();});
+  const num = $('#m-num'); if(num) num.oninput=()=>{mob.mcInput=num.value;};
+  const otp = $('#m-otp'); if(otp){ otp.oninput=()=>{ otp.value=otp.value.replace(/\D/g,'').slice(0,6); mob.otp=otp.value; const b=root.querySelector('[data-m="otp"]'); if(b) b.disabled = mob.otp.length!==6; }; otp.focus(); }
+  root.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{
+    const a = b.dataset.m;
+    if(a==='scan'){ mob.step=1; }
+    else if(a==='lookup'){ const v=(mob.mcInput||'').trim().toUpperCase(); if(v && v!==m.id){ toast(`Aucun adhérent trouvé pour ${v}. Vérifiez le numéro sur la carte.`); return; } mob.step=1; }
+    else if(a==='id-yes'){ mob.step=2; mob.otp=''; }
+    else if(a==='id-no'){ toast('Prise en charge bloquée. Le signalement est transmis à la mutuelle.'); feed.unshift(['20:48','Comptoir mobile : identité refusée pour MC-00928194 (Clinique Les Palmiers)']); mob.step=0; }
+    else if(a==='resend'){ toast('Nouveau code envoyé par SMS.'); }
+    else if(a==='otp'){ if(mob.otp!==OTP_DEMO){ toast('Code incorrect. Demandez à l\'adhérente de le relire, ou renvoyez-le.'); return; } mob.step=3; }
+    else if(a==='to-decision'){ mob.step=4; }
+    else if(a==='back'){ mob.step=3; }
+    else if(a==='issue'){
+      const id = 'PEC-26-0' + (9815 + claims.length);
+      claims.unshift({id, m:1, prov:0, date:'30/09 20:48', total, share, status:auto?'auto':'review', fraud:.06, acts:sel.map(x=>x[0]), dx:'Consultation — comptoir mobile', rule:auto?'R-12 v3':'R-20 v2'});
+      if(auto) ledger.unshift({id:'J-2026-09184'+(10+ledger.length), t:'30/09 20:48', lib:`${id} · accord comptoir mobile${mob.offline?' (provisoire, hors ligne)':''}`, lines:[['6011','Prestations santé — soins',share,0],['4011','Prestataires à payer · Clinique Les Palmiers',0,share]]});
+      feed.unshift(['20:48',`${id} ${auto?'accordée':'envoyée au médecin-conseil'} depuis le comptoir mobile — Awa Koné`]);
+      mob.issued = {id, total, share, auto}; renderNav();
+    }
+    else if(a==='next-patient'){ mob.step=0; mob.otp=''; mob.issued=null; mob.acts=new Set([0,1,2]); mob.mcInput=''; }
+    vMobile();
+  });
+}
+
+/* ---------- Prises en charge ---------- */
+function vClaims(){
+  let list = role==='clin' ? claims.filter(c=>c.prov===0) : claims;
+  if(claimFilter!=='all') list = list.filter(c=>c.status===claimFilter);
+  const fb = (k,l) => `<button data-f="${k}" aria-pressed="${claimFilter===k}">${l}</button>`;
+  $('#view').innerHTML = `
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="eyebrow">${role==='clin'?'Clinique Les Palmiers · vos dossiers':'Toutes les prises en charge'}</span><h1>Prises en charge</h1></div>
+  <div class="filters">${fb('all','Toutes')}${fb('review','Revue médecin-conseil')}${fb('fraud','Alertes fraude')}${fb('auto','Automatiques')}${fb('paid','Payées')}${fb('rejected','Refusées')}</div>
+  <div class="panel tbl-wrap"><table><thead><tr><th>Dossier</th><th>Adhérent</th><th>Prestataire</th><th class="r">Montant</th><th class="r">Part mutuelle</th><th>Risque</th><th>Statut</th></tr></thead><tbody>
+    ${list.length? list.map(c=>{const m=members[c.m];const s=statusMap[c.status];const fc=c.fraud>.6?'crit':c.fraud>.15?'warn':'ok';
+      return `<tr class="click" data-claim="${c.id}" tabindex="0"><td><div class="mono" style="font-size:12px">${c.id}</div><div class="faint" style="font-size:12px">${c.date}</div></td><td><div class="who"><span class="av">${initials(m.name)}</span>${m.name}</div></td><td class="muted">${providers[c.prov]}</td><td class="r num">${fmt(c.total)}</td><td class="r num">${fmt(c.share)}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="bar ${fc}" style="width:60px"><i style="width:${Math.max(6,c.fraud*100)}%"></i></div><span class="num faint" style="font-size:12px">${c.fraud.toFixed(2).replace('.',',')}</span></div></td><td><span class="pill ${s[1]}">${s[0]}</span></td></tr>`}).join('')
+      : `<tr><td colspan="7" class="faint" style="padding:28px;text-align:center">Aucune prise en charge dans ce filtre.</td></tr>`}
+  </tbody></table></div>`;
+  $('#view').querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{claimFilter=b.dataset.f;vClaims();});
+  $('#view').querySelectorAll('[data-claim]').forEach(r=>{r.onclick=()=>openClaim(r.dataset.claim);r.onkeydown=e=>{if(e.key==='Enter')openClaim(r.dataset.claim);};});
+}
+function openClaim(id){
+  const c = claims.find(x=>x.id===id); const m = members[c.m]; const s = statusMap[c.status];
+  const canDecide = (c.status==='review'||c.status==='fraud'||c.status==='info') && role!=='clin';
+  const dxBlock = role==='mc'
+    ? `<div><span class="eyebrow">Motif médical</span><p style="margin:6px 0 0">${esc(c.dx)}</p><p class="faint" style="font-size:12px;margin:4px 0 0">Accès médecin-conseil journalisé · ${new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</p></div>`
+    : `<div class="secret">🔒 Motif médical masqué — visible uniquement par le médecin-conseil (secret médical).</div>`;
+  openDrawer(`
+    <div class="drawer-h"><div style="flex:1;min-width:0"><div class="mono faint" style="font-size:12px">${c.id} · ${c.date}</div><h2 style="font-size:20px;margin-top:4px">${F(c.total)}</h2><div style="margin-top:6px"><span class="pill ${s[1]}">${s[0]}</span></div></div><button class="btn ghost" data-close aria-label="Fermer">✕</button></div>
+    <div class="drawer-b">
+      <dl class="props">
+        <dt>Adhérent</dt><dd>${m.name} <span class="mono faint" style="font-size:12px">${m.id}</span></dd>
+        <dt>Prestataire</dt><dd>${providers[c.prov]}</dd>
+        <dt>Actes</dt><dd>${c.acts.map(esc).join(' · ')}</dd>
+        <dt>Part mutuelle</dt><dd class="num">${F(c.share)} <span class="faint">(${m.rate} %)</span></dd>
+        <dt>Règle appliquée</dt><dd class="mono" style="font-size:12px">${c.rule}</dd>
+      </dl>
+      ${dxBlock}
+      ${c.flag?`<div class="insight" style="background:var(--crit-bg);color:var(--crit)"><b>Signal</b>${esc(c.flag)}</div>`:''}
+      <div class="joe-card" style="padding:14px">
+        <div class="joe-h"><span class="joe-badge">✦</span>Analyse JOE</div>
+        <div style="font-size:13px" class="muted">${c.status==='fraud'
+          ? `Même bénéficiaire, même laboratoire : 4 bilans complets depuis le 18 août. Les 3 précédents n'ont donné lieu à aucune consultation de suivi. Recommandation : demander l'ordonnance originale avant paiement.`
+          : c.status==='review'
+          ? `Acte cohérent avec l'historique récent de l'adhérente. Tarif conforme au barème conventionné. Recommandation : accorder, sous réserve de validation médicale.`
+          : `Dossier conforme. Aucune anomalie de tarif ni de fréquence.`}</div>
+        <div class="faint" style="font-size:12px">JOE recommande ; la décision reste humaine ou issue d'une règle versionnée.</div>
+      </div>
+      ${canDecide?`<div class="row-actions"><button class="btn primary" data-dec="approved">Accorder</button><button class="btn" data-dec="info">Demander des pièces</button><button class="btn danger" data-dec="rejected">Refuser</button></div>`:''}
+    </div>`);
+  $('#drawer-root').querySelectorAll('[data-dec]').forEach(b=>b.onclick=()=>{
+    const d = b.dataset.dec; c.status = d;
+    if(d==='approved'){ ledger.unshift({id:'J-2026-09184'+(10+ledger.length), t:'30/09 20:34', lib:`${c.id} · accord après revue`, lines:[['6011','Prestations santé — soins',c.share,0],['4011','Prestataires à payer · '+providers[c.prov],0,c.share]]}); }
+    if(d==='rejected') c.share = 0;
+    feed.unshift(['20:34',`${c.id} : ${statusMap[d][0].toLowerCase()} par ${role==='mc'?'le médecin-conseil':'le gestionnaire'}`]);
+    closeDrawer(); renderNav(); vClaims();
+    toast({approved:`${c.id} accordée. Écriture passée au grand livre.`, info:`Demande de pièces envoyée à ${providers[c.prov]}.`, rejected:`${c.id} refusée. Le prestataire et l'adhérent sont notifiés.`}[d]);
+  });
+}
+
+/* ---------- Adhérents ---------- */
+function vMembers(){
+  $('#view').innerHTML = `
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="eyebrow">48 290 adhérents actifs · 6 affichés</span><h1>Adhérents</h1></div>
+  <div class="panel tbl-wrap"><table><thead><tr><th>Adhérent</th><th>Formule</th><th>Payeur</th><th>Plafond consommé</th><th>Statut</th></tr></thead><tbody>
+  ${members.map((m,i)=>{const p=m.used/m.ceiling;const bc=p>.85?'crit':p>.6?'warn':'';const st=m.status==='Actif'?'p-ok':m.status==='Suspendu'?'p-crit':'p-warn';
+    return `<tr class="click" data-m="${i}" tabindex="0"><td><div class="who"><span class="av">${initials(m.name)}</span><div><div>${m.name}</div><div class="mono faint" style="font-size:12px">${m.id}</div></div></div></td><td>${m.plan} <span class="faint">${m.rate} %</span></td><td class="muted">${m.payer}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="bar ${bc}" style="width:90px"><i style="width:${Math.max(3,p*100)}%"></i></div><span class="num faint" style="font-size:12px">${Math.round(p*100)} %</span></div></td><td><span class="pill ${st}">${m.status}</span></td></tr>`}).join('')}
+  </tbody></table></div>`;
+  $('#view').querySelectorAll('[data-m]').forEach(r=>{r.onclick=()=>openMember(+r.dataset.m);r.onkeydown=e=>{if(e.key==='Enter')openMember(+r.dataset.m);};});
+}
+function openMember(i, tab='resume'){
+  const m = members[i]; const rem = m.ceiling-m.used;
+  const fam = [['Titulaire',m.name],['Conjoint(e)','Ayant droit'],['Enfant · 9 ans','Ayant droit'],['Enfant · 4 ans','Ayant droit'],['Enfant · 2 ans','Ayant droit']].slice(0,m.lives);
+  const mc = claims.filter(c=>c.m===i);
+  const tabs = [['resume','Résumé'],['garanties','Garanties'],['pec','Prises en charge'],['cotis','Cotisations']];
+  let body = '';
+  if(tab==='resume') body = `
+    <dl class="props"><dt>Formule</dt><dd>${m.plan} · ${m.rate} %</dd><dt>Souscripteur</dt><dd>${m.sponsor}</dd><dt>Payeur</dt><dd>${m.payer}</dd><dt>Ville</dt><dd>${m.city}</dd><dt>Adhérent depuis</dt><dd>${m.since}</dd></dl>
+    ${m.note?`<div class="insight" style="background:var(--warn-bg);color:var(--warn)">${esc(m.note)}</div>`:''}
+    <div><span class="eyebrow">Famille · ${m.lives} bénéficiaire${m.lives>1?'s':''}</span><div class="fam" style="margin-top:8px">${fam.map(f=>`<div><b style="font-weight:500">${f[1]==='Ayant droit'?'Ayant droit':f[1]}</b><div class="faint" style="font-size:12px">${f[0]}</div></div>`).join('')}</div></div>
+    <div class="joe-card" style="padding:14px"><div class="joe-h"><span class="joe-badge">✦</span>JOE résume</div><div class="muted" style="font-size:13px">${m.name} a consommé ${Math.round(m.used/m.ceiling*100)} % du plafond familial (reste ${F(rem)}). ${mc.length} prise${mc.length>1?'s':''} en charge récente${mc.length>1?'s':''}. ${m.status==='Actif'?'Cotisations à jour.':'Droits non ouverts actuellement.'}</div></div>`;
+  if(tab==='garanties') body = `
+    <div class="garantie">
+      ${[['Plafond annuel familial',m.used,m.ceiling],['Hospitalisation',Math.round(m.used*.3),Math.round(m.ceiling*.6)],['Optique',45000,90000],['Dentaire',0,150000],['Maternité',0,400000]].map(g=>`<div><div>${g[0]}</div><div class="faint num" style="font-size:12px">${fmt(g[1])} / ${fmt(g[2])} FCFA</div></div><div class="bar ${g[1]/g[2]>.85?'crit':''}"><i style="width:${Math.max(2,g[1]/g[2]*100)}%"></i></div>`).join('')}
+    </div><p class="faint" style="font-size:12px;margin:0">Garanties issues de « ${m.plan} » version 2 (en vigueur depuis le 01/01/2026).</p>`;
+  if(tab==='pec') body = mc.length ? `<div class="tbl-wrap"><table><tbody>${mc.map(c=>`<tr><td class="mono" style="font-size:12px">${c.id}</td><td class="muted">${providers[c.prov]}</td><td class="r num">${fmt(c.share)}</td><td><span class="pill ${statusMap[c.status][1]}">${statusMap[c.status][0]}</span></td></tr>`).join('')}</tbody></table></div>` : `<p class="faint">Aucune prise en charge sur la période.</p>`;
+  if(tab==='cotis') body = `<div class="tbl-wrap"><table><tbody>${['Oct. 2026','Sept. 2026','Août 2026','Juil. 2026'].map((mo,k)=>{const late=m.status==='Suspendu'&&k<2;return `<tr><td>${mo}</td><td class="muted">${m.payer}</td><td class="r num">${fmt(m.rate===80?27500:m.rate===70?16000:9000)}</td><td><span class="pill ${late?'p-crit':'p-ok'}">${late?'Impayée':'Payée'}</span></td></tr>`}).join('')}</tbody></table></div>`;
+  openDrawer(`
+    <div class="drawer-h"><span class="photo" style="width:44px;height:44px;font-size:15px">${initials(m.name)}</span><div style="flex:1;min-width:0"><h2 style="font-size:19px">${m.name}</h2><div class="mono faint" style="font-size:12px">${m.id}</div></div><button class="btn ghost" data-close aria-label="Fermer">✕</button></div>
+    <div class="drawer-b">
+      <div class="tabs" role="tablist">${tabs.map(t=>`<button role="tab" aria-selected="${tab===t[0]}" data-tab="${t[0]}">${t[1]}</button>`).join('')}</div>
+      ${body}
+      <div class="row-actions"><button class="btn primary" data-act="msg">Envoyer un message WhatsApp</button><button class="btn" data-act="card">Réémettre la carte</button></div>
+    </div>`);
+  $('#drawer-root').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>openMember(i,b.dataset.tab));
+  $('#drawer-root').querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>toast(b.dataset.act==='msg'?`Message préparé pour ${m.name} (prototype : rien n'est envoyé).`:`Nouvelle carte QR générée pour ${m.name}. L'ancienne est révoquée.`));
+}
+
+/* ---------- Grand livre ---------- */
+function vLedger(){
+  const td = ledger.reduce((a,e)=>a+e.lines.reduce((s,l)=>s+l[2],0),0);
+  const tc = ledger.reduce((a,e)=>a+e.lines.reduce((s,l)=>s+l[3],0),0);
+  $('#view').innerHTML = `
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="eyebrow">Journal général · septembre 2026</span><h1>Grand livre</h1></div>
+  <div class="banner">🔒 Écritures en ajout seul. Aucune ligne ne se modifie : une erreur se corrige par une contre-passation, comme J-2026-0918377.</div>
+  <div class="panel tbl-wrap"><table class="ledger"><thead><tr><th>Écriture</th><th>Libellé</th><th>Compte</th><th class="r">Débit</th><th class="r">Crédit</th></tr></thead><tbody>
+  ${ledger.map(e=>e.lines.map((l,k)=>`<tr class="${k===0?'first':''}">${k===0?`<td rowspan="${e.lines.length}"><div class="mono" style="font-size:12px">${e.id}</div><div class="faint" style="font-size:12px">${e.t}</div></td><td rowspan="${e.lines.length}">${esc(e.lib)}</td>`:''}<td><span class="acct">${l[0]}</span> <span class="muted">${esc(l[1])}</span></td><td class="r num">${l[2]?fmt(l[2]):''}</td><td class="r num">${l[3]?fmt(l[3]):''}</td></tr>`).join('')).join('')}
+  <tr class="first"><td colspan="3"><b>Totaux affichés</b> <span class="pill ${td===tc?'p-ok':'p-crit'}" style="margin-left:8px">${td===tc?'Équilibré':'Déséquilibré'}</span></td><td class="r num"><b>${fmt(td)}</b></td><td class="r num"><b>${fmt(tc)}</b></td></tr>
+  </tbody></table></div>`;
+}
+
+/* ---------- Produits ---------- */
+let verSel = 1;
+const versions = [
+  {v:'v1', from:'01/01/2025', to:'31/12/2025', state:'Clôturée', rate:80, ceiling:2500000, carence:90, consult:22000, auto:40000},
+  {v:'v2', from:'01/01/2026', to:'31/12/2026', state:'En vigueur', rate:80, ceiling:3000000, carence:60, consult:25000, auto:50000},
+  {v:'v3', from:'01/01/2027', to:'—', state:'Brouillon', rate:80, ceiling:3200000, carence:60, consult:25000, auto:60000},
+];
+function vProducts(){
+  const cur = versions[verSel], prev = versions[verSel-1];
+  const d = (k,unit='') => { if(!prev) return ''; const x = cur[k]-prev[k]; if(!x) return '<span class="faint" style="font-size:12px">inchangé</span>'; const good = k==='carence' ? x<0 : x>0; return `<span class="${good?'diff-up':'diff-dn'}">${x>0?'+':''}${fmt(x)}${unit}</span>`; };
+  $('#view').innerHTML = `
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="eyebrow">Moteur produit · 4 formules actives</span><h1>Santé Famille Or</h1><p class="muted" style="margin:0;max-width:65ch">Chaque version a une date d'effet. Un soin est toujours évalué avec la version en vigueur le jour du soin, même s'il est traité plus tard.</p></div>
+  <div class="versions">${versions.map((v,i)=>`<button class="ver" data-v="${i}" aria-pressed="${i===verSel}"><span style="display:flex;justify-content:space-between;gap:8px"><b class="mono">${v.v}</b><span class="pill ${v.state==='En vigueur'?'p-ok':v.state==='Brouillon'?'p-info':'p-mute'}">${v.state}</span></span><span class="faint" style="font-size:12px">du ${v.from} au ${v.to}</span></button>`).join('')}</div>
+  <div class="panel tbl-wrap"><table><thead><tr><th>Paramètre</th><th class="r">${cur.v}</th><th>Écart vs ${prev?prev.v:'—'}</th></tr></thead><tbody>
+    <tr><td>Taux de couverture</td><td class="r num">${cur.rate} %</td><td>${d('rate',' pt')}</td></tr>
+    <tr><td>Plafond annuel familial</td><td class="r num">${F(cur.ceiling)}</td><td>${d('ceiling')}</td></tr>
+    <tr><td>Délai de carence</td><td class="r num">${cur.carence} jours</td><td>${d('carence',' j')}</td></tr>
+    <tr><td>Barème consultation généraliste</td><td class="r num">${F(cur.consult)}</td><td>${d('consult')}</td></tr>
+    <tr><td>Seuil d'accord automatique (R-12)</td><td class="r num">${F(cur.auto)}</td><td>${d('auto')}</td></tr>
+  </tbody></table></div>
+  ${cur.state==='Brouillon'?`<div class="joe-card"><div class="joe-h"><span class="joe-badge">✦</span>Simulation JOE sur 12 mois d'historique</div><div class="muted" style="font-size:13px">Relever le seuil automatique à 60 000 FCFA ferait passer 71 % des dossiers en accord immédiat (contre 64 %), pour un surcoût estimé de 0,4 point de ratio S/C. Le plafond à 3,2 M concerne 1,8 % des familles.</div><div class="row-actions"><button class="btn primary" id="pub-v3">Soumettre v3 à validation</button></div></div>`:''}`;
+  $('#view').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{verSel=+b.dataset.v;vProducts();});
+  const p = $('#pub-v3'); if(p) p.onclick=()=>toast('v3 soumise au conseil d\'administration. Elle ne s\'appliquera qu\'aux soins à partir du 01/01/2027.');
+}
+
+/* ---------- Porteurs de risque ---------- */
+function vCarriers(){
+  $('#view').innerHTML = `
+  <div style="display:flex;flex-direction:column;gap:6px"><span class="eyebrow">Architecture multi-porteurs</span><h1>Porteurs de risque</h1><p class="muted" style="margin:0;max-width:65ch">Le même noyau sert la mutuelle, puis les assureurs en gestion déléguée, puis les courtiers. Chaque organisation joue un ou plusieurs rôles ; ses données et ses règles restent cloisonnées.</p></div>
+  <div class="cards-3">
+    <div class="panel org"><div style="display:flex;justify-content:space-between;gap:8px"><h2>Mutuelle MulemaCare</h2><span class="pill p-ok">En production</span></div><div class="roles"><span class="pill p-info">Porteur de risque</span><span class="pill p-info">Gestionnaire</span></div><dl class="props" style="grid-template-columns:120px 1fr"><dt>Régulateur</dt><dd>AIRMS (mutualité sociale)</dd><dt>Adhérents</dt><dd class="num">48 290</dd><dt>Formules</dt><dd class="num">4</dd></dl></div>
+    <div class="panel org"><div style="display:flex;justify-content:space-between;gap:8px"><h2>Assureur pilote</h2><span class="pill p-warn">Intégration</span></div><div class="roles"><span class="pill p-info">Porteur de risque</span><span class="pill p-mute">Géré par MulemaCare</span></div><dl class="props" style="grid-template-columns:120px 1fr"><dt>Régulateur</dt><dd>Code CIMA</dd><dt>Portefeuille</dt><dd>Santé groupe · 6 200 vies</dd><dt>Rémunération</dt><dd>Frais de gestion par vie</dd></dl></div>
+    <div class="panel org"><div style="display:flex;justify-content:space-between;gap:8px"><h2>Courtier partenaire</h2><span class="pill p-mute">Prévu</span></div><div class="roles"><span class="pill p-info">Distributeur</span></div><dl class="props" style="grid-template-columns:120px 1fr"><dt>Régulateur</dt><dd>Code CIMA</dd><dt>Modules</dt><dd>Cotations, placement, bordereaux</dd><dt>Commissions</dt><dd>Passées au grand livre</dd></dl></div>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><h2>Qui voit quoi</h2><div class="spacer"></div><span class="faint" style="font-size:12px">Contrôle d'accès par rôle et par attribut</span></div>
+    <div class="tbl-wrap"><table class="matrix"><thead><tr><th>Donnée</th><th>Gestionnaire</th><th>Médecin-conseil</th><th>Clinique</th><th>Employeur</th><th>Courtier</th></tr></thead><tbody>
+      ${[['Identité et droits de l\'adhérent',1,1,1,0,1],['Montants et statut des prises en charge',1,1,'Ses dossiers',0,0],['Motif médical, diagnostic',0,1,'Ses patients',0,0],['Consommation agrégée du groupe',1,1,0,'Anonymisée','Anonymisée'],['Grand livre et règlements',1,0,'Ses paiements',0,'Ses commissions']]
+        .map(r=>`<tr><td>${r[0]}</td>${r.slice(1).map(x=>x===1?'<td class="yes">Oui</td>':x===0?'<td class="no">Non</td>':`<td class="muted" style="font-size:12px">${x}</td>`).join('')}</tr>`).join('')}
+    </tbody></table></div>
+  </div>`;
+}
+
+/* ---------- Drawer ---------- */
+function openDrawer(html){
+  $('#drawer-root').innerHTML = `<div class="scrim" data-close></div><aside class="drawer" role="dialog" aria-modal="true">${html}</aside>`;
+  $('#drawer-root').querySelectorAll('[data-close]').forEach(el=>el.onclick=closeDrawer);
+  const f = $('#drawer-root .drawer button'); if(f) f.focus();
+}
+function closeDrawer(){ $('#drawer-root').innerHTML=''; }
+
+/* ---------- Palette ⌘K + JOE ---------- */
+const answers = {
+  'Combien avons-nous payé en imagerie ce mois-ci ?':`<b>18,7 M FCFA</b> en septembre, soit 12,8 % des prestations. C'est +21 % par rapport à août, porté surtout par le Centre d'imagerie Deux-Plateaux (+37 %).`,
+  'Quelles prises en charge sont suspectes ?':()=>`<b>${claims.filter(c=>c.status==='fraud').length} dossier(s)</b> au-dessus du seuil de 0,6. Le principal : PEC-26-09802, 4ᵉ bilan biologique complet en 6 semaines pour le même bénéficiaire.`,
+  'Quels contrats employeurs expirent dans 60 jours ?':`<b>14 contrats</b>, 3 820 vies. 9 ont un ratio S/C sous 70 % et peuvent être reconduits au même tarif ; 5 demandent une révision.`,
+  'Qui est en impayé depuis plus de 30 jours ?':`<b>312 adhérents</b>, dont 41 payés habituellement par un proche de la diaspora. Une relance WhatsApp avec lien de paiement est prête ; suspension automatique à J+45.`,
+  'Explique la décision de prise en charge d\'Awa Koné':`La règle <span class="mono">R-12 v3</span> accorde automatiquement quand les droits sont ouverts, le prestataire conventionné, le total sous 50 000 FCFA et le score de fraude sous 0,20. Les quatre conditions sont remplies.`,
+  'Montre-moi les IRM du Centre d\'imagerie Deux-Plateaux':`<b>47 IRM</b> en septembre contre 34 en août. 29 prescrites par le même médecin. Dossier ouvert : PEC-26-09813 (revue médecin-conseil).`,
+};
+let palSel = 0, palItems = [];
+function openPal(q=''){
+  $('#pal-root').innerHTML = `<div class="pal-scrim" id="pal-scrim"><div class="pal" role="dialog" aria-modal="true" aria-label="Recherche et JOE"><input id="pal-in" placeholder="Adhérent, dossier, prestataire… ou une question pour JOE" autocomplete="off"><div class="pal-list" id="pal-list"></div><div id="pal-ans"></div></div></div>`;
+  const inp = $('#pal-in'); inp.value = q; inp.focus();
+  $('#pal-scrim').onclick = e => { if(e.target.id==='pal-scrim') closePal(); };
+  inp.oninput = () => renderPal(inp.value);
+  inp.onkeydown = e => {
+    if(e.key==='ArrowDown'){e.preventDefault();palSel=Math.min(palSel+1,palItems.length-1);renderPal(inp.value,true);}
+    else if(e.key==='ArrowUp'){e.preventDefault();palSel=Math.max(palSel-1,0);renderPal(inp.value,true);}
+    else if(e.key==='Enter'){e.preventDefault(); if(palItems[palSel]) palItems[palSel].run(); else if(inp.value.trim()) askJoe(inp.value.trim());}
+  };
+  renderPal(q);
+  if(answers[q]) askJoe(q);
+}
+function closePal(){ $('#pal-root').innerHTML=''; }
+function renderPal(q, keep){
+  if(!keep) palSel = 0;
+  const s = q.toLowerCase().trim();
+  const items = [];
+  Object.keys(answers).filter(a=>!s||a.toLowerCase().includes(s)).slice(0,4).forEach(a=>items.push({sec:'Demander à JOE',label:'✦ '+a,run:()=>askJoe(a)}));
+  if(s && !Object.keys(answers).some(a=>a.toLowerCase()===s)) items.unshift({sec:'Demander à JOE',label:'✦ '+q,run:()=>askJoe(q)});
+  members.filter(m=>!s||m.name.toLowerCase().includes(s)||m.id.toLowerCase().includes(s)).slice(0,4).forEach(m=>items.push({sec:'Adhérents',label:m.name,meta:m.id,run:()=>{closePal(); if(role!=='gest'){toast('Fiche adhérent réservée au gestionnaire.');return;} go('members'); openMember(members.indexOf(m));}}));
+  claims.filter(c=>!s||c.id.toLowerCase().includes(s)||providers[c.prov].toLowerCase().includes(s)).slice(0,3).forEach(c=>items.push({sec:'Prises en charge',label:providers[c.prov],meta:c.id,run:()=>{closePal(); go('claims'); openClaim(c.id);}}));
+  nav.filter(n=>n.k&&n.roles.includes(role)&&(!s||n.l.toLowerCase().includes(s))).forEach(n=>items.push({sec:'Aller à',label:n.l,run:()=>{closePal();go(n.k);}}));
+  palItems = items;
+  let html='', last='';
+  items.forEach((it,i)=>{ if(it.sec!==last){html+=`<div class="pal-sec">${it.sec}</div>`;last=it.sec;} html+=`<button class="pal-item" data-i="${i}" aria-selected="${i===palSel}">${esc(it.label)}${it.meta?`<small>${it.meta}</small>`:''}</button>`; });
+  $('#pal-list').innerHTML = html || '<div class="pal-sec">Aucun résultat</div>';
+  $('#pal-list').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>items[+b.dataset.i].run());
+}
+function askJoe(q){
+  let a = answers[q]; if(typeof a==='function') a = a();
+  if(!a) a = `Dans le prototype, JOE répond aux questions d'exemple. En production, il interroge les données de la mutuelle via ses outils (droits, prises en charge, grand livre) et cite chaque chiffre.`;
+  $('#pal-ans').innerHTML = `<div class="pal-answer"><div class="joe-h"><span class="joe-badge">✦</span>${esc(q)}</div><div style="font-size:14px">${a}</div><div class="faint" style="font-size:12px">Chiffres de démonstration · source : grand livre et prises en charge de septembre.</div></div>`;
+}
+$('#open-pal').onclick = () => openPal();
+document.addEventListener('keydown', e => {
+  if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); $('#pal-root').innerHTML ? closePal() : openPal(); }
+  if(e.key==='Escape'){ if($('#pal-root').innerHTML) closePal(); else closeDrawer(); }
+});
+$('#view').addEventListener('click', e => {
+  const p = e.target.closest('[data-pal]'); if(p){ openPal(); return; }
+  const q = e.target.closest('[data-q]'); if(q){ openPal(q.dataset.q); return; }
+  const g = e.target.closest('[data-go]'); if(g){ if(g.dataset.f) claimFilter = g.dataset.f; go(g.dataset.go); }
+});
+
+/* ---------- Toast ---------- */
+let tt;
+function toast(msg){ $('#toast-root').innerHTML = `<div class="toast" role="status">${esc(msg)}</div>`; clearTimeout(tt); tt = setTimeout(()=>$('#toast-root').innerHTML='', 3600); }
+
+/* ---------- Thèmes ---------- */
+const skinMeta = {
+  mulema:{n:'MulemaCare', d:'Indigo, recommandé', c:['#f6f7fa','#2e3fa6']},
+  notion:{n:'Style Notion', d:'Blanc, gris chauds, bleu', c:['#ffffff','#2383e2']},
+  google:{n:'Style Google', d:'Tonal, pilules, Roboto', c:['#f8fafd','#0b57d0']},
+  anthropic:{n:'Style Anthropic', d:'Ivoire, argile, sérif', c:['#faf9f5','#c15f3c']},
+  linear:{n:'Style Linear', d:'Dense, violet, précis', c:['#fbfbfc','#5e6ad2']},
+  stripe:{n:'Style Stripe', d:'Bleu nuit, violet, ombres douces', c:['#f6f9fc','#635bff']},
+  github:{n:'Style GitHub', d:'Sobre, bleu lien, coins 6 px', c:['#f6f8fa','#0969da']},
+  apple:{n:'Style Apple', d:'Gris système, grands arrondis', c:['#f5f5f7','#0071e3']},
+};
+const skinNames = Object.fromEntries(Object.entries(skinMeta).map(([k,v])=>[k,v.n]));
+const swatch = k => `<span class="sw"><i style="background:${skinMeta[k].c[0]}"></i><i style="background:${skinMeta[k].c[1]}"></i></span>`;
+function renderThemeMenu(cur){
+  $('#tmenu').innerHTML = Object.keys(skinMeta).map(k=>`<button type="button" role="menuitemradio" aria-checked="${k===cur}" data-skin-pick="${k}">${swatch(k)}<span><b style="font-weight:500">${skinMeta[k].n}</b><small>${skinMeta[k].d}</small></span>${k===cur?'<span class="chk">✓</span>':''}</button>`).join('');
+  $('#theme-sw').outerHTML = swatch(cur).replace('class="sw"','class="sw" id="theme-sw"');
+  $('#theme-name').textContent = skinMeta[cur].n;
+}
+function applySkin(skin, mode, announce){
+  const r = document.documentElement;
+  if(skin==='mulema') r.removeAttribute('data-skin'); else r.setAttribute('data-skin', skin);
+  if(mode==='auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', mode);
+  $('#skin').value = skin; $('#mode').value = mode;
+  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.mode===mode)));
+  renderThemeMenu(skin);
+  try{ localStorage.setItem('mc-skin', skin); localStorage.setItem('mc-mode', mode); }catch(e){}
+  if(announce) toast(`Thème appliqué : ${skinNames[skin]}.`);
+}
+let savedSkin='mulema', savedMode='auto';
+try{ savedSkin = localStorage.getItem('mc-skin') || 'mulema'; savedMode = localStorage.getItem('mc-mode') || 'auto'; }catch(e){}
+if(!skinNames[savedSkin]) savedSkin='mulema';
+if(!['auto','light','dark'].includes(savedMode)) savedMode='auto';
+applySkin(savedSkin, savedMode, false);
+$('#skin').addEventListener('change', e => applySkin(e.target.value, $('#mode').value, true));
+$('#mode').addEventListener('change', e => applySkin($('#skin').value, e.target.value, false));
+document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => applySkin($('#skin').value, b.dataset.mode, false)));
+function setMenu(open){ $('#tmenu').hidden = !open; $('#theme-btn').setAttribute('aria-expanded', String(open)); }
+$('#theme-btn').addEventListener('click', e => { e.stopPropagation(); setMenu($('#tmenu').hidden); });
+$('#tmenu').addEventListener('click', e => { const b = e.target.closest('[data-skin-pick]'); if(!b) return; applySkin(b.dataset.skinPick, $('#mode').value, true); setMenu(false); });
+document.addEventListener('click', e => { if(!e.target.closest('.tmenu-wrap')) setMenu(false); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') setMenu(false); });
+
+const h = (location.hash||'').slice(1);
+go(titles[h] ? h : 'home');
+})();
+</script>
+
+</body></html>

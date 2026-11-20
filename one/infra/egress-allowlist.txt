@@ -1,0 +1,22 @@
+# Liste blanche réseau de MulemaCare One (R9 — résidence des données).
+#
+# Format : <PAYS> <hôte>:<port>   — une entrée par ligne, port obligatoire, aucun joker.
+# Une instance ne charge que les lignes de son pays (CI ou SN) : elle ne joint aucun service
+# de l'autre pays, aucun LLM externe, aucun CDN, aucun service de polices.
+# Toute destination absente d'ici est refusée par la garde d'egress (apps/api/integrations).
+# Ajouter une ligne = revue humaine + mise à jour de infra/deploy/<pays>.toml (le test
+# test_declared_endpoints_match_the_allowlist_exactly exige les deux listes identiques).
+#
+# Noms d'hôtes provisoires (`*.mulemacare.internal`) : à remplacer par l'exploitation
+# (hébergement dans le pays, cf. PRD §10 Q5). Aucun fournisseur de paiement ni de SMS tant
+# que le PRD §10 Q1 n'est pas tranché.
+
+# --- Côte d'Ivoire ---------------------------------------------------------------------------
+CI healthos.ci.mulemacare.internal:443       # HealthOS CI, FHIR R4, identifiant pseudonyme seul
+CI insurance-db.ci.mulemacare.internal:5432  # PostgreSQL 16, base logique `insurance`
+CI redis.ci.mulemacare.internal:6379         # Redis (cache, files)
+
+# --- Sénégal ---------------------------------------------------------------------------------
+SN healthos.sn.mulemacare.internal:443       # HealthOS SN, FHIR R4, identifiant pseudonyme seul
+SN insurance-db.sn.mulemacare.internal:5432  # PostgreSQL 16, base logique `insurance`
+SN redis.sn.mulemacare.internal:6379         # Redis (cache, files)

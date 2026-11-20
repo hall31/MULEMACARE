@@ -1,0 +1,18 @@
+# Déploiement MulemaCare One — Sénégal.
+# Aucun secret ici : les secrets sont injectés par l'environnement de l'instance.
+# Chaque point de sortie est aussi listé dans infra/egress-allowlist.txt (ligne SN).
+
+country_code = "SN"
+timezone = "Africa/Dakar"
+currency = "XOF"
+
+[healthos]
+fhir_base_url = "https://healthos.sn.mulemacare.internal/api/v1/fhir/R4"
+timeout_seconds = 5
+
+[egress]
+endpoints = [
+  "healthos.sn.mulemacare.internal:443",
+  "insurance-db.sn.mulemacare.internal:5432",
+  "redis.sn.mulemacare.internal:6379",
+]

@@ -198,6 +198,39 @@ def test_mcare_tools_and_transmit(client: TestClient) -> None:
     assert tx.json()["proposal_id"]
 
 
+def test_audit_trail_persists_context_data(client: TestClient) -> None:
+    """AuditRepository.log() used to be called with metadata=, a kwarg the
+    AuditLog model doesn't declare as a column — SQLAlchemy accepted it
+    silently as a plain instance attribute instead of raising, so
+    agent_name/action_type were dropped and every audit-trail entry reported
+    context_data: {}. Regression guard for that specific failure mode."""
+    token = _token(client, "audit@mulemacare.example")
+    h = {"Authorization": f"Bearer {token}"}
+    created = client.post(
+        "/api/v1/action-center/proposals",
+        headers=h,
+        json={
+            "agent_name": "ClaimsTriageAgent",
+            "action_type": "claim_approve",
+            "cssa_id": "CSSA-AUDIT1",
+            "summary": "Test claim",
+            "payload": {"amount": 5000},
+            "evidence": {"reco": "approve"},
+        },
+    )
+    assert created.status_code == 200, created.text
+    pid = created.json()["proposal"]["id"]
+
+    trail = client.get(f"/api/v1/action-center/proposals/{pid}/audit-trail", headers=h)
+    assert trail.status_code == 200, trail.text
+    entries = trail.json()["audit_trail"]
+    created_entry = next(e for e in entries if e["action"] == "created")
+    assert created_entry["context_data"] == {
+        "agent_name": "ClaimsTriageAgent",
+        "action_type": "claim_approve",
+    }
+
+
 def test_healthos_off_by_default(client: TestClient) -> None:
     token = _token(client, "hos@mulemacare.example")
     h = {"Authorization": f"Bearer {token}"}

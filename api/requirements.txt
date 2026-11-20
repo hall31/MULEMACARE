@@ -13,4 +13,9 @@ cryptography>=41.0.0
 pytest>=8.0.0
 redis>=5.0.0
 pytest-asyncio>=0.23.0
-anthropic>=0.39.0
+# Tronc IA de la plateforme : seul point d'accès aux fournisseurs LLM.
+# pip résout ces chemins depuis le répertoire COURANT, pas depuis ce fichier :
+# installer depuis MULEMACARE/api (`cd api && pip install -r requirements.txt`,
+# comme `make qa-api`). L'image reproduit cette disposition.
+-e ../../../../../packages/cybernecs-agent-core
+-e ../../../../../packages/cybernecs-ai-gateway[online]

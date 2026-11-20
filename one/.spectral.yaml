@@ -1,0 +1,47 @@
+# Lint du contrat d'API (specs/openapi.yaml). Lancé par `make contracts` (inclus dans `make check`).
+extends:
+  - spectral:oas
+rules:
+  # Chaque opération déclare son lot propriétaire et les rôles autorisés.
+  operation-x-lot:
+    description: Chaque opération porte x-lot (L1 à L8, P1 pour la Phase 1, P2 pour la Phase 2, P3 pour la Phase 3).
+    severity: error
+    given: $.paths[*][get,put,post,patch,delete]
+    then:
+      field: x-lot
+      function: pattern
+      functionOptions:
+        match: '^(L[1-8]|P[123])$'
+  operation-x-roles:
+    description: Chaque opération porte x-roles.
+    severity: error
+    given: $.paths[*][get,put,post,patch,delete]
+    then:
+      field: x-roles
+      function: truthy
+  # Toute opération authentifiée documente le 401.
+  operation-401:
+    description: Les opérations documentent la réponse 401.
+    severity: error
+    given: $.paths[?(!@property.startsWith('/v1/public/'))][get,put,post,patch,delete].responses
+    then:
+      field: '401'
+      function: truthy
+  # Les erreurs sont en application/problem+json avec le schéma Problem.
+  error-responses-are-problems:
+    description: Les réponses 4xx/5xx réutilisent les réponses partagées (Problem).
+    severity: error
+    resolved: false
+    given: $.paths[*][get,put,post,patch,delete].responses[?(@property.match(/^[45]/))]
+    then:
+      field: $ref
+      function: truthy
+  # L'organisation ne se reçoit jamais du client.
+  no-organization-id-parameter:
+    description: organization_id vient du jeton, jamais d'un paramètre.
+    severity: error
+    given: $..parameters[*].name
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: '^organi[sz]ation_?id$'

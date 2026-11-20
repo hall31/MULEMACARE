@@ -1,0 +1,16 @@
+# Contexte de build Docker de MulemaCare One : jamais de secret ni d'artefact local.
+.env
+.env.*
+!.env.example
+.dev/
+.venv/
+**/__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+node_modules/
+**/node_modules/
+**/.next/
+apps/web/
+**/*.pem

@@ -1,0 +1,18 @@
+# Déploiement MulemaCare One — Côte d'Ivoire.
+# Aucun secret ici : les secrets sont injectés par l'environnement de l'instance.
+# Chaque point de sortie est aussi listé dans infra/egress-allowlist.txt (ligne CI).
+
+country_code = "CI"
+timezone = "Africa/Abidjan"
+currency = "XOF"
+
+[healthos]
+fhir_base_url = "https://healthos.ci.mulemacare.internal/api/v1/fhir/R4"
+timeout_seconds = 5
+
+[egress]
+endpoints = [
+  "healthos.ci.mulemacare.internal:443",
+  "insurance-db.ci.mulemacare.internal:5432",
+  "redis.ci.mulemacare.internal:6379",
+]

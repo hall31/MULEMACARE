@@ -1,0 +1,24 @@
+# Contexte de build = racine du monorepo, dont l'image n'a besoin que de l'API
+# MulemaCare, des deux paquets du tronc IA et des licences qu'ils référencent.
+# BuildKit lit `<dockerfile>.dockerignore` en priorité : cet ignore ne concerne
+# que l'image MulemaCare API, les autres produits gardent le leur.
+
+**
+
+!packages/cybernecs-agent-core/**
+!packages/cybernecs-ai-gateway/**
+!APPS/ENTREPRISES/CYBERCLAW/LICENSE
+!APPS/ENTREPRISES/CYBERCLAW/NOTICE
+!APPS/PUBLIC/HEALTH/MULEMACARE/api/requirements.txt
+!APPS/PUBLIC/HEALTH/MULEMACARE/api/app/**
+
+# Rebuts qui traînent dans les dossiers réintégrés.
+**/__pycache__/**
+**/*.py[cod]
+**/.pytest_cache/**
+**/.ruff_cache/**
+**/.venv/**
+**/*.egg-info/**
+**/.env
+**/.env.*
+**/*.db

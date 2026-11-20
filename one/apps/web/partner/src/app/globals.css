@@ -1,0 +1,150 @@
+/*
+ * Espaces assureur et employeur — styles globaux. Direction « Registre émeraude », densité console.
+ * Couleurs, polices, rayons : UNIQUEMENT les jetons de specs/design/mulemacare-tokens.css (importé
+ * tel quel, aucune copie). La marque d'une organisation surcharge quatre jetons au rendu serveur
+ * (apps/web/shared/brand) ; rien ici n'y touche.
+ */
+@import "tailwindcss";
+@import "../../../../../specs/design/mulemacare-tokens.css";
+
+/* Polices auto-hébergées (src/app/fonts.ts, next/font/local, OFL-1.1) ; aucun CDN. */
+:root {
+  --f-display: var(--mc-font-display), var(--mc-font-body), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-body: var(--mc-font-body), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --f-num: var(--mc-font-num), var(--mc-font-body), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Seuls les jetons MulemaCare existent : palette, échelle de texte, rayons et ombres par défaut
+   de Tailwind retirés (une couleur hors jetons ou une 7ᵉ taille de texte ne compile pas). */
+@theme {
+  --color-*: initial;
+  --text-*: initial;
+  --font-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-sunk: var(--sunk);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  /* Accent : action et sélection seulement, jamais un statut ni une série de graphique. */
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-fg: var(--accent-fg);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-on-deep: var(--brand-on-deep);
+  --color-ok: var(--ok);
+  --color-ok-bg: var(--ok-bg);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-crit: var(--crit);
+  --color-crit-bg: var(--crit-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --font-display: var(--f-display);
+  --font-body: var(--f-body);
+  --font-num: var(--f-num);
+
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-btn: var(--r-btn);
+  --radius-lg: var(--r-lg);
+  --radius-full: var(--r-pill);
+
+  /* Échelle du contrat (POLISH_CONTRACT §4) : six tailles, pas une de plus. */
+  --text-caption: var(--fs-caption);
+  --text-caption--line-height: var(--lh-caption);
+  --text-dense: var(--fs-dense);
+  --text-dense--line-height: var(--lh-dense);
+  --text-body: var(--fs-body);
+  --text-body--line-height: var(--lh-body);
+  --text-title: var(--fs-title);
+  --text-title--line-height: var(--lh-title);
+  --text-headline: var(--fs-headline);
+  --text-headline--line-height: var(--lh-headline);
+  --text-display: var(--fs-display);
+  --text-display--line-height: var(--lh-display);
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--line);
+  }
+  html {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--f-body);
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    min-height: 100dvh;
+    /* Densité console : 14 px (AGENTS.md, Design). */
+    font-size: var(--fs-dense);
+    line-height: var(--lh-dense);
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--f-display);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--tr-display);
+    text-wrap: balance;
+  }
+  :focus-visible {
+    outline: var(--focus-w) solid var(--focus);
+    outline-offset: var(--focus-offset);
+  }
+}
+
+/* Chiffres : Inter tabulaire (montants, effectifs, rapports). */
+@utility num {
+  font-family: var(--f-num);
+  font-feature-settings: var(--num-features);
+}
+
+/* Surtitre : filet or devant (motif du site), capitales, 12 px (console seulement). */
+@utility eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tr-eyebrow);
+  text-transform: uppercase;
+  color: var(--fg-2);
+  &::before {
+    content: "";
+    width: 16px;
+    height: 2px;
+    background: var(--brand-gold);
+  }
+}
+
+/* Mouvement : uniquement si aucune réduction n'est demandée ; rien ne boucle en mouvement réduit. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-slot="skeleton"] {
+    animation: mc-pulse 1.4s var(--ease-standard) infinite;
+  }
+  [data-slot="bar"] {
+    transition: width var(--dur-reveal) var(--ease-enter);
+  }
+}
+
+@keyframes mc-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}

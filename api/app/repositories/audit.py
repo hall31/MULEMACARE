@@ -26,7 +26,7 @@ class AuditRepository:
         old_status: str | None,
         new_status: str,
         reason: str | None = None,
-        metadata: dict[str, Any] | None = None,
+        context_data: dict[str, Any] | None = None,
     ) -> AuditLog:
         """Create and persist an immutable audit log entry."""
         import uuid
@@ -41,7 +41,7 @@ class AuditRepository:
             old_status=old_status,
             new_status=new_status,
             reason=reason,
-            metadata=metadata or {},
+            context_data=context_data or {},
         )
         self.db.add(log_entry)
         await self.db.flush()  # Flush but don't commit — let caller handle transaction

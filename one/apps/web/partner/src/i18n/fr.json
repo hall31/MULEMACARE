@@ -1,0 +1,182 @@
+{
+  "app": {
+    "name": "MulemaCare One",
+    "monogram": "M",
+    "tagline": "Espaces partenaires",
+    "title": "Espaces partenaires · MulemaCare One",
+    "brandedTitle": "Espaces partenaires · {name}",
+    "titleTemplate": "%s · {name}",
+    "description": "Espaces assureur et employeur : agrégats anonymisés du portefeuille et du groupe.",
+    "skip": "Aller au contenu",
+    "loadingSession": "Ouverture de la session…"
+  },
+  "nav": {
+    "label": "Navigation principale",
+    "insurer": "Portefeuille",
+    "employer": "Mon groupe"
+  },
+  "roles": {
+    "assureur": "Assureur",
+    "employeur": "Employeur",
+    "admin": "Administrateur",
+    "gestionnaire": "Gestionnaire mutuelle",
+    "medecin_conseil": "Médecin-conseil",
+    "clinique": "Clinique",
+    "adherent": "Adhérent",
+    "admin_plateforme": "Administrateur de plateforme"
+  },
+  "theme": {
+    "label": "Apparence",
+    "light": "Clair",
+    "dark": "Sombre",
+    "auto": "Auto"
+  },
+  "session": {
+    "connectedAs": "Connecté en tant que",
+    "demoProfile": "Profil de démonstration",
+    "demoHint": "Mode démonstration : le profil remplace la connexion (fournisseur d'identité non choisi). Données fictives.",
+    "notConfiguredTitle": "Connexion non configurée",
+    "notConfiguredBody": "Aucun fournisseur d'identité n'est branché sur ces espaces. Lancez-les en mode démonstration ou configurez la connexion."
+  },
+  "common": {
+    "none": "—"
+  },
+  "states": {
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "errorTitle": "Impossible d'afficher ces données",
+    "code": "Code {code}",
+    "requestId": "Référence support : {id}",
+    "forbiddenTitle": "Accès réservé",
+    "forbiddenBody": "Cet espace n'est pas ouvert à votre rôle. Demandez l'accès à l'administrateur de votre organisation.",
+    "unknownError": "Une erreur inattendue est survenue.",
+    "unknownAction": "Réessayez dans un instant. Si le problème continue, contactez le support.",
+    "networkError": "Le serveur ne répond pas.",
+    "networkAction": "Vérifiez votre connexion puis réessayez."
+  },
+  "format": {
+    "xof": "{amount} FCFA",
+    "percent": "{value} %",
+    "seconds": "{value} s",
+    "minutes": "{value} min",
+    "hours": "{value} h",
+    "days": "{value} j",
+    "approx": "≈ {value}"
+  },
+  "kanon": {
+    "masked": "Masqué",
+    "maskedHint": "Moins de 5 personnes : non publié",
+    "carriedBy": "Porté par {tier}",
+    "tierRange": "{from} à {to} personnes",
+    "tierOpen": "{from} personnes ou plus",
+    "noteTitle": "Certaines valeurs sont masquées (moins de {k} personnes)",
+    "noteBody": "Une valeur portée par moins de {k} personnes n'est jamais publiée, ni sur la période ni sur une de ses semaines, et ses voisines sont masquées si une soustraction pouvait la retrouver. Les effectifs sont donnés par tranche et les montants au millier près, jamais exacts.",
+    "widen": "Élargir à 13 semaines",
+    "countRange": "{from} à {to}",
+    "countOpen": "{from} ou plus"
+  },
+  "period": {
+    "label": "Période (semaines entières terminées)",
+    "range": "Du {from} au {to}",
+    "preset": {
+      "1": "Semaine dernière",
+      "4": "4 semaines",
+      "13": "13 semaines",
+      "52": "52 semaines"
+    },
+    "published": "Période publiée : du {from} au {to} (semaines entières et terminées seulement)."
+  },
+  "chart": {
+    "showTable": "Voir le tableau",
+    "tableLabel": "Tableau : {title}",
+    "itemCol": "Élément",
+    "tierCol": "Effectif"
+  },
+  "memberStatus": {
+    "actif": "Actifs",
+    "carence": "En carence",
+    "suspendu": "Suspendus"
+  },
+  "contractStatus": {
+    "en_cours": "En cours",
+    "a_echeance": "Échéance proche",
+    "echu": "Échu",
+    "sans_echeance": "Sans échéance"
+  },
+  "categories": {
+    "pharmacie": "Pharmacie",
+    "consultation": "Consultations",
+    "hospitalisation": "Hospitalisation",
+    "analyses": "Analyses",
+    "maternite": "Maternité",
+    "imagerie": "Imagerie",
+    "dentaire": "Dentaire",
+    "optique": "Optique",
+    "autres_regroupes": "Autres catégories regroupées"
+  },
+  "insurer": {
+    "eyebrow": "Espace assureur · {name}",
+    "title": "Portefeuille",
+    "intro": "Vue agrégée de votre portefeuille, en lecture seule : aucun nom, aucun dossier, aucun motif médical. Les catégories de garantie remplacent les actes. Effectifs par tranche, montants au millier près.",
+    "kpiTitle": "Indicateurs de la période",
+    "members": "Adhérents",
+    "lossRatio": "Ratio sinistres / primes",
+    "lossRatioHint": "Part mutuelle des dossiers accordés ÷ cotisations payées, sans provisions.",
+    "premiums": "Primes encaissées",
+    "claimsCost": "Sinistres (part mutuelle)",
+    "decisionDelay": "Délai moyen de décision",
+    "automation": "Décisions automatiques",
+    "automationHint": "Part des dossiers décidés par les règles, sans revue.",
+    "byStatus": "Adhérents par statut",
+    "byStatusCaption": "À la fin de la période.",
+    "byCategory": "Prestations par catégorie",
+    "byCategoryCaption": "Part mutuelle en francs CFA ; les catégories sous le seuil sont regroupées.",
+    "membersCol": "Adhérents",
+    "coveredCol": "Part mutuelle",
+    "claimsCol": "Dossiers",
+    "providers": "Principaux prestataires",
+    "providersCaption": "Les cinq premiers par part mutuelle ; tous les autres sont fondus dans une seule ligne.",
+    "providerCol": "Prestataire",
+    "otherProviders": "Tous les autres prestataires",
+    "noCareTitle": "Aucun soin sur cette période",
+    "noCareBody": "Les prestations apparaissent ici dès que des dossiers sont accordés sur la période choisie.",
+    "noProviderTitle": "Aucun prestataire publiable",
+    "noProviderBody": "Un prestataire n'apparaît que s'il a soigné au moins {k} personnes sur la période.",
+    "generated": "Calculé le {at} · seuil d'anonymat : {k} personnes",
+    "export": "Exporter en CSV",
+    "exportFilename": "portefeuille-{from}-{to}.csv",
+    "exportPending": "Préparation du fichier…",
+    "exportReady": "Fichier prêt : {file}",
+    "exportError": "Export impossible : {message} (code {code})."
+  },
+  "employer": {
+    "eyebrow": "Espace employeur · {name}",
+    "title": "Mon groupe",
+    "intro": "Consommation agrégée et anonymisée de vos groupes, et échéance de vos contrats. Aucun nom de salarié, aucun dossier, aucun motif médical.",
+    "consumptionTitle": "Consommation des groupes",
+    "members": "Salariés couverts",
+    "claims": "Dossiers de soins",
+    "covered": "Part mutuelle",
+    "smallGroup": "Groupe de petite taille : la plupart des valeurs sont masquées pour qu'aucun salarié ne soit reconnaissable (moins de {k} personnes).",
+    "noCategory": "Aucune catégorie publiable : chacune doit concerner au moins {k} personnes.",
+    "noGroupTitle": "Aucun groupe rattaché à votre accès",
+    "noGroupBody": "Vos groupes apparaissent ici dès que la mutuelle les rattache à votre compte employeur.",
+    "contractsTitle": "Contrats et échéances",
+    "contractsIntro": "Contrats de groupe et date de fin.",
+    "contractsSummary": "{count} contrat(s) arrivent à échéance dans les {days} prochains jours.",
+    "horizon": "Échéance dans les",
+    "horizonOption": "{days} jours",
+    "groupCol": "Groupe",
+    "endCol": "Fin du contrat",
+    "statusCol": "Échéance",
+    "membersCol": "Effectif",
+    "since": "Depuis le {date}",
+    "noEnd": "Reconduit sans date de fin",
+    "noEndShort": "—",
+    "endedAgo": "Terminé depuis {days} jours",
+    "endsToday": "Se termine aujourd'hui",
+    "endsIn": "Dans {days} jours",
+    "noContractTitle": "Aucun contrat de groupe",
+    "noContractBody": "Vos contrats apparaissent ici avec leur échéance dès qu'ils sont enregistrés par la mutuelle."
+  }
+}

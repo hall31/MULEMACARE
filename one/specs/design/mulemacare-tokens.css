@@ -1,0 +1,216 @@
+/*
+ * MulemaCare One — jetons de design (contrat L0, direction « Registre émeraude »).
+ * Règles d'usage, tableau des contrastes et interdits : docs/POLISH_CONTRACT.md.
+ *
+ * Source : thème Bio-Clinical Emerald du site preprod.mulemacare.com
+ * (site/assets/css/mulema-tokens.css, docs/ART_ESPACES.md) : émeraude #097268, royal #1E40AF,
+ * or #D97706, fond #F6F9FB, encre #0F172A. Remplace l'accent indigo du prototype (2026-10-01).
+ *
+ * Contient : clair (:root), sombre (système ou data-theme="dark"), plein soleil (data-sun,
+ * noir sur blanc quel que soit le thème), puis typographie, espacement, rayons, ombres,
+ * mouvement (avec prefers-reduced-motion). Aucun thème alternatif.
+ *
+ * Sémantique séparée : les statuts utilisent ok / warn / crit / info, jamais l'accent.
+ * L'or (--brand-gold) est décoratif : jamais du texte sur fond clair (3,19:1, échoue AA).
+ *
+ * Polices : noms seulement. Elles sont auto-hébergées (aucun appel à un CDN de polices,
+ * résidence des données et liste blanche réseau) ; paquets prévus : @fontsource-variable/outfit,
+ * @fontsource-variable/plus-jakarta-sans, @fontsource-variable/inter (OFL-1.1).
+ */
+
+:root {
+  --bg: #f6f9fb;
+  --surface: #ffffff;
+  --sunk: #eef3f6;
+  --line: #e2e8f0;
+  --line-2: #7a8a9e;
+  --fg: #0f172a;
+  --fg-2: #334155;
+  --fg-3: #5b6b7f;
+  --accent: #097268;
+  --accent-hover: #075e56;
+  --accent-2: #e3f3ef;
+  --accent-fg: #ffffff;
+  --focus: #097268;
+  --ok: #166534;
+  --ok-bg: #e6f4ea;
+  --warn: #92400e;
+  --warn-bg: #fef3c7;
+  --crit: #b91c1c;
+  --crit-bg: #fdecec;
+  --info: #1e40af;
+  --info-bg: #eaf0fd;
+  --brand-deep: #064a43;
+  --brand-on-deep: #ffffff;
+  --brand-on-deep-2: #b9e4dc;
+  --brand-gold: #d97706;
+  --brand-gold-soft: #fef3c7;
+  --brand-gold-on-deep: #e3a23b;
+  --brand-royal: #1e40af;
+  --scrim: rgba(6, 20, 18, 0.48);
+  --shadow-1: 0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 1px rgba(15, 23, 42, 0.04);
+  --shadow-2: 0 2px 6px rgba(15, 23, 42, 0.06), 0 12px 28px -12px rgba(6, 74, 67, 0.22);
+  --shadow: 0 24px 64px -16px rgba(6, 40, 36, 0.36);
+  --f-display: "Outfit", "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --f-num: "Inter", "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, Consolas, monospace;
+  --num-features: "tnum" 1, "lnum" 1;
+  --id-features: "case" 1; /* pas de tnum : il élargit le tiret des identifiants (MC-00928194) */
+  --fs-caption: 0.75rem;
+  --lh-caption: 1rem;
+  --fs-dense: 0.875rem;
+  --lh-dense: 1.25rem;
+  --fs-body: 1rem;
+  --lh-body: 1.5rem;
+  --fs-title: 1.25rem;
+  --lh-title: 1.75rem;
+  --fs-headline: 1.75rem;
+  --lh-headline: 2.25rem;
+  --fs-display: 2.5rem;
+  --lh-display: 3rem;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --tr-display: -0.02em;
+  --tr-eyebrow: 0.12em;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-btn: 12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-pill: 999px;
+  --tap-console: 32px;
+  --tap-min: 48px;
+  --tap-primary: 56px;
+  --focus-w: 2px;
+  --focus-offset: 2px;
+  --dur-press: 90ms;
+  --dur-hover: 140ms;
+  --dur-enter: 200ms;
+  --dur-panel: 280ms;
+  --dur-reveal: 400ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --move-sm: 4px;
+  --move-md: 12px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1417;
+    --surface: #131c20;
+    --sunk: #0a1013;
+    --line: #22303a;
+    --line-2: #5f7282;
+    --fg: #e7eef1;
+    --fg-2: #b3c1c8;
+    --fg-3: #8d9da6;
+    --accent: #4fc2b0;
+    --accent-hover: #6fd3c3;
+    --accent-2: #123430;
+    --accent-fg: #04211d;
+    --focus: #4fc2b0;
+    --ok: #6fcf8e;
+    --ok-bg: #12291b;
+    --warn: #f0b45e;
+    --warn-bg: #33250f;
+    --crit: #f38e86;
+    --crit-bg: #3a1816;
+    --info: #9bb4f6;
+    --info-bg: #172343;
+    --brand-deep: #0b3f3a;
+    --brand-gold-soft: #33250f;
+    --scrim: rgba(0, 0, 0, 0.6);
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-2: 0 12px 28px -12px rgba(0, 0, 0, 0.6);
+    --shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.7);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0d1417;
+  --surface: #131c20;
+  --sunk: #0a1013;
+  --line: #22303a;
+  --line-2: #5f7282;
+  --fg: #e7eef1;
+  --fg-2: #b3c1c8;
+  --fg-3: #8d9da6;
+  --accent: #4fc2b0;
+  --accent-hover: #6fd3c3;
+  --accent-2: #123430;
+  --accent-fg: #04211d;
+  --focus: #4fc2b0;
+  --ok: #6fcf8e;
+  --ok-bg: #12291b;
+  --warn: #f0b45e;
+  --warn-bg: #33250f;
+  --crit: #f38e86;
+  --crit-bg: #3a1816;
+  --info: #9bb4f6;
+  --info-bg: #172343;
+  --brand-deep: #0b3f3a;
+  --brand-gold-soft: #33250f;
+  --scrim: rgba(0, 0, 0, 0.6);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 12px 28px -12px rgba(0, 0, 0, 0.6);
+  --shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
+}
+
+/* Plein soleil : noir sur blanc, traits pleins, 7:1 minimum, identique quel que soit le thème. */
+[data-sun] {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --sunk: #ebebeb;
+  --line: #000000;
+  --line-2: #000000;
+  --fg: #000000;
+  --fg-2: #000000;
+  --fg-3: #000000;
+  --accent: #00473f;
+  --accent-hover: #00332d;
+  --accent-2: #d7f0ea;
+  --accent-fg: #ffffff;
+  --focus: #000000;
+  --ok: #0a4f22;
+  --ok-bg: #dcf3e2;
+  --warn: #5c3300;
+  --warn-bg: #ffe9b8;
+  --crit: #8e0000;
+  --crit-bg: #ffe0e0;
+  --info: #0a2a8a;
+  --info-bg: #e2e9ff;
+  --brand-deep: #00332d;
+  --brand-gold-soft: #ffe9b8;
+  --shadow-1: none;
+  --shadow-2: none;
+  --focus-w: 3px;
+  color-scheme: light;
+}
+
+/* Mouvement réduit : aucun déplacement, fondus courts, rien qui boucle (docs/POLISH_CONTRACT.md §6). */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-press: 0.01ms;
+    --dur-hover: 0.01ms;
+    --dur-enter: 120ms;
+    --dur-panel: 120ms;
+    --dur-reveal: 120ms;
+    --move-sm: 0px;
+    --move-md: 0px;
+  }
+}

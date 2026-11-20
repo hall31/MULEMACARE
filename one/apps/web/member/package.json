@@ -1,0 +1,39 @@
+{
+  "name": "@mulemacare-one/member",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Espace adhérent et lien de paiement diaspora (Phase 1, voie B)",
+  "type": "module",
+  "scripts": {
+    "gen:api": "openapi-typescript ../../../specs/openapi.yaml -o src/api/schema.d.ts",
+    "dev": "next dev -p 3200",
+    "build": "next build",
+    "start": "next start -p 3200",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "a11y": "playwright test e2e/a11y.spec.ts",
+    "check": "pnpm run typecheck && pnpm run test && pnpm run build && pnpm run e2e"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "5.104.0",
+    "next": "16.3.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "uqr": "0.1.3"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "24.19.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "ajv": "8.20.0",
+    "openapi-typescript": "7.13.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "vitest": "5.0.2",
+    "yaml": "2.9.1"
+  }
+}

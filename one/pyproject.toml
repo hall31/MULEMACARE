@@ -1,0 +1,55 @@
+[project]
+name = "mulemacare-one"
+version = "0.0.0"
+description = "MulemaCare One — noyau de gestion de la mutuelle (API)"
+requires-python = ">=3.12,<3.13"
+# Chaque dépendance est justifiée dans specs/DEPENDENCIES.md.
+dependencies = [
+  "sqlalchemy>=2.0,<2.2",
+  "alembic>=1.13,<2",
+  "psycopg[binary]>=3.2,<4",
+  "fastapi>=0.120,<1",
+  "greenlet>=3,<4",
+  "cryptography>=46,<47",
+  "pyjwt[crypto]>=2.10,<3",
+  "uvicorn>=0.40,<1",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3,<9",
+  "ruff>=0.8,<1",
+  "mypy>=1.13,<2",
+  "pgserver>=0.1.4,<0.2",
+  "hypothesis>=6.100,<7",
+  "httpx>=0.27,<1",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["apps/api"]
+pythonpath = ["apps"]
+addopts = "-ra --strict-markers --strict-config"
+xfail_strict = true
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["apps"]
+extend-exclude = ["apps/web"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "N", "SIM", "RUF", "ANN", "PT", "PL"]
+
+[tool.ruff.lint.per-file-ignores]
+# pytest s'appuie sur assert ; les tests exécutent du SQL de contrat construit localement.
+"apps/api/**/tests/**" = ["S101", "S608", "PLR2004"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "apps"
+explicit_package_bases = true
+files = ["apps/api"]

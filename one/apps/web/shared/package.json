@@ -1,0 +1,16 @@
+{
+  "name": "@mulemacare-one/shared",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Code partagé des apps web (P3 : moteur de thème par organisation). Importé par alias de source (@shared/*), sans build ni dépendance d'exécution.",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.0",
+    "typescript": "5.9.3",
+    "vitest": "5.0.2"
+  }
+}

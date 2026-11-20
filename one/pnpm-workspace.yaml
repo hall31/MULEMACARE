@@ -1,0 +1,6 @@
+packages:
+  - apps/web/*
+
+# msw : son script postinstall copie le service worker ; on le génère explicitement (pnpm mock:worker).
+allowBuilds:
+  msw: false
